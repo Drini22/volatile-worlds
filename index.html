@@ -1,0 +1,2203 @@
+<title>Volatile Worlds</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#0C111E; --surface:#131A2C; --surface2:#182136; --line:#26304A; --line-soft:#1D2740;
+    --ink:#E9EDF6; --ink2:#9AA6BF; --muted:#6B7690;
+    --rock:#C97633; --ice:#3D9BD9;
+    --rock-soft:rgba(201,118,51,.16); --ice-soft:rgba(61,155,217,.16);
+    --iron:#AEB6C4; --icefill:#A8D8F0;
+    --good:#4CBB78; --bad:#E06565;
+    --serif:"Spectral",Georgia,'Times New Roman',serif;
+    --sans:"IBM Plex Sans",-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  }
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0;
+       background-image:radial-gradient(1100px 500px at 70% -10%, #16203A 0%, rgba(22,32,58,0) 70%);}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 24px 96px;}
+  a{color:var(--ice);text-decoration-thickness:1px;text-underline-offset:3px;}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2;text-wrap:balance;margin:0;}
+  p{margin:0;}
+  .prose{max-width:62ch;color:var(--ink2);}
+  .prose strong{color:var(--ink);font-weight:600;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+
+  /* ---------- header ---------- */
+  header{padding:72px 0 20px;}
+  header h1{font-size:clamp(40px,6vw,58px);margin:14px 0 18px;}
+  header .standfirst{font-family:var(--serif);font-weight:400;font-size:20px;color:var(--ink2);max-width:58ch;}
+  .layer-key{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:28px;padding:14px 18px;border:1px solid var(--line-soft);border-radius:10px;background:rgba(19,26,44,.6);width:fit-content;}
+  .layer-key span{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);}
+  .dot{width:11px;height:11px;border-radius:50%;flex:none;}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap;}
+  .tabbtn{background:none;border:1px solid var(--line);border-radius:10px;color:var(--ink2);
+          padding:10px 18px;font-family:var(--sans);font-size:14.5px;cursor:pointer;
+          display:flex;flex-direction:column;align-items:flex-start;gap:3px;}
+  .tabbtn small{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .tabbtn[aria-selected="true"]{background:var(--surface2);color:var(--ink);border-color:var(--muted);}
+  .tabbtn:focus-visible{outline:2px solid var(--ice);outline-offset:2px;}
+  .pagehero{margin-top:36px;}
+  .pagehero .standfirst{font-family:var(--serif);font-weight:400;font-size:19px;color:var(--ink2);max-width:60ch;margin:10px 0 0;}
+
+  /* ---------- dorn tab ---------- */
+  .hist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:6px;}
+  @media (max-width:760px){.hist-grid{grid-template-columns:1fr;}}
+  .postplanets{display:flex;gap:16px;margin-top:20px;flex-wrap:wrap;align-items:stretch;}
+  .postplanets .pp{display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .postplanets svg{width:124px;height:124px;background:var(--surface2);border:1px solid var(--line-soft);border-radius:10px;}
+  .postplanets .pp-cap{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:center;}
+  .pp-lead{font-size:13px;color:var(--ink2);align-self:center;max-width:16ch;}
+  .warnchip{background:rgba(224,101,101,.12);border:1px solid rgba(224,101,101,.3);border-radius:10px;
+            padding:10px 16px;font-size:13px;color:#E88A8A;}
+
+  /* ---------- sections ---------- */
+  section{margin-top:84px;}
+  .sec-head{display:flex;align-items:baseline;gap:16px;border-top:1px solid var(--line);padding-top:22px;}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--muted);flex:none;}
+  .sec-head h2{font-size:clamp(24px,3.4vw,32px);}
+  .sec-head + .prose{margin:14px 0 26px;}
+  .panel{background:var(--surface);border:1px solid var(--line-soft);border-radius:14px;padding:24px;}
+  .takeaway{margin-top:18px;max-width:62ch;color:var(--ink2);font-size:14.5px;border-left:2px solid var(--line);padding-left:14px;}
+  .takeaway em{color:var(--ink);font-style:normal;font-weight:600;}
+
+  /* ---------- controls ---------- */
+  .controls{display:flex;flex-wrap:wrap;gap:18px 32px;align-items:flex-end;margin-bottom:20px;}
+  .ctl{display:flex;flex-direction:column;gap:6px;min-width:180px;flex:1;max-width:260px;}
+  .ctl label{font-size:12.5px;color:var(--ink2);display:flex;justify-content:space-between;gap:10px;}
+  .ctl label output{font-family:var(--mono);color:var(--ink);}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:22px;background:none;margin:0;cursor:pointer;}
+  input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ink);border:3px solid var(--bg);margin-top:-6px;box-shadow:0 0 0 1px var(--line);}
+  input[type=range]:focus-visible{outline:2px solid var(--ice);outline-offset:3px;border-radius:4px;}
+  input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--line);}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--ink);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--line);}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .seg button{background:none;border:none;color:var(--ink2);font-family:var(--sans);font-size:13px;padding:7px 14px;cursor:pointer;border-right:1px solid var(--line);}
+  .seg button:last-child{border-right:none;}
+  .seg button[aria-pressed="true"]{background:var(--surface2);color:var(--ink);font-weight:600;}
+  .seg button:focus-visible{outline:2px solid var(--ice);outline-offset:-2px;}
+  .btn{background:var(--surface2);border:1px solid var(--line);color:var(--ink);font-family:var(--sans);font-size:13.5px;font-weight:500;padding:9px 16px;border-radius:8px;cursor:pointer;}
+  .btn:hover{border-color:var(--muted);}
+  .btn:focus-visible{outline:2px solid var(--ice);outline-offset:2px;}
+  .preset{font-size:12.5px;padding:6px 12px;}
+
+  /* ---------- planets (station 1) ---------- */
+  .twins{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media (max-width:720px){.twins{grid-template-columns:1fr;}}
+  .planet-card{background:var(--surface2);border:1px solid var(--line-soft);border-radius:12px;padding:18px 18px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .planet-card h3{font-size:16px;font-family:var(--sans);font-weight:600;align-self:flex-start;display:flex;align-items:center;gap:8px;}
+  .planet-card .tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px;}
+  .tag.rock{background:var(--rock-soft);color:#E5A468;}
+  .tag.ice{background:var(--ice-soft);color:#7FC2EA;}
+  .planet-card svg{width:100%;max-width:300px;height:auto;}
+  .bigR{font-family:var(--mono);font-size:26px;color:var(--ink);}
+  .bigR small{font-size:14px;color:var(--muted);}
+  .comp-line{font-size:12.5px;color:var(--ink2);text-align:center;min-height:2.6em;}
+  .nomatch{border-style:dashed;justify-content:center;text-align:center;color:var(--ink2);font-size:14px;padding:32px 26px;}
+  .nomatch strong{color:var(--ink);}
+  .match-note{margin-top:16px;font-size:14px;color:var(--ink2);max-width:62ch;}
+  .match-note .mono{color:var(--ink);}
+
+  /* ---------- charts ---------- */
+  .census-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:760px){.census-grid{grid-template-columns:1fr;}}
+  .step-tag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+  .chart-box{position:relative;}
+  .chart-box svg{width:100%;height:auto;display:block;}
+  .chart-title{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+  .chart-sub{font-size:12.5px;color:var(--muted);margin-bottom:12px;}
+  .axis text{font-family:var(--mono);font-size:11px;fill:var(--muted);}
+  .axis line{stroke:var(--line-soft);}
+  .axis .zero{stroke:var(--line);}
+  .gridline{stroke:var(--line-soft);stroke-dasharray:none;}
+  .serieslabel{font-family:var(--sans);font-size:12px;font-weight:600;}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--ink2);}
+  .legend span{display:flex;align-items:center;gap:7px;}
+  .legend i{width:16px;height:0;border-top:2.5px solid;border-radius:2px;}
+  .tip{position:absolute;pointer-events:none;background:#0A0F1B;border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:12px;color:var(--ink2);line-height:1.5;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.45);z-index:5;}
+  .tip b{color:var(--ink);font-weight:600;}
+  .tip .mono{font-size:11.5px;}
+  [hidden]{display:none!important;}
+
+  .readouts{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;}
+  .chip{background:var(--surface2);border:1px solid var(--line-soft);border-radius:10px;padding:10px 16px;min-width:130px;}
+  .chip .k{font-size:11.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;font-family:var(--mono);}
+  .chip .v{font-family:var(--mono);font-size:19px;color:var(--ink);margin-top:2px;}
+  .chip .v small{font-size:12px;color:var(--muted);}
+  .chip.answer .v{color:#7FC2EA;}
+
+  .verdict{display:inline-flex;align-items:center;gap:9px;border-radius:99px;padding:8px 16px;font-size:13.5px;font-weight:600;margin-top:2px;}
+  .verdict.yes{background:rgba(76,187,120,.14);color:#6ECD93;}
+  .verdict.no{background:rgba(224,101,101,.14);color:#E88A8A;}
+  .verdict::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:none;}
+
+  footer{margin-top:96px;border-top:1px solid var(--line);padding-top:26px;font-size:13.5px;color:var(--muted);max-width:70ch;}
+  footer p{margin-bottom:12px;}
+  @media (prefers-reduced-motion:no-preference){
+    .planet-card svg circle{transition:r .25s ease;}
+  }
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">An interactive reading companion · exoplanet interiors</p>
+  <h1>Volatile Worlds</h1>
+  <div class="tabs" role="tablist" aria-label="Papers">
+    <button class="tabbtn" id="tab-alibert" role="tab" aria-selected="true">Alibert 2016 <small>break the degeneracy</small></button>
+    <button class="tabbtn" id="tab-dorn" role="tab" aria-selected="false">Dorn 2017 <small>map the degeneracy</small></button>
+    <button class="tabbtn" id="tab-kub" role="tab" aria-selected="false">Kubyshkina 2022 <small>evolve the population</small></button>
+    <button class="tabbtn" id="tab-baty" role="tab" aria-selected="false">Baty 2023 <small>learn the equation</small></button>
+    <button class="tabbtn" id="tab-mos" role="tab" aria-selected="false">Moseley 2020 <small>emulate the simulator</small></button>
+  </div>
+</header>
+
+<div id="page-alibert" role="tabpanel" aria-labelledby="tab-alibert">
+<section class="pagehero">
+  <p class="eyebrow">Y. Alibert (2016) · A&amp;A 591, A79 · arXiv:1605.05064</p>
+  <p class="standfirst">How much of a planet is water? Mass and radius alone can't tell you — unless the planet is scorched bare, or unless you catch a whole population young. This page lets you play with both tricks.</p>
+  <div class="layer-key" role="img" aria-label="Layer color key: iron core, silicate mantle, icy mantle, hydrogen-helium envelope">
+    <span><i class="dot" style="background:var(--iron)"></i>iron core</span>
+    <span><i class="dot" style="background:var(--rock)"></i>silicate mantle</span>
+    <span><i class="dot" style="background:var(--icefill)"></i>icy mantle</span>
+    <span><i class="dot" style="background:rgba(61,155,217,.4)"></i>H/He gas envelope</span>
+  </div>
+</section>
+
+<!-- ================= STATION 1 ================= -->
+<section id="s1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>Two planets, one measurement</h2></div>
+  <p class="prose">Build a planet with the sliders. The model finds an <strong>impostor</strong>: a planet with the same mass and the same transit radius at 5&nbsp;Gyr, but a completely different interior — water traded for gas. A telescope measuring mass and radius today could not tell them apart. This is the degeneracy the whole paper is about.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Total mass <output id="o-m1">12.0 M⊕</output></label>
+        <input type="range" id="in-m1" min="2" max="15" step="0.5" value="12" aria-label="Total mass in Earth masses"></div>
+      <div class="ctl"><label>Water-ice fraction (of solid) <output id="o-fv1">0 %</output></label>
+        <input type="range" id="in-fv1" min="0" max="0.8" step="0.01" value="0" aria-label="Water ice fraction"></div>
+      <div class="ctl"><label>H/He gas fraction <output id="o-fg1">10 %</output></label>
+        <input type="range" id="in-fg1" min="0" max="0.30" step="0.005" value="0.10" aria-label="Gas fraction"></div>
+    </div>
+    <div class="twins">
+      <div class="planet-card">
+        <h3>Your planet <span class="tag rock" id="tagA">dry</span></h3>
+        <svg id="pA" viewBox="0 0 300 300" aria-label="Cross-section of your planet"></svg>
+        <div class="bigR"><span id="rA">–</span> <small>R⊕ at 5 Gyr</small></div>
+        <p class="comp-line" id="compA"></p>
+      </div>
+      <div class="planet-card" id="cardB">
+        <h3>The impostor <span class="tag ice" id="tagB">wet</span></h3>
+        <svg id="pB" viewBox="0 0 300 300" aria-label="Cross-section of the impostor planet"></svg>
+        <div class="bigR"><span id="rB">–</span> <small>R⊕ at 5 Gyr</small></div>
+        <p class="comp-line" id="compB"></p>
+      </div>
+      <div class="planet-card nomatch" id="cardBno" hidden>
+        <p><strong>No impostor exists.</strong><br>With almost no gas, even a bone-dry rocky planet of this mass can't be made this small any other way — a water-rich version would be too big. When the gas is gone, composition becomes measurable. That's the trick of §2.</p>
+      </div>
+    </div>
+    <p class="match-note" id="matchNote"></p>
+  </div>
+  <p class="takeaway"><em>Why it matters:</em> the paper deliberately never uses “volatile” and “gas” interchangeably — water ice counts as volatile, H/He counts as gas — because trading one for the other is exactly what makes interiors unrecoverable from a single (mass, radius) pair.</p>
+</section>
+
+<!-- ================= STATION 2 ================= -->
+<section id="s2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>Strip the gas: 55 Cancri e</h2></div>
+  <p class="prose">Very close to its star, a low-mass planet can't hold on to H/He — evaporation removes it. With gas off the table, radius becomes a function of water fraction alone (given the star's Fe/Si and Mg/Si). Slide the observed radius and read off the implied water content. The band's width comes from the mass uncertainty (7.83–8.35&nbsp;M⊕).</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Observed radius <output id="o-ro">2.17 R⊕</output></label>
+        <input type="range" id="in-ro" min="1.80" max="2.45" step="0.01" value="2.17" aria-label="Observed radius"></div>
+      <div class="ctl"><label>Radius uncertainty ± <output id="o-sig">0.10 R⊕</output></label>
+        <input type="range" id="in-sig" min="0.02" max="0.15" step="0.01" value="0.10" aria-label="Radius uncertainty"></div>
+      <div class="ctl" style="max-width:none;flex:none;">
+        <label>Published measurements</label>
+        <div style="display:flex;gap:8px;">
+          <button class="btn preset" id="btn-gillon">Gillon 2012 · 2.17 ± 0.10</button>
+          <button class="btn preset" id="btn-demory">Demory 2015 · 1.91 ± 0.08</button>
+        </div>
+      </div>
+    </div>
+    <div class="chart-box" id="cb2">
+      <p class="chart-title">Radius of a gas-free 55 Cnc e vs. its water-ice fraction</p>
+      <p class="chart-sub">Blue band: model radius across the allowed mass range · gray band: your measurement · shaded column: implied water fraction</p>
+      <svg id="ch2" viewBox="0 0 920 380" aria-label="Chart of radius versus water ice fraction"></svg>
+      <div class="tip" id="tip2" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip answer"><div class="k">implied water fraction</div><div class="v" id="ans2">–</div></div>
+      <div class="chip"><div class="k">assumption</div><div class="v" style="font-size:13.5px;line-height:1.5;color:var(--ink2)">no gas envelope<br>(evaporated)</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Try the two presets.</em> With the Gillon radius the paper concludes 55 Cnc e is 19–56% water; with the smaller Demory radius, a completely dry planet fits. Same planet, same method — the answer hangs entirely on one radius measurement. (The toy model here reproduces the paper's 19–56% almost exactly.)</p>
+</section>
+
+<!-- ================= STATION 3 ================= -->
+<section id="s3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Rewind the clock</h2></div>
+  <p class="prose">Far from the star, evaporation can't help. But the two indistinguishable planets of §1 are only identical <strong>today</strong>. A dry planet keeps more radioactive silicates and cools more slowly, so it was more puffed up when young. Wind the water fraction up and down and watch the two histories peel apart at early ages — while always agreeing at 5&nbsp;Gyr.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Water fraction of the wet planet <output id="o-fv3">70 %</output></label>
+        <input type="range" id="in-fv3" min="0.1" max="0.7" step="0.01" value="0.7" aria-label="Water fraction of the wet planet"></div>
+    </div>
+    <div class="chart-box" id="cb3">
+      <p class="chart-title">Radius history of two 12 M⊕ planets matched at 5 Gyr</p>
+      <p class="chart-sub">Dry planet: 10% gas, no water · wet planet: gas adjusted so both have the same radius today · hover to compare</p>
+      <svg id="ch3" viewBox="0 0 920 400" aria-label="Chart of radius versus age for two planets"></svg>
+      <div class="tip" id="tip3" hidden></div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--rock)"></i>dry · more gas</span>
+      <span><i style="border-color:var(--ice)"></i>wet · less gas</span>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">Δ radius at 100 Myr</div><div class="v" id="d100">–</div></div>
+      <div class="chip"><div class="k">Δ radius at 1 Gyr</div><div class="v" id="d1000">–</div></div>
+      <div class="chip"><div class="k">Δ radius at 5 Gyr</div><div class="v">0.0 %<small> by construction</small></div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>The catch:</em> the difference is a percent or two — and you can't observe one planet at two ages. The paper's answer: don't observe one planet twice, observe <em>many similar planets once each</em>, at different ages. That's §4.</p>
+</section>
+
+<!-- ================= STATION 4 ================= -->
+<section id="s4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>The census: a PLATO thought experiment</h2></div>
+  <p class="prose">Simulate the paper's actual two-step experiment. Planets are selected by <strong>mass</strong> (all 12&nbsp;M⊕ here) and by <strong>host-star age</strong> — never by radius: radius is the measurement. <strong>Step&nbsp;1, calibrate:</strong> both rival stories — all dry, or all 70% water — get their gas fraction tuned so each reproduces the <em>same</em> observed radii in the old (5&nbsp;Gyr) sample. After that, the old sample can't tell them apart by construction. <strong>Step&nbsp;2, test:</strong> the tuned stories predict different radii for <em>young</em> planets, because dry planets carrying more gas were puffier in the past. Observe a young batch with realistic noise (±10% on ages) and ask: can we reject the wrong story?</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Planets observed</label>
+        <div class="seg" id="seg-n" role="group" aria-label="Number of planets">
+          <button aria-pressed="false" data-v="25">25</button>
+          <button aria-pressed="true" data-v="100">100</button>
+          <button aria-pressed="false" data-v="500">500</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Age of the young sample</label>
+        <div class="seg" id="seg-t" role="group" aria-label="Age of young sample">
+          <button aria-pressed="true" data-v="0.1">100 Myr</button>
+          <button aria-pressed="false" data-v="0.5">500 Myr</button>
+          <button aria-pressed="false" data-v="1">1 Gyr</button>
+          <button aria-pressed="false" data-v="3">3 Gyr</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Radius precision</label>
+        <div class="seg" id="seg-p" role="group" aria-label="Radius precision">
+          <button aria-pressed="true" data-v="0.02">2 % (PLATO)</button>
+          <button aria-pressed="false" data-v="0.05">5 %</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>View</label>
+        <div class="seg" id="seg-v" role="group" aria-label="Chart view">
+          <button aria-pressed="true" data-v="cdf">Cumulative</button>
+          <button aria-pressed="false" data-v="hist">Histogram</button>
+        </div></div>
+      <div class="ctl" style="flex:none;" id="ctl-bins" hidden><label>Bins</label>
+        <div class="seg" id="seg-b" role="group" aria-label="Histogram bin count">
+          <button aria-pressed="false" data-v="8">8</button>
+          <button aria-pressed="true" data-v="16">16</button>
+          <button aria-pressed="false" data-v="32">32</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;">
+        <button class="btn" id="btn-resample">Observe a new sample</button></div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb4a">
+        <p class="step-tag">Step 1 · calibrate</p>
+        <p class="chart-title">Old sample — the 5 Gyr anchor</p>
+        <p class="chart-sub">Each story's gas fraction is tuned to reproduce the same radii today, so the curves lie on top of each other by construction.</p>
+        <svg id="ch4a" viewBox="0 0 460 380" aria-label="Radius distributions of the old calibration sample"></svg>
+        <div class="tip" id="tip4a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb4b">
+        <p class="step-tag">Step 2 · test</p>
+        <p class="chart-title">Young sample — where the stories differ</p>
+        <p class="chart-sub" id="ch4-sub">Kolmogorov–Smirnov distance D = widest vertical gap (marked)</p>
+        <svg id="ch4b" viewBox="0 0 460 380" aria-label="Radius distributions of the young test sample"></svg>
+        <div class="tip" id="tip4b" hidden></div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--rock)"></i>dry hypothesis</span>
+      <span><i style="border-color:var(--ice)"></i>wet hypothesis</span>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">calibrated gas · dry / wet</div><div class="v" id="gascal">–</div></div>
+      <div class="chip"><div class="k">KS distance D (young)</div><div class="v" id="ksd">–</div></div>
+      <div class="chip"><div class="k">reject threshold (95%)</div><div class="v" id="kscrit">–</div></div>
+      <div class="chip"><div class="k">surveys that succeed</div><div class="v" id="powpct">–<small> of 200 repeats</small></div></div>
+      <div class="chip" style="display:flex;align-items:center;"><span class="verdict" id="verdict">–</span></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Reproduce the paper's headline:</em> at 100 Myr with 100 planets and PLATO's 2% radii, the histories separate almost every time. Push the age to 3 Gyr, or drop to 25 planets, and the signal drowns in noise — exactly why the method needs young stars with good ages, i.e. PLATO rather than TESS or CHEOPS.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The interactive model here is a pedagogical parametrization calibrated to the paper's published figures (it reproduces the 55 Cnc e 19–56% water range, the 3.23/3.67 R⊕ twin planets, and the ~1% early-age divergence). The real paper integrates the interior structure ODEs with Mie–Grüneisen–Debye equations of state, models the H/He envelope with irradiation, and evolves planets by total-energy conservation with radiogenic heating.</p>
+  <p>Y. Alibert (2016), “Constraining the volatile fraction of planets from transit observations”, A&amp;A 591, A79 · <a href="https://arxiv.org/abs/1605.05064">arXiv:1605.05064</a></p>
+</footer>
+</div><!-- /page-alibert -->
+
+<div id="page-dorn" role="tabpanel" aria-labelledby="tab-dorn" hidden>
+<section class="pagehero">
+  <p class="eyebrow">Dorn, Venturini, Khan, Heng, Alibert, Helled, Rivoldini &amp; Benz (2017) · A&amp;A 597, A37 · arXiv:1609.03908</p>
+  <p class="standfirst">Alibert 2016 hunted for ways to <em>break</em> the composition degeneracy. Dorn 2017 does the opposite: embrace it. Put priors on every interior parameter, run the forward model thousands of times, and let Bayes' theorem state exactly how much — and how little — a mass, a radius, and the star's chemistry really tell you.</p>
+</section>
+
+<!-- ================= STATION D1 ================= -->
+<section id="d1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>The inference machine</h2></div>
+  <p class="prose">Hand the machine an observed planet: a mass, a radius, and a radius uncertainty. It samples thousands of interiors — iron core, silicate mantle, water ice, H/He gas — from wide priors, keeps the ones consistent with the data, and returns <strong>probability distributions, not answers</strong>. Then flip on the stellar abundance constraint (Fe/Si from the host star's spectrum, the Thiabaud proxy) and watch which posteriors tighten — and which don't care.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Mass (known) <output id="o-dm">7.0 M⊕</output></label>
+        <input type="range" id="in-dm" min="1" max="18" step="0.1" value="7" aria-label="Planet mass"></div>
+      <div class="ctl"><label>Observed radius <output id="o-dr">2.60 R⊕</output></label>
+        <input type="range" id="in-dr" min="0.9" max="4.6" step="0.01" value="2.6" aria-label="Observed radius"></div>
+      <div class="ctl" style="flex:none;"><label>Radius precision</label>
+        <div class="seg" id="seg-dp" role="group" aria-label="Radius precision">
+          <button aria-pressed="true" data-v="0.02">2 %</button>
+          <button aria-pressed="false" data-v="0.05">5 %</button>
+          <button aria-pressed="false" data-v="0.10">10 %</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Constraints</label>
+        <div class="seg" id="seg-dab" role="group" aria-label="Constraints used">
+          <button aria-pressed="false" data-v="0">M + R only</button>
+          <button aria-pressed="true" data-v="1">+ stellar Fe/Si</button>
+        </div></div>
+      <div class="ctl" style="max-width:none;flex:none;">
+        <label>Presets from the paper</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn preset" id="btn-dnep">Neptune · 17.2 M⊕, 3.87 R⊕</button>
+          <button class="btn preset" id="btn-dcaseb">Case B · 7 M⊕, 2.2 R⊕</button>
+          <button class="btn preset" id="btn-dcased">Case D · 7 M⊕, 2.9 R⊕</button>
+        </div>
+      </div>
+    </div>
+    <div class="hist-grid">
+      <div class="chart-box" id="cb-dhi">
+        <p class="chart-title">Iron core <span style="color:var(--muted);font-weight:400">· fraction of solid</span></p>
+        <svg id="dh-iron" viewBox="0 0 300 225" aria-label="Posterior of iron core fraction"></svg>
+        <div class="tip" id="tip-dhi" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-dhw">
+        <p class="chart-title">Water ice <span style="color:var(--muted);font-weight:400">· fraction of solid</span></p>
+        <svg id="dh-ice" viewBox="0 0 300 225" aria-label="Posterior of water ice fraction"></svg>
+        <div class="tip" id="tip-dhw" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-dhg">
+        <p class="chart-title">H/He gas <span style="color:var(--muted);font-weight:400">· fraction of mass, log</span></p>
+        <svg id="dh-gas" viewBox="0 0 300 225" aria-label="Posterior of gas mass fraction"></svg>
+        <div class="tip" id="tip-dhg" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">iron core · 68 %</div><div class="v" id="ci-iron">–</div></div>
+      <div class="chip"><div class="k">water ice · 68 %</div><div class="v" id="ci-ice">–</div></div>
+      <div class="chip"><div class="k">gas · 68 %</div><div class="v" id="ci-gas">–</div></div>
+      <div class="chip warnchip" id="dwarn" hidden>Data at the edge of the model space — few consistent interiors remain. Treat these posteriors with care.</div>
+    </div>
+    <div class="postplanets">
+      <p class="pp-lead">Interiors drawn at random from the posterior:</p>
+      <div class="pp"><svg id="dpp0" viewBox="0 0 300 300"></svg><span class="pp-cap" id="dppc0"></span></div>
+      <div class="pp"><svg id="dpp1" viewBox="0 0 300 300"></svg><span class="pp-cap" id="dppc1"></span></div>
+      <div class="pp"><svg id="dpp2" viewBox="0 0 300 300"></svg><span class="pp-cap" id="dppc2"></span></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Try Neptune.</em> The paper validates the machine on the one volatile-rich planet with independent interior estimates — the posteriors bracket them. Then try Case B vs. Case D: same mass, different radius — bulk density is what steers every posterior. And notice: where the data say little (the gas layer), the shape you see is mostly the <em>prior</em> — the paper's warning that priors must be chosen from physics, not convenience.</p>
+</section>
+
+<!-- ================= STATION D2 ================= -->
+<section id="d2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>The shape of ignorance</h2></div>
+  <p class="prose">One-dimensional histograms hide the structure of the degeneracy. Plot the surviving interiors in the water–gas plane and it appears: a <strong>ridge of trade-offs</strong>, more water with less gas, less water with more gas — Alibert's degeneracy, now drawn as a probability cloud (the paper's Figs. 8–9). Every dot below is a complete planet that fits the data.</p>
+  <div class="panel">
+    <div class="chart-box" id="cb-dsc">
+      <p class="chart-title">Joint posterior: water ice vs. H/He gas</p>
+      <p class="chart-sub">1200 interiors resampled from the posterior of §1 — move the sliders above and watch the cloud deform</p>
+      <svg id="dsc" viewBox="0 0 920 400" aria-label="Scatter of posterior samples in the water versus gas plane"></svg>
+      <div class="tip" id="tip-dsc" hidden></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Why it matters:</em> a low-density planet can be a <em>massive ocean</em> or a <em>thick atmosphere</em> — the paper shows (Case C) that mass and radius alone cannot separate the two, and that a simplistic atmosphere model silently converts one into the other. Correlations, not single numbers, are the honest deliverable of interior characterization.</p>
+</section>
+
+<!-- ================= STATION D3 ================= -->
+<section id="d3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Which measurement buys which knowledge</h2></div>
+  <p class="prose">The paper's most useful result is a <strong>sensitivity map</strong>: mass sets the size of the rocky and icy interior; radius governs the water and gas layers; stellar abundances fix the proportions of core and mantle. Below, the same inference runs under four data scenarios — each bar is how much of the prior's width survives (smaller = more learned).</p>
+  <div class="panel">
+    <div class="chart-box" id="cb-dbud">
+      <p class="chart-title">Posterior width as a share of the prior width (68 % intervals)</p>
+      <p class="chart-sub">Computed live for the planet configured in §1 (mass and radius from the sliders above)</p>
+      <svg id="dbud" viewBox="0 0 920 400" aria-label="Bar chart of posterior widths under four data scenarios"></svg>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--ice)"></i>with stellar abundances</span>
+      <span><i style="border-color:var(--ice);opacity:.45"></i>with abundances · R ±10 %</span>
+      <span><i style="border-color:var(--rock)"></i>no abundances</span>
+      <span><i style="border-color:var(--rock);opacity:.45"></i>no abundances · R ±10 %</span>
+    </div>
+  </div>
+  <p class="takeaway"><em>Read it like the paper:</em> better radii shrink the water bar (Case B vs. E: three times tighter) but barely touch the gas bar; abundances shrink the iron bar and, through correlations, help the ice — but say nothing about gas. The gas layer stays prior-dominated, which is why Dorn's outlook points at the missing ingredient: a physical prior on luminosity from <em>evolution models</em> — precisely the physics of the Alibert tab. The two papers are two halves of one pipeline.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The real paper runs Markov-chain Monte Carlo over a full thermodynamic forward model — an hcp-iron core (Bouchet EoS), a silicate mantle from Gibbs free-energy minimization (Stixrude &amp; Lithgow-Bertelloni), high-pressure water (Vazan/Seager EoS), and two atmosphere models (radiative-transfer vs. isothermal scale-height) — at 40–90 s per model, ~10⁵ models per planet. This page does importance sampling over the same calibrated toy mass–radius model as the Alibert tab, extended with a variable iron fraction; mass is treated as exact. The lessons about degeneracy, correlations, and data sensitivity are the paper's; the numbers are illustrative.</p>
+  <p>C. Dorn et al. (2017), “A generalized Bayesian inference method for constraining the interiors of super Earths and sub-Neptunes”, A&amp;A 597, A37 · <a href="https://arxiv.org/abs/1609.03908">arXiv:1609.03908</a></p>
+</footer>
+</div><!-- /page-dorn -->
+
+<div id="page-kub" role="tabpanel" aria-labelledby="tab-kub" hidden>
+<section class="pagehero">
+  <p class="eyebrow">D. Kubyshkina &amp; L. Fossati (2022) · A&amp;A 668, A178 · arXiv:2211.10166</p>
+  <p class="standfirst">Alibert fenced off the planets that endure evaporation; Dorn froze time and treated luminosity as a free knob. This paper walks into the fenced-off regime: couple hydrodynamic atmospheric escape to thermal evolution, evolve a whole synthetic population for 10&nbsp;Gyr under every possible history of its star's activity, and ask which parts of the observed mass–radius diagram are sculpted by <em>escape</em> — and which still remember <em>formation</em>.</p>
+</section>
+
+<!-- ================= STATION K1 ================= -->
+<section id="k1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>One planet, three suns</h2></div>
+  <p class="prose">The same planet around three stars of identical mass but different spin histories. A star born rotating fast stays X-ray bright for hundreds of Myr; a slow rotator quiets down in tens. Since the star's <em>past</em> rotation can't be observed today, this spread is an irreducible uncertainty — watch how much of the planet's fate it controls.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Core mass <output id="o-kmc">5.0 M⊕</output></label>
+        <input type="range" id="in-kmc" min="1" max="40" step="0.5" value="5" aria-label="Core mass"></div>
+      <div class="ctl"><label>Initial atmosphere (of total mass) <output id="o-kfat">5.0 %</output></label>
+        <input type="range" id="in-kfat" min="0.2" max="60" step="0.2" value="5" aria-label="Initial atmospheric mass fraction"></div>
+      <div class="ctl" style="flex:none;"><label>Orbit</label>
+        <div class="seg" id="seg-ka" role="group" aria-label="Orbital separation">
+          <button aria-pressed="false" data-v="0.03">0.03 AU</button>
+          <button aria-pressed="true" data-v="0.05">0.05</button>
+          <button aria-pressed="false" data-v="0.1">0.1</button>
+          <button aria-pressed="false" data-v="0.2">0.2</button>
+          <button aria-pressed="false" data-v="0.35">0.35</button>
+        </div></div>
+    </div>
+    <div class="chart-box" id="cb-k1">
+      <p class="chart-title">Radius history under escape + contraction, per stellar rotation history</p>
+      <p class="chart-sub">From disk dispersal (5 Myr) to 10 Gyr · a flat line at the bottom means the atmosphere is gone — a bare core</p>
+      <svg id="kch1" viewBox="0 0 920 400" aria-label="Radius versus age for three stellar rotation histories"></svg>
+      <div class="tip" id="tip-k1" hidden></div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--ice)"></i>slow rotator</span>
+      <span><i style="border-color:var(--muted)"></i>moderate</span>
+      <span><i style="border-color:var(--rock)"></i>fast rotator</span>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">slow · kept</div><div class="v" id="k1s">–</div></div>
+      <div class="chip"><div class="k">moderate · kept</div><div class="v" id="k1m">–</div></div>
+      <div class="chip"><div class="k">fast · kept</div><div class="v" id="k1f">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Two regimes to find:</em> below ~10 M⊕ close in, all three histories end at the same bare core — escape erases initial conditions (try 5 M⊕ at 0.05 AU). Push the core mass up and the three suns produce three genuinely different planets — the rotation history is now written into the radius forever. That boundary between <em>escape-dominated</em> and <em>formation-dominated</em> is the paper's central object.</p>
+</section>
+
+<!-- ================= STATION K2 ================= -->
+<section id="k2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>The synthetic mass–radius diagram</h2></div>
+  <p class="prose">Now evolve a whole grid of planets — twenty core masses, five orbits — with initial atmospheres taken from a formation model (more massive planet, farther out → more gas accreted). Step through cosmic time and watch atmospheric escape carve the population: the radius gap opens within tens of Myr and keeps moving to higher masses for Gyrs.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Age</label>
+        <div class="seg" id="seg-kage" role="group" aria-label="Age of population">
+          <button aria-pressed="false" data-v="0.05">50 Myr</button>
+          <button aria-pressed="false" data-v="0.5">500 Myr</button>
+          <button aria-pressed="true" data-v="5">5 Gyr</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Stellar rotation</label>
+        <div class="seg" id="seg-krot" role="group" aria-label="Rotator class">
+          <button aria-pressed="false" data-v="slow">slow</button>
+          <button aria-pressed="true" data-v="mod">moderate</button>
+          <button aria-pressed="false" data-v="fast">fast</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Initial atmospheres</label>
+        <div class="seg" id="seg-ksc" role="group" aria-label="Formation scenario">
+          <button aria-pressed="true" data-v="basic">in-situ (“basic”)</button>
+          <button aria-pressed="false" data-v="mig">migrated</button>
+        </div></div>
+    </div>
+    <div class="chart-box" id="cb-k2">
+      <p class="chart-title">Synthetic population, colored by fraction of the initial atmosphere lost</p>
+      <p class="chart-sub">Each dot: one core mass at one orbit · log–log, as in the paper's Figs. 3 &amp; 8 · hover any dot</p>
+      <svg id="kch2" viewBox="0 0 920 430" aria-label="Synthetic mass radius diagram"></svg>
+      <div class="tip" id="tip-k2" hidden></div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--ice)"></i>kept most (&lt;30 % lost)</span>
+      <span><i style="border-color:var(--rock)"></i>lost 30–99 %</span>
+      <span><i style="border-color:var(--iron)"></i>stripped bare</span>
+    </div>
+  </div>
+  <p class="takeaway"><em>Play it like the paper:</em> at 50 Myr the gap sits near 1.8–2 R⊕ and most small planets are already bare; by 5 Gyr the stripped region has climbed to ~20 M⊕. Switch “in-situ” to “migrated” (bigger initial envelopes) and the upper edge of the population inflates — that difference between the two scenarios is how the paper argues most close-in planets above ~10 M⊕ must have <em>migrated in with massive envelopes</em>.</p>
+</section>
+
+<!-- ================= STATION K3 ================= -->
+<section id="k3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>The radius-spread budget</h2></div>
+  <p class="prose">The paper's quantitative question: of the radius spread observed at each mass, how much can the unknowable stellar rotation history explain, and how much must come from initial conditions (orbits, envelopes, migration)? Below, both spreads computed from the synthetic grid at 5&nbsp;Gyr.</p>
+  <div class="panel">
+    <div class="chart-box" id="cb-k3">
+      <p class="chart-title">Radius spread ΔR at 5 Gyr vs. planet mass</p>
+      <p class="chart-sub">Blue: spread from stellar rotation history alone (at fixed orbit, averaged) · rust: total spread across orbits, rotators and both formation scenarios</p>
+      <svg id="kch3" viewBox="0 0 920 380" aria-label="Radius spread versus mass"></svg>
+      <div class="tip" id="tip-k3" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">rotation's share of the spread</div><div class="v" id="k3ratio">–</div></div>
+      <div class="chip"><div class="k">paper's answer</div><div class="v">≈ ¼<small> of total spread</small></div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>The outliers close the story:</em> ~20 % of observed planets sit outside every model boundary. Half are inflated hot sub-Saturns (WASP-107 b — some extra heating mechanism, the low-mass edge of hot-Jupiter inflation). The rest are suspiciously <em>dense</em> warm Neptunes (TOI-849 b, HD 95338 b) whose 1–2 % H/He atmospheres are an order of magnitude below what accretion predicts — planets that look icy-cored or water-rich instead. The wet-vs-dry question from the Alibert tab resurfaces exactly where escape physics says it can't be hidden.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The real paper couples MESA thermal-evolution models to a grid of 1-D hydrodynamic upper-atmosphere simulations (Kubyshkina et al. 2018/2021) for escape rates, uses the Mors stellar-evolution code for the XUV history of slow/moderate/fast rotators, and takes initial envelopes from Mordasini's formation-model approximation — 300 evolutionary tracks against 198 well-measured planets. This tab integrates a toy energy-limited escape law (loss ∝ F<sub>XUV</sub>R³/M²) with a saturated-then-decaying XUV history and the same toy structure model as the other tabs. Regime boundaries and trends are the paper's; exact numbers are illustrative.</p>
+  <p>D. Kubyshkina &amp; L. Fossati (2022), “The mass–radius relation of intermediate-mass planets outlined by hydrodynamic escape and thermal evolution”, A&amp;A 668, A178 · <a href="https://arxiv.org/abs/2211.10166">arXiv:2211.10166</a></p>
+</footer>
+</div><!-- /page-kub -->
+
+<div id="page-baty" role="tabpanel" aria-labelledby="tab-baty" hidden>
+<section class="pagehero">
+  <p class="eyebrow">H. Baty (2023) · Astronomy and Computing 44, 100734 · insu-04178275</p>
+  <p class="standfirst">Your reading list now pivots to methods. Before neural networks replace planet-structure solvers (plaNETic) or seismic simulators (Moseley), here is the smallest complete example: the Lane–Emden equation of stellar structure, solved not by integrating it — but by <em>training a network to be its solution</em>. On this page, that training genuinely happens, live, in your browser.</p>
+</section>
+
+<!-- ================= STATION B1 ================= -->
+<section id="b1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>The polytrope</h2></div>
+  <p class="prose">Hydrostatic equilibrium plus a polytropic equation of state P = Kρ<sup>1+1/n</sup> collapses all of stellar structure into one dimensionless ODE: <span class="mono">y'' + (2/x)y' + yⁿ = 0</span>, with y(0)=1, y'(0)=0. The solution y is (a power of) the density profile; where y first hits zero is the star's surface. Exact solutions exist only for n = 0, 1, 5 — and note the 2/x term: the equation is <strong>singular at the very center</strong>, which is what makes it a classic numerical test case.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Polytropic index n <output id="o-bn1">1.50</output></label>
+        <input type="range" id="in-bn1" min="0" max="5" step="0.05" value="1.5" aria-label="Polytropic index"></div>
+      <div class="ctl" style="flex:none;">
+        <div class="chip"><div class="k">stellar surface x₁</div><div class="v" id="bzero">–</div></div>
+      </div>
+    </div>
+    <div class="chart-box" id="cb-b1">
+      <p class="chart-title">Lane–Emden solution y(x) and density profile ρ/ρc = yⁿ</p>
+      <p class="chart-sub">Runge–Kutta reference solution · n = 0, 1, 5 have closed forms; everything between needs numerics</p>
+      <svg id="bch1" viewBox="0 0 920 380" aria-label="Lane-Emden solution and density profile"></svg>
+      <div class="tip" id="tip-b1" hidden></div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--ice)"></i>y(x)</span>
+      <span><i style="border-color:var(--rock)"></i>density ρ/ρc</span>
+    </div>
+  </div>
+  <p class="takeaway"><em>Why this equation, in this reading list:</em> it is the 19th-century ancestor of every interior-structure integration you met in the Alibert and Dorn tabs — the same hydrostatic core, stripped to one line. Whatever a new numerical method claims, it must first survive the polytrope.</p>
+</section>
+
+<!-- ================= STATION B2 ================= -->
+<section id="b2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>Watch a PINN learn</h2></div>
+  <p class="prose">A Physics-Informed Neural Network needs <strong>no solution data</strong>. A small network y<sub>θ</sub>(x) is evaluated at a handful of collocation points; automatic differentiation supplies y'<sub>θ</sub> and y''<sub>θ</sub>; the loss is simply the <em>equation residual</em> — how badly the network violates Lane–Emden — and gradient descent hammers it toward zero. Below is a real tanh network (two hidden layers of 20, exactly Baty's architecture) training with Adam, in your browser, right now if you press the button.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Polytropic index</label>
+        <div class="seg" id="seg-bn2" role="group" aria-label="Index for training">
+          <button aria-pressed="false" data-v="0">n = 0</button>
+          <button aria-pressed="false" data-v="1">1</button>
+          <button aria-pressed="true" data-v="1.5">1.5</button>
+          <button aria-pressed="false" data-v="3">3</button>
+          <button aria-pressed="false" data-v="5">5</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-btrain">▶ Train</button>
+        <button class="btn" id="btn-breset">↺ Reset network</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-b2">
+        <p class="chart-title">Network prediction vs. exact solution</p>
+        <p class="chart-sub">Ticks on the axis: the 32 collocation points — all the “data” the network ever sees</p>
+        <svg id="bch2" viewBox="0 0 460 380" aria-label="PINN prediction versus exact solution"></svg>
+        <div class="tip" id="tip-b2" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-b2l">
+        <p class="chart-title">Training history (log scale)</p>
+        <p class="chart-sub">Physics loss = mean squared residual · MSE = true error vs. the reference solution</p>
+        <svg id="bch2l" viewBox="0 0 460 380" aria-label="Loss history"></svg>
+        <div class="tip" id="tip-b2l" hidden></div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--ice)"></i>PINN / physics loss</span>
+      <span><i style="border-color:var(--muted)"></i>exact (RK4)</span>
+      <span><i style="border-color:var(--rock)"></i>true error (MSE)</span>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">training step</div><div class="v" id="b2step">0</div></div>
+      <div class="chip"><div class="k">physics loss</div><div class="v" id="b2loss">–</div></div>
+      <div class="chip"><div class="k">max |error|</div><div class="v" id="b2err">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to notice:</em> the loss falls even though the network never saw a single solution value — the equation itself is the supervisor. Watch the two curves in the right panel track each other: minimizing the residual really does minimize the true error. Baty's benchmark: ~10⁻⁵ max error, one order better than Monte-Carlo solvers, two better than Chebyshev networks — but far from Runge–Kutta's machine precision. PINNs don't win at accuracy; they win at being <em>meshless, differentiable, and instant to evaluate once trained</em>.</p>
+</section>
+
+<!-- ================= STATION B3 ================= -->
+<section id="b3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>One network, a whole family</h2></div>
+  <p class="prose">The paper's best trick: make the polytropic index n an <strong>input</strong> of the network, y<sub>θ</sub>(x, n), and train on n = 0, 1, 2, 3, 4 simultaneously. The result is not a solution but a <em>solution family</em> — a surrogate model. Train it, then drag the slider to any n, including values the network never saw.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-btrainF">▶ Train on n = 0…4</button>
+        <button class="btn" id="btn-bresetF">↺ Reset</button>
+      </div>
+      <div class="ctl"><label>Evaluate at n <output id="o-bnF">2.50</output></label>
+        <input type="range" id="in-bnF" min="0" max="5" step="0.1" value="2.5" aria-label="Index to evaluate"></div>
+      <div class="ctl" style="flex:none;">
+        <div class="chip"><div class="k">regime</div><div class="v" id="bFzone" style="font-size:14px;">–</div></div>
+      </div>
+    </div>
+    <div class="chart-box" id="cb-b3">
+      <p class="chart-title">Family network evaluated at your n, against the exact solution</p>
+      <p class="chart-sub">Trained only at n = 0, 1, 2, 3, 4 · anything else is interpolation — or extrapolation</p>
+      <svg id="bch3" viewBox="0 0 920 400" aria-label="Family PINN versus exact solution"></svg>
+      <div class="tip" id="tip-b3" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">training step</div><div class="v" id="b3step">0</div></div>
+      <div class="chip"><div class="k">physics loss</div><div class="v" id="b3loss">–</div></div>
+      <div class="chip"><div class="k">max |error| at this n</div><div class="v" id="b3err">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>This station is the bridge to the rest of your reading list.</em> Try n = 2.5: never trained, nearly perfect — interpolation works. Now drag past 4: the fit degrades — <em>PINNs are not good extrapolators</em> (Baty's words). That is precisely the promise and the warning behind every surrogate model to come: Moseley's seismic emulator failing outside its training distribution, and plaNETic answering only within the population it was trained on.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's simplified.</strong> The networks on this page are real: tanh MLPs (2×20 for §2, 2×24 for §3, as in the paper) trained with Adam on the regularized residual x·y'' + 2y' + x·yⁿ, with hand-derived exact backpropagation through the second derivative. Two deliberate departures from Baty: the boundary conditions are hard-encoded via the trial function y = 1 + x²·N(x) (Baty imposes them softly through the data loss), and the learning rate is ~20× higher so you see convergence in seconds rather than 32 000 steps. Reference curves are RK4. Code and the paper's own PyTorch notebooks: <a href="https://github.com/hubertbaty/PINNS-LE">github.com/hubertbaty/PINNS-LE</a>.</p>
+  <p>H. Baty (2023), “Modelling Lane–Emden type equations using Physics-Informed Neural Networks”, Astronomy and Computing 44, 100734 · <a href="https://insu.hal.science/insu-04178275">HAL insu-04178275</a></p>
+</footer>
+</div><!-- /page-baty -->
+
+<div id="page-mos" role="tabpanel" aria-labelledby="tab-mos" hidden>
+<section class="pagehero">
+  <p class="eyebrow">B. Moseley, T. Nissen-Meyer &amp; A. Markham (2020) · Solid Earth 11, 1527–1549</p>
+  <p class="standfirst">Baty put the physics in the loss. Moseley takes the other road from our discussion: run the expensive classical simulator many times, and teach a network to <em>imitate</em> it — pure supervised learning, physics guaranteed by the training data. Below you'll run the real simulator, train a real surrogate on it, and then watch the surrogate break exactly where the paper says it must.</p>
+</section>
+
+<!-- ================= STATION M1 ================= -->
+<section id="m1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>The expensive forward problem</h2></div>
+  <p class="prose">Seismic simulation means solving the acoustic wave equation on a fine grid, timestep by timestep — billions of degrees of freedom in production runs. One global simulation at 1 Hz costs ~40 <em>million</em> CPU hours; industrial imaging needs hundreds of thousands of runs per survey. Here is that forward problem in miniature: a 2-D finite-difference wavefield in a three-layer medium. Fire a shot and watch the reflections that carry all the information about the layers.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Layer 1 velocity <output id="o-mv1">1.8</output></label>
+        <input type="range" id="in-mv1" min="1.0" max="3.4" step="0.1" value="1.8" aria-label="Layer 1 velocity"></div>
+      <div class="ctl"><label>Layer 2 velocity <output id="o-mv2">2.4</output></label>
+        <input type="range" id="in-mv2" min="1.0" max="3.4" step="0.1" value="2.4" aria-label="Layer 2 velocity"></div>
+      <div class="ctl"><label>Layer 3 velocity <output id="o-mv3">3.0</output></label>
+        <input type="range" id="in-mv3" min="1.0" max="3.4" step="0.1" value="3.0" aria-label="Layer 3 velocity"></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;">
+        <button class="btn" id="btn-mfire">▶ Fire shot</button></div>
+    </div>
+    <canvas id="mcv" width="140" height="120" style="width:100%;display:block;border-radius:10px;border:1px solid var(--line-soft);" aria-label="Live finite-difference wavefield"></canvas>
+    <div class="readouts">
+      <div class="chip"><div class="k">wall-clock per shot</div><div class="v" id="m1ms">–</div></div>
+      <div class="chip"><div class="k">grid</div><div class="v">140 × 120<small> cells · 900 steps</small></div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Recognize the role:</em> this is the forward operator g(m) — the same slot the interior-structure integrator occupied in the Dorn tab. Fine for one run; fatal inside an inversion loop that needs it a million times. That mismatch is the entire motivation for what follows.</p>
+</section>
+
+<!-- ================= STATION M2 ================= -->
+<section id="m2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>Supervise a surrogate</h2></div>
+  <p class="prose">Moseley's recipe, miniaturized honestly: generate a dataset of simulations (here, 140 one-dimensional three-layer models — computed by the finite-difference code the moment this page loaded), then train a network to map <span class="mono">(v₁, v₂, v₃) → seismogram</span>. Note what is <strong>absent</strong>: no wave equation in the loss, no residuals — just supervised regression on simulator outputs. The physics lives entirely in the data.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-mtrain">▶ Train surrogate</button>
+        <button class="btn" id="btn-mreset">↺ Reset network</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-m2a">
+        <p class="chart-title">Held-out example: surrogate vs. simulator</p>
+        <p class="chart-sub">A velocity model the network never saw during training</p>
+        <svg id="mch2a" viewBox="0 0 460 380" aria-label="Predicted versus true seismogram"></svg>
+        <div class="tip" id="tip-m2a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-m2b">
+        <p class="chart-title">Training history (log scale)</p>
+        <p class="chart-sub">Training loss and held-out validation loss</p>
+        <svg id="mch2b" viewBox="0 0 460 380" aria-label="Loss history"></svg>
+        <div class="tip" id="tip-m2b" hidden></div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--ice)"></i>surrogate / train loss</span>
+      <span><i style="border-color:var(--muted)"></i>simulator (truth)</span>
+      <span><i style="border-color:var(--rock)"></i>validation loss</span>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">training step</div><div class="v" id="m2step">0</div></div>
+      <div class="chip"><div class="k">train loss</div><div class="v" id="m2loss">–</div></div>
+      <div class="chip"><div class="k">validation loss</div><div class="v" id="m2val">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Two of the paper's findings are visible right here.</em> First, watch the early arrivals lock on quickly while the <em>late</em> wiggles — multiple reverberations bouncing between layers — fit last and worst: Moseley's WaveNet had exactly this weakness. Second, the paper's key design choice was physics-aware <em>input encoding</em>: they feed the network the reflectivity series (which is causally aligned with the output) rather than raw velocities, and a causal WaveNet beats a plain CNN. Physics can inform a surrogate through its <em>representation</em>, not only through a loss.</p>
+</section>
+
+<!-- ================= STATION M3 ================= -->
+<section id="m3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>The distribution is the contract</h2></div>
+  <p class="prose">The surrogate was trained on velocities drawn from 1.2–2.8. Drag the middle layer's velocity — including <em>outside</em> that range — and compare surrogate against simulator. Then benchmark both. This is the paper's Marmousi experiment in one slider: a surrogate's accuracy is a promise made only over its training distribution.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Middle-layer velocity v₂ <output id="o-m3v">2.00</output></label>
+        <input type="range" id="in-m3v" min="0.9" max="3.4" step="0.05" value="2.0" aria-label="Middle layer velocity"></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;">
+        <button class="btn" id="btn-mbench">⏱ Benchmark speed</button></div>
+      <div class="ctl" style="flex:none;">
+        <div class="chip"><div class="k">speed-up (measured now)</div><div class="v" id="m3speed">–</div></div>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-m3a">
+        <p class="chart-title">Trace at your v₂: surrogate vs. simulator</p>
+        <p class="chart-sub">v₁ = 1.6 and v₃ = 2.2 held fixed</p>
+        <svg id="mch3a" viewBox="0 0 460 380" aria-label="Surrogate versus simulator at chosen velocity"></svg>
+        <div class="tip" id="tip-m3a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-m3b">
+        <p class="chart-title">Surrogate error across velocity space</p>
+        <p class="chart-sub">Shaded band: the training distribution · the walls are where the contract ends</p>
+        <svg id="mch3b" viewBox="0 0 460 380" aria-label="Error versus velocity"></svg>
+        <div class="tip" id="tip-m3b" hidden></div>
+      </div>
+    </div>
+  </div>
+  <p class="takeaway"><em>The paper's honest bookkeeping, worth internalizing:</em> speed-ups of 19–22× on CPU and 406–549× on GPU — but 0.5–4 days of training plus 50 000–300 000 simulations to build the dataset. Amortization only pays when <em>many</em> similar simulations are needed (inversion, hazard analysis); it's pointless for one-off runs. And generality is bounded: on Marmousi velocity models unlike the training set, the autoencoder failed, with a nearest-training-neighbour check as the paper's practical warning light. Swap “velocity model” for “planet population” and this is precisely the contract plaNETic signs.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The simulations and the learning on this page are real — a 2-D leapfrog finite-difference acoustic solver with sponge boundaries, and a 3→64→64→150 MLP trained with Adam on 140 one-dimensional three-layer simulations generated in your browser. The paper operates at scale: a 9-layer causal WaveNet (1.3 M parameters) on 50 000 FD simulations of layered media, and an 18.4 M-parameter conditional autoencoder on 300 000 simulations of <em>faulted</em> media with variable source position, trained for days on GPUs, with a t<sup>2.5</sup> time-gain loss to counter spherical spreading. It also retrains the WaveNet backwards as a fast seismic inverter. Code: <a href="https://github.com/benmoseley/seismic-simulation-complex-media">github.com/benmoseley/seismic-simulation-complex-media</a>.</p>
+  <p>B. Moseley, T. Nissen-Meyer &amp; A. Markham (2020), “Deep learning for fast simulation of seismic waves in complex media”, Solid Earth 11, 1527–1549 · <a href="https://doi.org/10.5194/se-11-1527-2020">doi:10.5194/se-11-1527-2020</a></p>
+</footer>
+</div><!-- /page-mos -->
+
+</div>
+
+<script>
+"use strict";
+/* ================= toy physics model =================
+   Calibrated against Alibert (2016) Figs. 1–3:
+   solid radius, gas envelope at 5 Gyr, and a cooling term whose
+   amplitude falls with water fraction (less silicate -> less
+   radiogenic heating -> faster contraction).                     */
+const M55 = [7.83, 8.35];                        // 55 Cnc e mass range, M_earth
+
+const rSolid = (ms, fv) => Math.pow(ms, 0.29) * (1 + 0.36 * Math.pow(fv, 0.7));
+const dRgas5 = (fg, ms) => fg <= 0 ? 0 : 4.9 * Math.pow(fg, 0.6) * Math.pow(ms / 10, -0.1);
+const R5 = (m, fv, fg) => { const ms = m * (1 - fg); return rSolid(ms, fv) + dRgas5(fg, ms); };
+const coolAmp = (fv, fg) => (0.10 * fg + 0.010) * (1 - 0.6 * fv);
+const shape = t => Math.pow(t + 0.05, -0.6) - Math.pow(5.05, -0.6);
+const Rt = (m, fv, fg, t) => R5(m, fv, fg) * (1 + coolAmp(fv, fg) * shape(t));
+
+function solveGas(m, fv, target) {            // fg such that R5(m,fv,fg)=target, or null
+  if (R5(m, fv, 0) > target + 1e-4) return null;
+  if (R5(m, fv, 0.5) < target) return null;
+  let lo = 0, hi = 0.5;
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    (R5(m, fv, mid) < target) ? lo = mid : hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+// invert: water fraction giving radius r for gas-free planet of mass m
+const fvFromR = (r, m) => {
+  const x = (r / Math.pow(m, 0.29) - 1) / 0.36;
+  return x <= 0 ? 0 : Math.pow(x, 1 / 0.7);
+};
+
+/* ================= small helpers ================= */
+const $ = id => document.getElementById(id);
+const fmt = (x, d = 2) => x.toFixed(d);
+const pct = x => Math.round(x * 100) + " %";
+const S = "http://www.w3.org/2000/svg";
+function el(name, attrs, parent) {
+  const n = document.createElementNS(S, name);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function linePath(pts) { return pts.map((p, i) => (i ? "L" : "M") + fmt(p[0], 1) + " " + fmt(p[1], 1)).join(""); }
+let seed = 12345;
+function rand() { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }
+function randn() { const u = Math.max(rand(), 1e-9), v = rand(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+const css = n => getComputedStyle(document.body).getPropertyValue(n).trim() ||
+               getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C = {}; // resolved palette
+["--rock","--ice","--ink","--ink2","--muted","--line","--line-soft","--iron","--icefill"]
+  .forEach(k => C[k.slice(2)] = css(k));
+
+/* ================= station 1: twin planets ================= */
+const PXPER_RE = 30; // px per Earth radius in the cross-sections
+function drawPlanet(svg, m, fv, fg, radius5, xIron = 0.325) {
+  svg.innerHTML = "";
+  const cx = 150, cy = 150;
+  const ms = m * (1 - fg);
+  // layer masses (of solid) -> volumes with relative densities iron 3.2, rock 1.6, ice 0.8
+  const vIron = xIron * (1 - fv) / 3.2, vRock = (1 - xIron) * (1 - fv) / 1.6, vIce = fv / 0.8;
+  const vTot = vIron + vRock + vIce;
+  const rs = (radius5 - dRgas5(fg, ms)) * PXPER_RE;  // solid radius in px
+  const rIron = rs * Math.cbrt(vIron / vTot);
+  const rRock = rs * Math.cbrt((vIron + vRock) / vTot);
+  const rOut = radius5 * PXPER_RE;
+  const defs = el("defs", {}, svg);
+  const gid = "env" + svg.id;
+  const gr = el("radialGradient", { id: gid }, defs);
+  el("stop", { offset: (rs / rOut * 100) + "%", "stop-color": "rgba(61,155,217,0.38)" }, gr);
+  el("stop", { offset: "88%", "stop-color": "rgba(61,155,217,0.12)" }, gr);
+  el("stop", { offset: "100%", "stop-color": "rgba(61,155,217,0)" }, gr);
+  if (fg > 0.001) el("circle", { cx, cy, r: fmt(rOut,1), fill: "url(#" + gid + ")" }, svg);
+  if (fv > 0.004) el("circle", { cx, cy, r: fmt(rs,1), fill: C.icefill }, svg);
+  el("circle", { cx, cy, r: fmt(fv > 0.004 ? rRock : rs, 1), fill: C.rock }, svg);
+  el("circle", { cx, cy, r: fmt(rIron,1), fill: C.iron }, svg);
+}
+function compText(m, fv, fg) {
+  return fmt(m,1) + " M⊕ · solid part " + pct(fv) + " water ice · " +
+         (fg < 0.0005 ? "no gas envelope" : "gas envelope " + fmt(fg*100,1) + " % of mass");
+}
+function updateS1() {
+  const m = +$("in-m1").value, fv = +$("in-fv1").value, fg = +$("in-fg1").value;
+  $("o-m1").textContent = fmt(m,1) + " M⊕";
+  $("o-fv1").textContent = pct(fv);
+  $("o-fg1").textContent = fmt(fg*100,1) + " %";
+  const rA5 = R5(m, fv, fg);
+  $("tagA").textContent = fv < 0.05 ? "dry" : fv < 0.35 ? "some ice" : "wet";
+  $("tagA").className = "tag " + (fv < 0.35 ? "rock" : "ice");
+  drawPlanet($("pA"), m, fv, fg, rA5);
+  $("rA").textContent = fmt(rA5, 2);
+  $("compA").textContent = compText(m, fv, fg);
+  // impostor: opposite composition, gas solved to match radius
+  const fvB = fv >= 0.35 ? 0 : 0.7;
+  const fgB = solveGas(m, fvB, rA5);
+  const ok = fgB !== null;
+  $("cardB").hidden = !ok; $("cardBno").hidden = ok;
+  if (ok) {
+    $("tagB").textContent = fvB === 0 ? "dry" : "wet";
+    $("tagB").className = "tag " + (fvB === 0 ? "rock" : "ice");
+    drawPlanet($("pB"), m, fvB, fgB, rA5);
+    $("rB").textContent = fmt(R5(m, fvB, fgB), 2);
+    $("compB").textContent = compText(m, fvB, fgB);
+    $("matchNote").innerHTML = "Both planets: <span class='mono'>" + fmt(m,1) + " M⊕, " + fmt(rA5,2) +
+      " R⊕</span>. One is " + (fvB===0 ? ("<b style='color:#7FC2EA'>" + pct(fv) + " water</b> with " + fmt(fg*100,1) + "% gas; the other is bone dry with " + fmt(fgB*100,1) + "% gas.")
+      : ("dry with " + fmt(fg*100,1) + "% gas; the other hides <b style='color:#7FC2EA'>70% water</b> under just " + fmt(fgB*100,1) + "% gas."));
+  } else {
+    $("matchNote").textContent = "";
+  }
+}
+
+/* ================= chart scaffolding ================= */
+function makeScales(x0, x1, y0, y1, W, H, padL, padR, padT, padB) {
+  return {
+    x: v => padL + (v - x0) / (x1 - x0) * (W - padL - padR),
+    y: v => H - padB - (v - y0) / (y1 - y0) * (H - padT - padB),
+    inv: px => x0 + (px - padL) / (W - padL - padR) * (x1 - x0),
+    W, H, padL, padR, padT, padB, x0, x1, y0, y1
+  };
+}
+function axes(svg, s, xticks, yticks, xlab, ylab, xfmt, yfmt) {
+  const g = el("g", { class: "axis" }, svg);
+  yticks.forEach(v => {
+    el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(v),1), y2: fmt(s.y(v),1), class: "gridline" }, g);
+    el("text", { x: s.padL - 9, y: fmt(s.y(v)+4,1), "text-anchor": "end" }, g).textContent = yfmt(v);
+  });
+  xticks.forEach(v => {
+    el("line", { x1: fmt(s.x(v),1), x2: fmt(s.x(v),1), y1: s.H - s.padB, y2: s.H - s.padB + 5 }, g);
+    el("text", { x: fmt(s.x(v),1), y: s.H - s.padB + 20, "text-anchor": "middle" }, g).textContent = xfmt(v);
+  });
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: s.H - s.padB, y2: s.H - s.padB, class: "zero" }, g);
+  el("text", { x: s.W - s.padR, y: s.H - 6, "text-anchor": "end", fill: C.muted }, g).textContent = xlab;
+  el("text", { x: s.padL, y: s.padT - 8, fill: C.muted }, g).textContent = ylab;
+}
+function attachHover(box, svg, s, onMove, onLeave) {
+  const move = ev => {
+    const r = svg.getBoundingClientRect();
+    const px = (ev.clientX - r.left) / r.width * s.W;
+    const py = (ev.clientY - r.top) / r.height * s.H;
+    if (px < s.padL || px > s.W - s.padR) { onLeave(); return; }
+    onMove(px, py, ev.clientX - box.getBoundingClientRect().left, ev.clientY - box.getBoundingClientRect().top);
+  };
+  svg.addEventListener("mousemove", move);
+  svg.addEventListener("mouseleave", onLeave);
+}
+
+/* ================= station 2: 55 Cnc e ================= */
+let s2scale;
+function drawS2() {
+  const ro = +$("in-ro").value, sig = +$("in-sig").value;
+  $("o-ro").textContent = fmt(ro,2) + " R⊕";
+  $("o-sig").textContent = fmt(sig,2) + " R⊕";
+  const svg = $("ch2"); svg.innerHTML = "";
+  const s = s2scale = makeScales(0, 0.8, 1.75, 2.55, 920, 380, 64, 18, 26, 42);
+  axes(svg, s, [0,0.2,0.4,0.6,0.8], [1.8,2.0,2.2,2.4],
+       "water-ice fraction", "radius, R⊕", v => Math.round(v*100)+"%", v => fmt(v,1));
+  const fs = []; for (let f = 0; f <= 0.8001; f += 0.01) fs.push(f);
+  const lo = fs.map(f => [s.x(f), s.y(rSolid(M55[0], f))]);
+  const hi = fs.map(f => [s.x(f), s.y(rSolid(M55[1], f))]);
+  // implied interval
+  let fLo = fvFromR(ro - sig, M55[1]);
+  let fHi = fvFromR(ro + sig, M55[0]);
+  const below = ro + sig < rSolid(M55[0], 0);            // even dry is too big
+  const openTop = fHi > 0.8;
+  fLo = Math.min(Math.max(fLo, 0), 0.8); fHi = Math.min(Math.max(fHi, 0), 0.8);
+  if (!below && fHi > fLo + 0.001)
+    el("rect", { x: fmt(s.x(fLo),1), y: s.padT, width: fmt(s.x(fHi)-s.x(fLo),1),
+                 height: s.H - s.padT - s.padB, fill: "rgba(61,155,217,.13)" }, svg);
+  // measurement band
+  el("rect", { x: s.padL, y: fmt(s.y(ro+sig),1), width: s.W - s.padL - s.padR,
+               height: fmt(s.y(ro-sig)-s.y(ro+sig),1), fill: "rgba(233,237,246,.07)" }, svg);
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(ro),1), y2: fmt(s.y(ro),1),
+               stroke: C.ink2, "stroke-width": 1.5, "stroke-dasharray": "5 4" }, svg);
+  // model band + edges
+  el("path", { d: linePath(hi) + lo.slice().reverse().map(p => "L"+fmt(p[0],1)+" "+fmt(p[1],1)).join("") + "Z",
+               fill: "rgba(61,155,217,.20)" }, svg);
+  el("path", { d: linePath(lo), stroke: C.ice, "stroke-width": 2, fill: "none" }, svg);
+  el("path", { d: linePath(hi), stroke: C.ice, "stroke-width": 2, fill: "none" }, svg);
+  el("text", { x: s.x(0.62), y: s.y(rSolid(M55[1],0.62)) - 10, class: "serieslabel", fill: C.ice }, svg)
+    .textContent = "model radius (7.8–8.4 M⊕, no gas)";
+  el("text", { x: s.W - s.padR - 6, y: fmt(s.y(ro)-7,1), "text-anchor": "end",
+               class: "serieslabel", fill: C.ink2 }, svg).textContent = "observed";
+  // answer
+  const ans = $("ans2");
+  if (below) ans.textContent = "too small even if dry";
+  else if (fLo <= 0.001 && openTop) ans.textContent = "unconstrained";
+  else ans.textContent = (fLo <= 0.001 ? "0" : Math.round(fLo*100)) + " – " + (openTop ? ">80" : Math.round(fHi*100)) + " %";
+}
+/* ================= station 3: evolution tracks ================= */
+const M3 = 12, FG_DRY = 0.10;
+let s3scale, s3data;
+function drawS3() {
+  const fv = +$("in-fv3").value;
+  $("o-fv3").textContent = pct(fv);
+  const rTarget = R5(M3, 0, FG_DRY);
+  const fgWet = solveGas(M3, fv, rTarget);
+  const ts = []; for (let lg = Math.log10(0.05); lg <= Math.log10(5)+1e-9; lg += 0.02) ts.push(Math.pow(10,lg));
+  const dry = ts.map(t => Rt(M3, 0, FG_DRY, t));
+  const wet = ts.map(t => Rt(M3, fv, fgWet, t));
+  s3data = { ts, dry, wet, fgWet, fv };
+  const yMax = Math.max(...dry) + 0.04, yMin = rTarget - 0.03;
+  const svg = $("ch3"); svg.innerHTML = "";
+  const s = s3scale = makeScales(Math.log10(0.05), Math.log10(5), yMin, yMax, 920, 400, 64, 150, 26, 42);
+  axes(svg, s, [0.1,0.3,1,3,5].map(Math.log10), niceTicks(yMin,yMax,5),
+       "age (log scale)", "radius, R⊕",
+       v => { const t = Math.pow(10,v); return t < 1 ? Math.round(t*1000)+" Myr" : t+" Gyr"; },
+       v => fmt(v,2));
+  el("path", { d: linePath(ts.map((t,i)=>[s.x(Math.log10(t)), s.y(dry[i])])), stroke: C.rock, "stroke-width": 2.5, fill: "none" }, svg);
+  el("path", { d: linePath(ts.map((t,i)=>[s.x(Math.log10(t)), s.y(wet[i])])), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  const xe = s.W - s.padR + 8;
+  el("text", { x: xe, y: fmt(s.y(dry[dry.length-1])-8,1), class: "serieslabel", fill: C.rock }, svg)
+    .textContent = "dry · " + fmt(FG_DRY*100,0) + "% gas";
+  el("text", { x: xe, y: fmt(s.y(wet[wet.length-1])+16,1), class: "serieslabel", fill: C.ice }, svg)
+    .textContent = pct(fv) + " water · " + fmt(fgWet*100,1) + "% gas";
+  // convergence marker at 5 Gyr
+  el("circle", { cx: fmt(s.x(Math.log10(5)),1), cy: fmt(s.y(rTarget),1), r: 4.5, fill: C.ink, stroke: "#0C111E", "stroke-width": 2 }, svg);
+  const d100 = (Rt(M3,0,FG_DRY,0.1) - Rt(M3,fv,fgWet,0.1)) / rTarget * 100;
+  const d1g  = (Rt(M3,0,FG_DRY,1)   - Rt(M3,fv,fgWet,1))   / rTarget * 100;
+  $("d100").textContent = fmt(d100,1) + " %";
+  $("d1000").textContent = fmt(d1g,1) + " %";
+}
+function niceTicks(a, b, n) {
+  const span = b - a, step = Math.pow(10, Math.floor(Math.log10(span/n)));
+  const mult = [1,2,5,10].find(m => span / (step*m) <= n+1) || 10;
+  const st = step * mult, t0 = Math.ceil(a/st)*st, out = [];
+  for (let v = t0; v <= b + 1e-9; v += st) out.push(+v.toFixed(6));
+  return out;
+}
+
+/* ================= station 4: population census ================= */
+const seg = { n: 100, t: 0.1, p: 0.02, v: "cdf", b: 16 };
+function segWire(id, key, parse, resample = true) {
+  $(id).querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    $(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    seg[key] = parse(b.dataset.v);
+    resample ? resampleS4(true) : drawS4();
+  }));
+}
+const popWetGas = () => solveGas(M3, 0.7, R5(M3, 0, 0.2));
+function samplePop(fv, fg, n, t, prec) {
+  const out = new Array(n);
+  for (let i = 0; i < n; i++) {
+    const tj = Math.max(0.02, t * (1 + 0.10 * randn()));
+    out[i] = Rt(M3, fv, fg, tj) * (1 + prec * (2 * rand() - 1));
+  }
+  return out.sort((a, b) => a - b);
+}
+function ksD(a, b) { // both sorted, equal length not required
+  let i = 0, j = 0, d = 0, at = 0;
+  while (i < a.length && j < b.length) {
+    (a[i] <= b[j]) ? i++ : j++;
+    const gap = Math.abs(i / a.length - j / b.length);
+    if (gap > d) { d = gap; at = (i < a.length && j < b.length) ? Math.min(a[Math.min(i,a.length-1)], b[Math.min(j,b.length-1)]) : Math.max(a[a.length-1], b[b.length-1]); }
+  }
+  return { d, at };
+}
+let s4samples;
+const s4charts = { a: null, b: null };
+function resampleS4(newTrials) {
+  const fgWet = popWetGas();
+  const A  = samplePop(0,   0.2,   seg.n, seg.t, seg.p);
+  const B  = samplePop(0.7, fgWet, seg.n, seg.t, seg.p);
+  const Ao = samplePop(0,   0.2,   seg.n, 5,     seg.p);
+  const Bo = samplePop(0.7, fgWet, seg.n, 5,     seg.p);
+  const { d, at } = ksD(A, B);
+  const dcrit = 1.358 * Math.sqrt(2 / seg.n);
+  s4samples = { A, B, Ao, Bo, d, at, dcrit };
+  $("gascal").innerHTML = "20 / " + fmt(fgWet*100,1) + "<small> %</small>";
+  $("ksd").textContent = fmt(d, 3);
+  $("kscrit").textContent = fmt(dcrit, 3);
+  const v = $("verdict"), pass = d > dcrit;
+  v.textContent = pass ? "histories distinguished" : "cannot reject either story";
+  v.className = "verdict " + (pass ? "yes" : "no");
+  if (newTrials) {
+    let wins = 0;
+    for (let k = 0; k < 200; k++) {
+      const a = samplePop(0, 0.2, seg.n, seg.t, seg.p);
+      const b = samplePop(0.7, fgWet, seg.n, seg.t, seg.p);
+      if (ksD(a, b).d > dcrit) wins++;
+    }
+    $("powpct").innerHTML = Math.round(wins/2) + " %<small> of 200 repeats</small>";
+  }
+  drawS4();
+}
+function drawS4() {
+  const hist = seg.v === "hist";
+  $("ctl-bins").hidden = !hist;
+  $("ch4-sub").textContent = hist
+    ? "Same young samples, binned — the apparent separation moves with the bin choice; D stays bin-free."
+    : "Kolmogorov–Smirnov distance D = widest vertical gap (marked)";
+  renderPair("a", $("ch4a"), s4samples.Ao, s4samples.Bo, false);
+  renderPair("b", $("ch4b"), s4samples.A,  s4samples.B,  true);
+}
+function renderPair(key, svg, A, B, showD) {
+  const hist = seg.v === "hist";
+  svg.innerHTML = "";
+  const xMin = Math.min(A[0], B[0]) - 0.02, xMax = Math.max(A[A.length-1], B[B.length-1]) + 0.02;
+  const W = 460, H = 380, padL = 52, padR = 12, padT = 24, padB = 40;
+  if (hist) {
+    const nb = seg.b, bw = (xMax - xMin) / nb;
+    const frac = arr => { const c = new Array(nb).fill(0);
+      arr.forEach(v => c[Math.min(nb-1, Math.max(0, Math.floor((v-xMin)/bw)))]++);
+      return c.map(x => x/arr.length); };
+    const fa = frac(A), fb = frac(B);
+    const yMax = Math.max(...fa, ...fb) * 1.18;
+    const s = makeScales(xMin, xMax, 0, yMax, W, H, padL, padR, padT, padB);
+    axes(svg, s, niceTicks(xMin, xMax, 4), niceTicks(0, yMax, 4),
+         "radius, R⊕", "fraction per bin",
+         v => fmt(v,2), v => Math.round(v*100)+"%");
+    const top = f => { const pts = [[s.x(xMin), s.y(0)]];
+      f.forEach((v,i) => { pts.push([s.x(xMin+i*bw), s.y(v)]); pts.push([s.x(xMin+(i+1)*bw), s.y(v)]); });
+      pts.push([s.x(xMax), s.y(0)]); return linePath(pts); };
+    el("path", { d: top(fa)+"Z", fill: "rgba(201,118,51,.20)" }, svg);
+    el("path", { d: top(fb)+"Z", fill: "rgba(61,155,217,.20)" }, svg);
+    el("path", { d: top(fa), fill: "none", stroke: C.rock, "stroke-width": 2 }, svg);
+    el("path", { d: top(fb), fill: "none", stroke: C.ice, "stroke-width": 2 }, svg);
+    s4charts[key] = { scale: s, view: "hist", xMin, bw, nb, fa, fb };
+  } else {
+    const s = makeScales(xMin, xMax, 0, 1, W, H, padL, padR, padT, padB);
+    axes(svg, s, niceTicks(xMin, xMax, 4), [0,0.25,0.5,0.75,1],
+         "radius, R⊕", "fraction below",
+         v => fmt(v,2), v => fmt(v,2));
+    const cdfPath = arr => {
+      const pts = [[s.x(s.x0), s.y(0)]];
+      arr.forEach((v, i) => { pts.push([s.x(v), s.y(i/arr.length)]); pts.push([s.x(v), s.y((i+1)/arr.length)]); });
+      pts.push([s.x(s.x1), s.y(1)]);
+      return linePath(pts);
+    };
+    el("path", { d: cdfPath(A), stroke: C.rock, "stroke-width": 2, fill: "none" }, svg);
+    el("path", { d: cdfPath(B), stroke: C.ice, "stroke-width": 2, fill: "none" }, svg);
+    if (showD) {
+      const { d, at } = s4samples;
+      const cdfAt = (arr, x) => { let c = 0; while (c < arr.length && arr[c] <= x) c++; return c / arr.length; };
+      const ya = cdfAt(A, at), yb = cdfAt(B, at);
+      el("line", { x1: fmt(s.x(at),1), x2: fmt(s.x(at),1), y1: fmt(s.y(ya),1), y2: fmt(s.y(yb),1),
+                   stroke: C.ink, "stroke-width": 2, "stroke-dasharray": "3 3" }, svg);
+      el("text", { x: fmt(s.x(at)+7,1), y: fmt((s.y(ya)+s.y(yb))/2 + 4,1), class: "serieslabel", fill: C.ink }, svg)
+        .textContent = "D = " + fmt(d,2);
+    }
+    s4charts[key] = { scale: s, view: "cdf", A, B };
+  }
+}
+
+/* ================= hover layers ================= */
+function setTip(tip, x, y, html, boxW) {
+  tip.innerHTML = html; tip.hidden = false;
+  const flip = x > boxW * 0.72;
+  tip.style.left = (flip ? x - tip.offsetWidth - 14 : x + 14) + "px";
+  tip.style.top = (y - 14) + "px";
+}
+// station 2
+attachHover($("cb2"), $("ch2"), { get padL(){return s2scale.padL}, get padR(){return s2scale.padR},
+  get W(){return s2scale.W}, get H(){return s2scale.H} },
+  (px, py, cx, cy) => {
+    const s = s2scale, f = Math.min(Math.max(s.inv(px), 0), 0.8);
+    setTip($("tip2"), cx, cy,
+      "<b>" + Math.round(f*100) + " % water ice</b><br><span class='mono'>R = " +
+      fmt(rSolid(M55[0],f),2) + " – " + fmt(rSolid(M55[1],f),2) + " R⊕</span>",
+      $("cb2").clientWidth);
+  }, () => $("tip2").hidden = true);
+// station 3
+attachHover($("cb3"), $("ch3"), { get padL(){return s3scale.padL}, get padR(){return s3scale.padR},
+  get W(){return s3scale.W}, get H(){return s3scale.H} },
+  (px, py, cx, cy) => {
+    const s = s3scale, t = Math.pow(10, s.inv(px));
+    const rd = Rt(M3, 0, FG_DRY, t), rw = Rt(M3, s3data.fv, s3data.fgWet, t);
+    const hl = $("ch3").querySelector(".hoverline") || el("line", { class: "hoverline", stroke: C.line, "stroke-width": 1 }, $("ch3"));
+    hl.setAttribute("x1", px); hl.setAttribute("x2", px);
+    hl.setAttribute("y1", s3scale.padT); hl.setAttribute("y2", 400 - s3scale.padB);
+    setTip($("tip3"), cx, cy,
+      "<b>" + (t < 1 ? Math.round(t*1000) + " Myr" : fmt(t,1) + " Gyr") + "</b><br>" +
+      "<span class='mono'>dry " + fmt(rd,2) + " · wet " + fmt(rw,2) + " R⊕</span><br>" +
+      "<span class='mono'>Δ = " + fmt((rd-rw)/rw*100,1) + " %</span>", $("cb3").clientWidth);
+  }, () => { $("tip3").hidden = true; const hl = $("ch3").querySelector(".hoverline"); if (hl) hl.remove(); });
+// station 4 (both census charts)
+function censusHover(key, boxId, svgId, tipId) {
+  attachHover($(boxId), $(svgId), {
+    get padL(){ return s4charts[key].scale.padL }, get padR(){ return s4charts[key].scale.padR },
+    get W(){ return s4charts[key].scale.W }, get H(){ return s4charts[key].scale.H } },
+    (px, py, cx, cy) => {
+      const c = s4charts[key], r = c.scale.inv(px);
+      if (c.view === "hist") {
+        const k = Math.min(c.nb - 1, Math.max(0, Math.floor((r - c.xMin) / c.bw)));
+        setTip($(tipId), cx, cy,
+          "<b>R " + fmt(c.xMin + k*c.bw,2) + " – " + fmt(c.xMin + (k+1)*c.bw,2) + " R⊕</b><br>" +
+          "<span class='mono'>dry " + Math.round(c.fa[k]*100) + " % · wet " + Math.round(c.fb[k]*100) + " % of sample</span>",
+          $(boxId).clientWidth);
+      } else {
+        const frac = (arr) => { let n = 0; while (n < arr.length && arr[n] <= r) n++; return n/arr.length; };
+        setTip($(tipId), cx, cy,
+          "<b>R ≤ " + fmt(r,2) + " R⊕</b><br><span class='mono'>dry " + Math.round(frac(c.A)*100) +
+          " % · wet " + Math.round(frac(c.B)*100) + " %</span>", $(boxId).clientWidth);
+      }
+    }, () => $(tipId).hidden = true);
+}
+censusHover("a", "cb4a", "ch4a", "tip4a");
+censusHover("b", "cb4b", "ch4b", "tip4b");
+
+/* ================= wiring ================= */
+["in-m1","in-fv1","in-fg1"].forEach(id => $(id).addEventListener("input", updateS1));
+["in-ro","in-sig"].forEach(id => $(id).addEventListener("input", drawS2));
+$("btn-gillon").addEventListener("click", () => { $("in-ro").value = 2.17; $("in-sig").value = 0.10; drawS2(); });
+$("btn-demory").addEventListener("click", () => { $("in-ro").value = 1.91; $("in-sig").value = 0.08; drawS2(); });
+$("in-fv3").addEventListener("input", drawS3);
+segWire("seg-n", "n", v => +v);
+segWire("seg-t", "t", v => +v);
+segWire("seg-p", "p", v => +v);
+segWire("seg-v", "v", v => v, false);
+segWire("seg-b", "b", v => +v, false);
+$("btn-resample").addEventListener("click", () => resampleS4(false));
+
+/* ================= Dorn 2017 tab =================
+   Importance sampling over the toy structure model, extended with a
+   variable iron fraction. Priors: x_iron ~ U(0,0.65), f_ice ~ U(0,0.95),
+   log10 f_gas ~ U(-6,-0.4). Likelihood: Gaussian in R (and, optionally,
+   in x_iron around the stellar Fe/Si proxy).                          */
+const D = { m: 7, r: 2.6, sr: 0.02, ab: true };
+const DN = 12000;
+const XI_MAX = 0.65, FV_MAX = 0.95, LG_LO = -6, LG_HI = -0.4;
+const ironFactor = x => (1 - 0.25 * x) / (1 - 0.25 * 0.325);
+const R5d = (m, fv, fg, xI) => { const ms = m * (1 - fg); return rSolid(ms, fv) * ironFactor(xI) + dRgas5(fg, ms); };
+const fmtGas = lg => { const p = Math.pow(10, lg) * 100; return p < 0.01 ? "<0.01" : p < 1 ? p.toPrecision(2) : p.toPrecision(3); };
+let dS = null;
+const dCharts = {};
+
+function sortIdx(vals) { return Array.from(vals.keys()).sort((a, b) => vals[a] - vals[b]); }
+function dornSampleIfNeeded() {
+  if (dS && dS.m === D.m) return;
+  const xi = new Float64Array(DN), fv = new Float64Array(DN), lg = new Float64Array(DN), R = new Float64Array(DN);
+  for (let i = 0; i < DN; i++) {
+    xi[i] = rand() * XI_MAX; fv[i] = rand() * FV_MAX; lg[i] = LG_LO + rand() * (LG_HI - LG_LO);
+    R[i] = R5d(D.m, fv[i], Math.pow(10, lg[i]), xi[i]);
+  }
+  dS = { m: D.m, xi, fv, lg, R, oXi: sortIdx(xi), oFv: sortIdx(fv), oLg: sortIdx(lg) };
+}
+function dornW(sr, ab) {
+  const sig = Math.max(sr * D.r, 1e-6), lw = new Float64Array(DN);
+  let mx = -Infinity;
+  for (let i = 0; i < DN; i++) {
+    let v = -0.5 * Math.pow((dS.R[i] - D.r) / sig, 2);
+    if (ab) v += -0.5 * Math.pow((dS.xi[i] - 0.325) / 0.06, 2);
+    lw[i] = v; if (v > mx) mx = v;
+  }
+  const w = new Float64Array(DN);
+  let sum = 0;
+  for (let i = 0; i < DN; i++) { w[i] = Math.exp(lw[i] - mx); sum += w[i]; }
+  let s2 = 0;
+  for (let i = 0; i < DN; i++) { w[i] /= sum; s2 += w[i] * w[i]; }
+  return { w, ess: 1 / s2 };
+}
+function wq(vals, order, w, q) {
+  let c = 0;
+  for (const i of order) { c += w[i]; if (c >= q) return vals[i]; }
+  return vals[order[order.length - 1]];
+}
+function resampleIdx(w, n) {
+  const out = new Array(n), step = 1 / n;
+  let u = rand() * step, c = w[0], i = 0;
+  for (let k = 0; k < n; k++) {
+    const t = u + k * step;
+    while (t > c && i < DN - 1) { i++; c += w[i]; }
+    out[k] = i;
+  }
+  return out;
+}
+
+function drawHistD(id, vals, w, x0, x1, ticks, tickFmt, ci) {
+  const svg = $(id); svg.innerHTML = "";
+  const nb = 30, bw = (x1 - x0) / nb, probs = new Array(nb).fill(0);
+  for (let i = 0; i < DN; i++) {
+    const k = Math.min(nb - 1, Math.max(0, Math.floor((vals[i] - x0) / bw)));
+    probs[k] += w[i];
+  }
+  const yMax = Math.max(Math.max(...probs), 1 / nb * 1.5) * 1.15;
+  const s = makeScales(x0, x1, 0, yMax, 300, 225, 36, 8, 14, 30);
+  axes(svg, s, ticks, [], "", "", tickFmt, v => "");
+  // 68% band
+  el("rect", { x: fmt(s.x(ci[0]),1), y: s.padT, width: fmt(Math.max(s.x(ci[1]) - s.x(ci[0]), 1),1),
+               height: 225 - s.padT - s.padB, fill: "rgba(61,155,217,.10)" }, svg);
+  // prior level (flat)
+  el("line", { x1: s.padL, x2: 300 - s.padR, y1: fmt(s.y(1/nb),1), y2: fmt(s.y(1/nb),1),
+               stroke: C.muted, "stroke-width": 1, "stroke-dasharray": "4 4" }, svg);
+  // posterior steps
+  const pts = [[s.x(x0), s.y(0)]];
+  probs.forEach((p, k) => { pts.push([s.x(x0 + k*bw), s.y(p)]); pts.push([s.x(x0 + (k+1)*bw), s.y(p)]); });
+  pts.push([s.x(x1), s.y(0)]);
+  el("path", { d: linePath(pts) + "Z", fill: "rgba(61,155,217,.22)" }, svg);
+  el("path", { d: linePath(pts), fill: "none", stroke: C.ice, "stroke-width": 2 }, svg);
+  el("text", { x: 300 - s.padR - 4, y: fmt(s.y(1/nb) - 5,1), "text-anchor": "end",
+               "font-family": "IBM Plex Mono,monospace", "font-size": 10, fill: C.muted }, svg).textContent = "prior";
+  dCharts[id] = { scale: s, x0, bw, nb, probs };
+}
+
+function dornDraw() {
+  dornSampleIfNeeded();
+  const { w, ess } = dornW(D.sr, D.ab);
+  $("dwarn").hidden = ess >= 60;
+  const ciXi = [wq(dS.xi, dS.oXi, w, 0.16), wq(dS.xi, dS.oXi, w, 0.84)];
+  const ciFv = [wq(dS.fv, dS.oFv, w, 0.16), wq(dS.fv, dS.oFv, w, 0.84)];
+  const ciLg = [wq(dS.lg, dS.oLg, w, 0.16), wq(dS.lg, dS.oLg, w, 0.84)];
+  drawHistD("dh-iron", dS.xi, w, 0, XI_MAX, [0, 0.2, 0.4, 0.6], v => Math.round(v*100) + "%", ciXi);
+  drawHistD("dh-ice",  dS.fv, w, 0, FV_MAX, [0, 0.3, 0.6, 0.9], v => Math.round(v*100) + "%", ciFv);
+  drawHistD("dh-gas",  dS.lg, w, LG_LO, LG_HI, [-6, -4, -2], v => "1e" + v, ciLg);
+  $("ci-iron").textContent = Math.round(ciXi[0]*100) + " – " + Math.round(ciXi[1]*100) + " %";
+  $("ci-ice").textContent  = Math.round(ciFv[0]*100) + " – " + Math.round(ciFv[1]*100) + " %";
+  $("ci-gas").textContent  = fmtGas(ciLg[0]) + " – " + fmtGas(ciLg[1]) + " %";
+  // posterior planets
+  const pick = resampleIdx(w, 3);
+  pick.forEach((i, k) => {
+    const fg = Math.pow(10, dS.lg[i]);
+    drawPlanet($("dpp" + k), D.m, dS.fv[i], fg, R5d(D.m, dS.fv[i], fg, dS.xi[i]), dS.xi[i]);
+    $("dppc" + k).textContent = "ice " + Math.round(dS.fv[i]*100) + "% · gas " + fmtGas(dS.lg[i]) + "% · iron " + Math.round(dS.xi[i]*100) + "%";
+  });
+  drawScatterD(w);
+  drawBudgetD();
+}
+
+function drawScatterD(w) {
+  const svg = $("dsc"); svg.innerHTML = "";
+  const s = makeScales(0, FV_MAX, LG_LO, LG_HI, 920, 400, 64, 18, 26, 42);
+  axes(svg, s, [0, 0.2, 0.4, 0.6, 0.8], [-6, -5, -4, -3, -2, -1],
+       "water-ice fraction of solid", "gas fraction of mass (log₁₀)",
+       v => Math.round(v*100) + "%", v => "1e" + v);
+  const idx = resampleIdx(w, 1200), pts = [];
+  idx.forEach(i => {
+    const px = s.x(Math.min(dS.fv[i] + (rand()-0.5)*0.012, FV_MAX));
+    const py = s.y(Math.max(Math.min(dS.lg[i] + (rand()-0.5)*0.05, LG_HI), LG_LO));
+    pts.push([px, py, i]);
+    el("circle", { cx: fmt(px,1), cy: fmt(py,1), r: 2.6, fill: "rgba(61,155,217,.30)" }, svg);
+  });
+  dCharts["dsc"] = { scale: s, pts };
+}
+
+const DSC = [
+  { sr: 0.02, ab: true,  fill: null, op: 1    },
+  { sr: 0.10, ab: true,  fill: null, op: 0.45 },
+  { sr: 0.02, ab: false, fill: null, op: 1    },
+  { sr: 0.10, ab: false, fill: null, op: 0.45 },
+];
+function drawBudgetD() {
+  const svg = $("dbud"); svg.innerHTML = "";
+  const params = [
+    { name: "iron core",  vals: dS.xi, order: dS.oXi, prior: 0.68 * XI_MAX },
+    { name: "water ice",  vals: dS.fv, order: dS.oFv, prior: 0.68 * FV_MAX },
+    { name: "H/He gas",   vals: dS.lg, order: dS.oLg, prior: 0.68 * (LG_HI - LG_LO) },
+  ];
+  const W = 920, padL = 130, padR = 60, padT = 16;
+  const bh = 16, bgap = 6, ggap = 30;
+  const xs = v => padL + v / 110 * (W - padL - padR);
+  // axis
+  [0, 25, 50, 75, 100].forEach(v => {
+    el("line", { x1: fmt(xs(v),1), x2: fmt(xs(v),1), y1: padT, y2: 340, stroke: C["line-soft"] }, svg);
+    el("text", { x: fmt(xs(v),1), y: 360, "text-anchor": "middle",
+                 "font-family": "IBM Plex Mono,monospace", "font-size": 11, fill: C.muted }, svg).textContent = v + "%";
+  });
+  el("text", { x: W - padR, y: 380, "text-anchor": "end", "font-family": "IBM Plex Mono,monospace",
+               "font-size": 11, fill: C.muted }, svg).textContent = "share of prior width remaining";
+  let y = padT + 6;
+  params.forEach(p => {
+    el("text", { x: padL - 12, y: fmt(y + (4*bh + 3*bgap)/2 + 4,1), "text-anchor": "end",
+                 "font-family": "IBM Plex Sans,sans-serif", "font-size": 13, "font-weight": 600, fill: C.ink }, svg)
+      .textContent = p.name;
+    DSC.forEach((sc, j) => {
+      const { w } = dornW(sc.sr, sc.ab);
+      const width = wq(p.vals, p.order, w, 0.84) - wq(p.vals, p.order, w, 0.16);
+      const pct = Math.min(width / p.prior * 100, 108);
+      const yy = y + j * (bh + bgap);
+      el("rect", { x: xs(0), y: yy, width: fmt(Math.max(xs(pct) - xs(0), 1.5),1), height: bh, rx: 3,
+                   fill: sc.ab ? C.ice : C.rock, opacity: sc.op }, svg);
+      el("text", { x: fmt(xs(pct) + 7,1), y: yy + bh - 4, "font-family": "IBM Plex Mono,monospace",
+                   "font-size": 11, fill: C.ink2 }, svg).textContent = Math.round(pct) + "%";
+    });
+    y += 4*bh + 3*bgap + ggap;
+  });
+}
+
+/* Dorn hovers */
+function histHover(boxId, svgId, tipId, kind) {
+  attachHover($(boxId), $(svgId), {
+    get padL(){ return dCharts[svgId].scale.padL }, get padR(){ return dCharts[svgId].scale.padR },
+    get W(){ return 300 }, get H(){ return 225 } },
+    (px, py, cx, cy) => {
+      const c = dCharts[svgId], r = c.scale.inv(px);
+      const k = Math.min(c.nb - 1, Math.max(0, Math.floor((r - c.x0) / c.bw)));
+      const a = c.x0 + k * c.bw, b = a + c.bw;
+      const lab = kind === "gas" ? fmtGas(a) + " – " + fmtGas(b) + " % of mass"
+                                 : Math.round(a*100) + " – " + Math.round(b*100) + " % of solid";
+      setTip($(tipId), cx, cy, "<b>" + lab + "</b><br><span class='mono'>P = " + (c.probs[k]*100).toFixed(1) + " %</span>",
+             $(boxId).clientWidth);
+    }, () => $(tipId).hidden = true);
+}
+histHover("cb-dhi", "dh-iron", "tip-dhi", "frac");
+histHover("cb-dhw", "dh-ice",  "tip-dhw", "frac");
+histHover("cb-dhg", "dh-gas",  "tip-dhg", "gas");
+attachHover($("cb-dsc"), $("dsc"), {
+  get padL(){ return dCharts["dsc"].scale.padL }, get padR(){ return dCharts["dsc"].scale.padR },
+  get W(){ return 920 }, get H(){ return 400 } },
+  (px, py, cx, cy) => {
+    const c = dCharts["dsc"];
+    let best = null, bd = 400;
+    c.pts.forEach(p => { const d = Math.hypot(p[0]-px, p[1]-py); if (d < bd) { bd = d; best = p; } });
+    if (!best || bd > 24) { $("tip-dsc").hidden = true; return; }
+    const i = best[2];
+    setTip($("tip-dsc"), cx, cy,
+      "<b>one consistent interior</b><br><span class='mono'>ice " + Math.round(dS.fv[i]*100) +
+      " % · gas " + fmtGas(dS.lg[i]) + " % · iron " + Math.round(dS.xi[i]*100) + " %</span>",
+      $("cb-dsc").clientWidth);
+  }, () => $("tip-dsc").hidden = true);
+
+/* Dorn wiring */
+function dornSeg(id, apply) {
+  $(id).querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    $(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    apply(b.dataset.v); dornDraw();
+  }));
+}
+function dornLabels() {
+  $("o-dm").textContent = fmt(D.m,1) + " M⊕";
+  $("o-dr").textContent = fmt(D.r,2) + " R⊕";
+}
+$("in-dm").addEventListener("input", () => { D.m = +$("in-dm").value; dornLabels(); dornDraw(); });
+$("in-dr").addEventListener("input", () => { D.r = +$("in-dr").value; dornLabels(); dornDraw(); });
+dornSeg("seg-dp", v => D.sr = +v);
+dornSeg("seg-dab", v => D.ab = v === "1");
+function dornPreset(m, r) {
+  D.m = m; D.r = r;
+  $("in-dm").value = m; $("in-dr").value = r;
+  dornLabels(); dornDraw();
+}
+$("btn-dnep").addEventListener("click", () => dornPreset(17.2, 3.87));
+$("btn-dcaseb").addEventListener("click", () => dornPreset(7, 2.2));
+$("btn-dcased").addEventListener("click", () => dornPreset(7, 2.9));
+
+/* ================= Kubyshkina 2022 engine =================
+   Toy energy-limited escape: d(fat)/dt = -K * F_XUV(a,t) * R^3 / M^2,
+   with F_XUV saturated until t_sat (rotator-dependent) then ~ t^-1.5,
+   coupled to the toy structure model with an early-inflation factor. */
+const KROT = { slow: 0.02, mod: 0.06, fast: 0.24 };
+const K_ESC = 1.2;
+const K = { mc: 5, fat: 0.05, a: 0.05, age: 5, rot: "mod", sc: "basic" };
+const kSteps = (() => { const ts = []; for (let lg = Math.log10(0.005); lg <= 1.0001; lg += 0.02) ts.push(Math.pow(10, lg)); return ts; })();
+const kContr = t => Math.min(Math.pow(t / 5, -0.12), 2.6);
+const kRc = mc => Math.pow(mc, 0.29);
+const kFat0 = (mc, a) => { const x = 0.005 * Math.pow(mc, 1.23) * Math.pow(a / 0.1, 0.72); return Math.min(x / (1 + x), 0.6); };
+function kEvolve(mc, fat0, a, rot) {
+  let fat = fat0;
+  const R = new Array(kSteps.length), F = new Array(kSteps.length);
+  let prev = kSteps[0];
+  for (let k = 0; k < kSteps.length; k++) {
+    const t = kSteps[k], dt = t - prev; prev = t;
+    let r = kRc(mc) + (fat > 1e-5 ? dRgas5(fat, mc) * kContr(t) : 0);
+    if (dt > 0 && fat > 0) {
+      const lx = t < KROT[rot] ? 1 : Math.pow(t / KROT[rot], -1.5);
+      const flux = Math.pow(a / 0.1, -2) * lx;
+      const M = mc / (1 - fat);
+      fat = Math.max(0, fat - K_ESC * flux * r * r * r / (M * M) * dt);
+      r = kRc(mc) + (fat > 1e-5 ? dRgas5(fat, mc) * kContr(t) : 0);
+    }
+    R[k] = r; F[k] = fat;
+  }
+  return { R, F };
+}
+const kAtAge = (track, age) => {
+  let k = 0; while (k < kSteps.length - 1 && kSteps[k] < age) k++;
+  return { r: track.R[k], fat: track.F[k] };
+};
+
+let k1data = null;
+function drawK1() {
+  $("o-kmc").textContent = fmt(K.mc,1) + " M⊕";
+  $("o-kfat").textContent = fmt(K.fat*100,1) + " %";
+  const rots = ["slow", "mod", "fast"], cols = { slow: C.ice, mod: C.muted, fast: C.rock };
+  const tracks = {};
+  rots.forEach(rt => tracks[rt] = kEvolve(K.mc, K.fat, K.a, rt));
+  k1data = tracks;
+  let yMax = 0, yMin = 1e9;
+  rots.forEach(rt => tracks[rt].R.forEach(r => { if (r > yMax) yMax = r; if (r < yMin) yMin = r; }));
+  const svg = $("kch1"); svg.innerHTML = "";
+  const s = makeScales(Math.log10(0.005), 1, yMin - 0.15, yMax + 0.2, 920, 400, 64, 130, 26, 42);
+  axes(svg, s, [0.01, 0.05, 0.3, 1, 3, 10].map(Math.log10), niceTicks(yMin - 0.15, yMax + 0.2, 5),
+       "age (log scale)", "radius, R⊕",
+       v => { const t = Math.pow(10, v); return t < 1 ? Math.round(t*1000) + " Myr" : t + " Gyr"; },
+       v => fmt(v, 1));
+  const names = { slow: "slow", mod: "moderate", fast: "fast" };
+  rots.forEach((rt, j) => {
+    el("path", { d: linePath(kSteps.map((t, k) => [s.x(Math.log10(t)), s.y(tracks[rt].R[k])])),
+                 stroke: cols[rt], "stroke-width": 2.5, fill: "none" }, svg);
+    const rEnd = tracks[rt].R[tracks[rt].R.length - 1];
+    el("text", { x: 920 - 122, y: fmt(s.y(rEnd) + 4 + (j === 1 ? 12 : 0),1), class: "serieslabel", fill: cols[rt] }, svg)
+      .textContent = names[rt] + " · " + fmt(rEnd, 2) + " R⊕";
+    const kept = K.fat > 0 ? tracks[rt].F[tracks[rt].F.length - 1] / K.fat : 0;
+    const stripped = tracks[rt].F[tracks[rt].F.length - 1] <= 0;
+    let strapAt = "";
+    if (stripped) { const k0 = tracks[rt].F.findIndex(f => f <= 0);
+      const ts = kSteps[Math.max(k0, 0)];
+      strapAt = ts < 1 ? Math.round(ts*1000) + " Myr" : fmt(ts,1) + " Gyr"; }
+    $("k1" + rt[0]).innerHTML = stripped ? "stripped<small> at " + strapAt + "</small>"
+                                         : Math.round(kept * 100) + " %<small> of atm.</small>";
+  });
+}
+
+let k2data = null;
+const KMASSES = (() => { const ms = []; for (let lg = 0; lg <= Math.log10(80) + 1e-9; lg += Math.log10(80) / 19) ms.push(Math.pow(10, lg)); return ms; })();
+const KORBS = [0.03, 0.05, 0.1, 0.2, 0.35];
+function drawK2() {
+  const pts = [];
+  KMASSES.forEach(mc => KORBS.forEach(a => {
+    const fat0 = K.sc === "mig" ? kFat0(mc, 1.5) : kFat0(mc, a);
+    const tr = kEvolve(mc, fat0, a, K.rot);
+    const { r, fat } = kAtAge(tr, K.age);
+    const lost = fat0 > 1e-6 ? (fat0 - fat) / fat0 : 0;
+    pts.push({ mc, a, fat0, fat, r, lost, m: mc / (1 - fat) });
+  }));
+  const svg = $("kch2"); svg.innerHTML = "";
+  const s = makeScales(0, Math.log10(230), Math.log10(0.85), Math.log10(13), 920, 430, 64, 18, 26, 42);
+  axes(svg, s, [1, 3, 10, 30, 100].map(Math.log10), [1, 2, 3, 5, 8, 12].map(Math.log10),
+       "mass, M⊕ (log)", "radius, R⊕ (log)",
+       v => Math.round(Math.pow(10, v)), v => Math.pow(10, v).toFixed(0));
+  const plotted = [];
+  pts.forEach(p => {
+    const col = p.lost >= 0.99 ? C.iron : p.lost >= 0.3 ? C.rock : C.ice;
+    const px = s.x(Math.log10(p.m)), py = s.y(Math.log10(p.r));
+    plotted.push([px, py, p]);
+    el("circle", { cx: fmt(px,1), cy: fmt(py,1), r: 4, fill: col, opacity: 0.8,
+                   stroke: "#0C111E", "stroke-width": 1 }, svg);
+  });
+  k2data = { scale: s, pts: plotted };
+}
+
+function drawK3() {
+  const spreadRot = [], spreadTot = [], xs = [];
+  KMASSES.forEach(mc => {
+    let rotSum = 0;
+    const all = [];
+    KORBS.forEach(a => {
+      const rs = ["slow", "mod", "fast"].map(rt => {
+        const b = kAtAge(kEvolve(mc, kFat0(mc, a), a, rt), 5).r;
+        const m = kAtAge(kEvolve(mc, kFat0(mc, 1.5), a, rt), 5).r;
+        all.push(b, m);
+        return b;
+      });
+      rotSum += Math.max(...rs) - Math.min(...rs);
+    });
+    xs.push(Math.log10(mc));
+    spreadRot.push(rotSum / KORBS.length);
+    spreadTot.push(Math.max(...all) - Math.min(...all));
+  });
+  const svg = $("kch3"); svg.innerHTML = "";
+  const yMax = Math.max(...spreadTot) * 1.15;
+  const s = makeScales(0, Math.log10(80), 0, yMax, 920, 380, 64, 18, 26, 42);
+  axes(svg, s, [1, 3, 10, 30, 80].map(Math.log10), niceTicks(0, yMax, 5),
+       "core mass, M⊕ (log)", "radius spread ΔR, R⊕",
+       v => Math.round(Math.pow(10, v)), v => fmt(v, 1));
+  el("path", { d: linePath(xs.map((x, i) => [s.x(x), s.y(spreadTot[i])])) , stroke: C.rock, "stroke-width": 2.5, fill: "none" }, svg);
+  el("path", { d: linePath(xs.map((x, i) => [s.x(x), s.y(spreadRot[i])])) , stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  el("text", { x: s.x(xs[xs.length-1]) - 6, y: fmt(s.y(spreadTot[spreadTot.length-1]) - 10,1), "text-anchor": "end", class: "serieslabel", fill: C.rock }, svg)
+    .textContent = "total spread";
+  el("text", { x: s.x(xs[xs.length-1]) - 6, y: fmt(s.y(spreadRot[spreadRot.length-1]) + 18,1), "text-anchor": "end", class: "serieslabel", fill: C.ice }, svg)
+    .textContent = "rotation history alone";
+  const ratios = xs.map((x, i) => spreadTot[i] > 0.05 ? spreadRot[i] / spreadTot[i] : null).filter(v => v !== null).sort((a, b) => a - b);
+  const med = ratios[Math.floor(ratios.length / 2)] || 0;
+  $("k3ratio").innerHTML = Math.round(med * 100) + " %<small> (median, this toy)</small>";
+  dCharts["kch3"] = { scale: s, xs, spreadRot, spreadTot };
+}
+
+/* Kubyshkina hovers */
+attachHover($("cb-k1"), $("kch1"), { padL: 64, padR: 130, W: 920, H: 400 },
+  (px, py, cx, cy) => {
+    const t = Math.pow(10, Math.log10(0.005) + (px - 64) / (920 - 64 - 130) * (1 - Math.log10(0.005)));
+    let k = 0; while (k < kSteps.length - 1 && kSteps[k] < t) k++;
+    const lab = t < 1 ? Math.round(t*1000) + " Myr" : fmt(t,1) + " Gyr";
+    setTip($("tip-k1"), cx, cy,
+      "<b>" + lab + "</b><br><span class='mono'>slow " + fmt(k1data.slow.R[k],2) + " · mod " + fmt(k1data.mod.R[k],2) +
+      " · fast " + fmt(k1data.fast.R[k],2) + " R⊕</span><br><span class='mono'>atm: " +
+      fmt(k1data.slow.F[k]*100,1) + " · " + fmt(k1data.mod.F[k]*100,1) + " · " + fmt(k1data.fast.F[k]*100,1) + " %</span>",
+      $("cb-k1").clientWidth);
+  }, () => $("tip-k1").hidden = true);
+attachHover($("cb-k2"), $("kch2"), { padL: 64, padR: 18, W: 920, H: 430 },
+  (px, py, cx, cy) => {
+    let best = null, bd = 1e9;
+    k2data.pts.forEach(p => { const d = Math.hypot(p[0]-px, p[1]-py); if (d < bd) { bd = d; best = p; } });
+    if (!best || bd > 22) { $("tip-k2").hidden = true; return; }
+    const p = best[2];
+    setTip($("tip-k2"), cx, cy,
+      "<b>core " + fmt(p.mc,1) + " M⊕ · " + p.a + " AU</b><br><span class='mono'>R = " + fmt(p.r,2) +
+      " R⊕ · atm " + fmt(p.fat0*100,1) + " % → " + fmt(p.fat*100,2) + " %</span><br><span class='mono'>" +
+      (p.lost >= 0.99 ? "stripped bare" : Math.round(p.lost*100) + " % of atmosphere lost") + "</span>",
+      $("cb-k2").clientWidth);
+  }, () => $("tip-k2").hidden = true);
+attachHover($("cb-k3"), $("kch3"), { padL: 64, padR: 18, W: 920, H: 380 },
+  (px, py, cx, cy) => {
+    const c = dCharts["kch3"], lm = c.scale.inv(px);
+    let bi = 0, bd = 1e9;
+    c.xs.forEach((x, i) => { const d = Math.abs(x - lm); if (d < bd) { bd = d; bi = i; } });
+    setTip($("tip-k3"), cx, cy,
+      "<b>" + fmt(Math.pow(10, c.xs[bi]),1) + " M⊕</b><br><span class='mono'>rotation " + fmt(c.spreadRot[bi],2) +
+      " · total " + fmt(c.spreadTot[bi],2) + " R⊕</span>", $("cb-k3").clientWidth);
+  }, () => $("tip-k3").hidden = true);
+
+/* Kubyshkina wiring */
+function kubSeg(id, apply, redraw) {
+  $(id).querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    $(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    apply(b.dataset.v); redraw();
+  }));
+}
+$("in-kmc").addEventListener("input", () => { K.mc = +$("in-kmc").value; drawK1(); });
+$("in-kfat").addEventListener("input", () => { K.fat = +$("in-kfat").value / 100; drawK1(); });
+kubSeg("seg-ka", v => K.a = +v, drawK1);
+kubSeg("seg-kage", v => K.age = +v, drawK2);
+kubSeg("seg-krot", v => K.rot = v, drawK2);
+kubSeg("seg-ksc", v => K.sc = v, drawK2);
+
+/* ================= Baty 2023: Lane-Emden & PINNs =================
+   Real training. Trial function y = 1 + x^2 N(x) hard-encodes the ICs;
+   regularized residual r = 6N + 6xN' + x^2 N'' + max(y,0)^n.
+   Backprop is exact, including through the second derivative:
+   each neuron carries the triple (a, da/dx, d2a/dx2).               */
+function rk4LE(n, xmax, npts) {
+  const NSTEP = 4000, h = xmax / NSTEP, out = [];
+  let x = 1e-6, u = 1 - x*x/6, v = -x/3;
+  const f = (x, u, v) => [v, -2*v/Math.max(x,1e-9) - Math.pow(Math.max(u,0), n)];
+  const rec = Math.max(1, Math.floor(NSTEP / npts));
+  out.push([x, u]);
+  for (let k = 1; k <= NSTEP; k++) {
+    const a = f(x,u,v), b = f(x+h/2, u+a[0]*h/2, v+a[1]*h/2),
+          c = f(x+h/2, u+b[0]*h/2, v+b[1]*h/2), d = f(x+h, u+c[0]*h, v+c[1]*h);
+    u += h/6*(a[0]+2*b[0]+2*c[0]+d[0]);
+    v += h/6*(a[1]+2*b[1]+2*c[1]+d[1]);
+    x += h;
+    if (k % rec === 0) out.push([x, u]);
+  }
+  return out;
+}
+function firstZeroLE(sol) {
+  for (let i = 1; i < sol.length; i++) if (sol[i][1] <= 0) {
+    const [x0, y0] = sol[i-1], [x1, y1] = sol[i];
+    return x0 + (x1 - x0) * y0 / (y0 - y1);
+  }
+  return null;
+}
+function Pinn(H, twoInput, lr, xm) {
+  const P = {
+    W1x: new Float64Array(H), W1n: new Float64Array(H), b1: new Float64Array(H),
+    W2: new Float64Array(H*H), b2: new Float64Array(H),
+    W3: new Float64Array(H), b3: new Float64Array(1), step: 0,
+  };
+  for (let j = 0; j < H; j++) {
+    P.W1x[j] = (rand()*2-1)*4/xm; P.W1n[j] = (rand()*2-1)*0.6;
+    P.b1[j] = (rand()*2-1)*2;  P.W3[j] = (rand()*2-1)*0.3/Math.sqrt(H);
+  }
+  for (let i = 0; i < H*H; i++) P.W2[i] = (rand()*2-1)/Math.sqrt(H);
+  const keys = ["W1x","W1n","b1","W2","b2","W3","b3"];
+  const opt = {};
+  keys.forEach(k => opt[k] = { g: new Float64Array(P[k].length), m: new Float64Array(P[k].length), v: new Float64Array(P[k].length) });
+  // caches (single point at a time)
+  const c = {
+    a1: new Float64Array(H), d1: new Float64Array(H), e1: new Float64Array(H), z11: new Float64Array(H),
+    a2: new Float64Array(H), d2: new Float64Array(H), e2: new Float64Array(H), z21: new Float64Array(H), z22: new Float64Array(H),
+  };
+  function fwd(x, nv) {
+    for (let j = 0; j < H; j++) {
+      const z = P.W1x[j]*x + (twoInput ? P.W1n[j]*nv : 0) + P.b1[j];
+      const z1 = P.W1x[j];
+      const a = Math.tanh(z), s = 1 - a*a;
+      c.a1[j] = a; c.z11[j] = z1;
+      c.d1[j] = s*z1; c.e1[j] = -2*a*s*z1*z1;
+    }
+    for (let k = 0; k < H; k++) {
+      let z = P.b2[k], z1 = 0, z2 = 0;
+      const off = k*H;
+      for (let j = 0; j < H; j++) { const w = P.W2[off+j]; z += w*c.a1[j]; z1 += w*c.d1[j]; z2 += w*c.e1[j]; }
+      const a = Math.tanh(z), s = 1 - a*a;
+      c.a2[k] = a; c.z21[k] = z1; c.z22[k] = z2;
+      c.d2[k] = s*z1; c.e2[k] = s*z2 - 2*a*s*z1*z1;
+    }
+    let N = P.b3[0], N1 = 0, N2 = 0;
+    for (let k = 0; k < H; k++) { N += P.W3[k]*c.a2[k]; N1 += P.W3[k]*c.d2[k]; N2 += P.W3[k]*c.e2[k]; }
+    return { N, N1, N2 };
+  }
+  function bwd(x, nv, gN, gN1, gN2) {
+    const ga = new Float64Array(H), ga1 = new Float64Array(H), ga2 = new Float64Array(H);
+    for (let k = 0; k < H; k++) {
+      opt.W3.g[k] += gN*c.a2[k] + gN1*c.d2[k] + gN2*c.e2[k];
+      ga[k] = P.W3[k]*gN; ga1[k] = P.W3[k]*gN1; ga2[k] = P.W3[k]*gN2;
+    }
+    opt.b3.g[0] += gN;
+    const gb = new Float64Array(H), gb1 = new Float64Array(H), gb2v = new Float64Array(H);
+    for (let k = 0; k < H; k++) {
+      const a = c.a2[k], s = 1 - a*a, z1 = c.z21[k], z2 = c.z22[k];
+      const gz  = ga[k]*s + ga1[k]*(-2*a*s*z1) + ga2[k]*(s*(6*a*a - 2)*z1*z1 - 2*a*s*z2);
+      const gz1 = ga1[k]*s + ga2[k]*(-4*a*s*z1);
+      const gz2 = ga2[k]*s;
+      gb[k] = gz; gb1[k] = gz1; gb2v[k] = gz2;
+      opt.b2.g[k] += gz;
+      const off = k*H;
+      for (let j = 0; j < H; j++) opt.W2.g[off+j] += gz*c.a1[j] + gz1*c.d1[j] + gz2*c.e1[j];
+    }
+    const ha = new Float64Array(H), ha1 = new Float64Array(H), ha2 = new Float64Array(H);
+    for (let k = 0; k < H; k++) {
+      const off = k*H;
+      for (let j = 0; j < H; j++) { const w = P.W2[off+j]; ha[j] += w*gb[k]; ha1[j] += w*gb1[k]; ha2[j] += w*gb2v[k]; }
+    }
+    for (let j = 0; j < H; j++) {
+      const a = c.a1[j], s = 1 - a*a, z1 = c.z11[j];
+      const gz  = ha[j]*s + ha1[j]*(-2*a*s*z1) + ha2[j]*(s*(6*a*a - 2)*z1*z1);
+      const gz1 = ha1[j]*s + ha2[j]*(-4*a*s*z1);
+      opt.W1x.g[j] += gz*x + gz1;
+      if (twoInput) opt.W1n.g[j] += gz*nv;
+      opt.b1.g[j] += gz;
+    }
+  }
+  return {
+    P,
+    evalY(x, nv) { return 1 + x*x*fwd(x, nv).N; },
+    trainStep(pts) {
+      keys.forEach(k => opt[k].g.fill(0));
+      let loss = 0;
+      const M = pts.length;
+      for (const [x, nv] of pts) {
+        const { N, N1, N2 } = fwd(x, nv);
+        const y = 1 + x*x*N, g = Math.min(Math.max(y, 0), 1.2);
+        const r = 6*N + 6*x*N1 + x*x*N2 + Math.pow(g, nv);
+        const dTerm = (nv > 0 && y > 0 && y < 1.2) ? nv*Math.pow(g, nv-1)*x*x : 0;
+        const gr = 2*r/M;
+        bwd(x, nv, gr*(6 + dTerm), gr*6*x, gr*x*x);
+        loss += r*r/M;
+      }
+      P.step++;
+      const t = P.step, b1c = 1 - Math.pow(0.9, t), b2c = 1 - Math.pow(0.999, t);
+      keys.forEach(k => {
+        const o = opt[k], p = P[k];
+        for (let i = 0; i < p.length; i++) {
+          o.m[i] = 0.9*o.m[i] + 0.1*o.g[i];
+          o.v[i] = 0.999*o.v[i] + 0.001*o.g[i]*o.g[i];
+          p[i] -= lr * (o.m[i]/b1c) / (Math.sqrt(o.v[i]/b2c) + 1e-8);
+        }
+      });
+      return loss;
+    },
+  };
+}
+
+/* ---- station B1: the polytrope ---- */
+const B1 = { n: 1.5 };
+function drawB1() {
+  $("o-bn1").textContent = fmt(B1.n, 2);
+  const sol = rk4LE(B1.n, 8, 400);
+  const z = firstZeroLE(sol);
+  const xEnd = z ? Math.min(z*1.25, 8) : 8;
+  $("bzero").innerHTML = z ? fmt(z, 2) : "∞<small> (n≈5: no surface)</small>";
+  const pts = sol.filter(p => p[0] <= xEnd);
+  const yMin = Math.min(-0.05, Math.min(...pts.map(p => p[1])) - 0.05);
+  const svg = $("bch1"); svg.innerHTML = "";
+  const s = makeScales(0, xEnd, yMin, 1.05, 920, 380, 64, 18, 26, 42);
+  axes(svg, s, niceTicks(0, xEnd, 6), niceTicks(yMin, 1.05, 5), "radius x", "", v => fmt(v,1), v => fmt(v,1));
+  el("line", { x1: s.padL, x2: 920-18, y1: fmt(s.y(0),1), y2: fmt(s.y(0),1), stroke: C.line, "stroke-width": 1 }, svg);
+  el("path", { d: linePath(pts.map(p => [s.x(p[0]), s.y(Math.pow(Math.max(p[1],0), B1.n))])), stroke: C.rock, "stroke-width": 2, fill: "none" }, svg);
+  el("path", { d: linePath(pts.map(p => [s.x(p[0]), s.y(p[1])])), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  if (z && z < xEnd) {
+    el("circle", { cx: fmt(s.x(z),1), cy: fmt(s.y(0),1), r: 4.5, fill: C.ink, stroke: "#0C111E", "stroke-width": 2 }, svg);
+    el("text", { x: fmt(s.x(z),1), y: fmt(s.y(0)-12,1), "text-anchor": "middle", class: "serieslabel", fill: C.ink }, svg).textContent = "surface";
+  }
+  dCharts["bch1"] = { scale: s, sol: pts, n: B1.n };
+}
+
+/* ---- station B2: single-equation PINN ---- */
+const BXMAX = { "0": 2.6, "1": 3.2, "1.5": 3.9, "3": 7, "5": 8 };
+const B2 = { n: 1.5, playing: false, pinn: null, colloc: [], exact: [], hist: [] };
+function b2Reset() {
+  const xm = BXMAX[String(B2.n)];
+  B2.pinn = Pinn(20, false, 0.002, xm);
+  B2.hist = [];
+  B2.colloc = [];
+  for (let i = 0; i < 32; i++) B2.colloc.push([0.02 + (xm - 0.02) * i / 31, B2.n]);
+  B2.exact = rk4LE(B2.n, xm, 200);
+  drawB2();
+}
+function b2Metrics() {
+  let mx = 0;
+  B2.exact.forEach(([x, ye]) => { const e = Math.abs(B2.pinn.evalY(x, B2.n) - ye); if (e > mx) mx = e; });
+  return mx;
+}
+function drawB2() {
+  const xm = BXMAX[String(B2.n)];
+  const yMin = Math.min(-0.05, Math.min(...B2.exact.map(p => p[1])) - 0.1);
+  let svg = $("bch2"); svg.innerHTML = "";
+  const s = makeScales(0, xm, yMin, 1.1, 460, 380, 46, 12, 22, 40);
+  axes(svg, s, niceTicks(0, xm, 4), niceTicks(yMin, 1.1, 4), "x", "", v => fmt(v,1), v => fmt(v,1));
+  el("line", { x1: s.padL, x2: 460-12, y1: fmt(s.y(0),1), y2: fmt(s.y(0),1), stroke: C.line }, svg);
+  B2.colloc.forEach(p => el("line", { x1: fmt(s.x(p[0]),1), x2: fmt(s.x(p[0]),1), y1: 380-40, y2: 380-34, stroke: C.muted, "stroke-width": 1.5 }, svg));
+  el("path", { d: linePath(B2.exact.map(p => [s.x(p[0]), s.y(p[1])])), stroke: C.muted, "stroke-width": 2, "stroke-dasharray": "6 4", fill: "none" }, svg);
+  el("path", { d: linePath(B2.exact.map(p => [s.x(p[0]), s.y(B2.pinn.evalY(p[0], B2.n))])), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  dCharts["bch2"] = { scale: s };
+  // loss chart
+  svg = $("bch2l"); svg.innerHTML = "";
+  if (B2.hist.length > 1) {
+    const H2 = B2.hist, lo = Math.min(...H2.map(h => Math.min(h.l, h.e))) - 0.3, hi = Math.max(...H2.map(h => Math.max(h.l, h.e))) + 0.3;
+    const s2 = makeScales(0, H2[H2.length-1].s, lo, hi, 460, 380, 46, 12, 22, 40);
+    axes(svg, s2, niceTicks(0, H2[H2.length-1].s, 4), niceTicks(lo, hi, 4), "step", "log₁₀",
+         v => v >= 1000 ? Math.round(v/1000) + "k" : Math.round(v), v => fmt(v,0));
+    el("path", { d: linePath(H2.map(h => [s2.x(h.s), s2.y(h.l)])), stroke: C.ice, "stroke-width": 2, fill: "none" }, svg);
+    el("path", { d: linePath(H2.map(h => [s2.x(h.s), s2.y(h.e)])), stroke: C.rock, "stroke-width": 2, fill: "none" }, svg);
+    dCharts["bch2l"] = { scale: s2, hist: H2 };
+  } else { dCharts["bch2l"] = null; }
+  $("b2step").textContent = B2.pinn.P.step;
+  const mx = b2Metrics();
+  $("b2err").textContent = mx < 1 ? mx.toExponential(1) : fmt(mx, 2);
+  $("b2loss").textContent = B2.lastLoss !== undefined ? B2.lastLoss.toExponential(1) : "–";
+}
+
+/* ---- station B3: family PINN ---- */
+const B3 = { playing: false, pinn: null, colloc: [], nTest: 2.5, exact: null, hist: [] };
+const B3XM = 7;
+function b3Reset() {
+  B3.pinn = Pinn(24, true, 0.002, B3XM);
+  B3.hist = [];
+  B3.colloc = [];
+  [0, 1, 2, 3, 4].forEach(nv => { for (let i = 0; i < 20; i++) B3.colloc.push([0.02 + (B3XM - 0.02) * i / 19, nv]); });
+  b3Exact();
+  drawB3();
+}
+function b3Exact() { B3.exact = rk4LE(B3.nTest, B3XM, 200); }
+function drawB3() {
+  $("o-bnF").textContent = fmt(B3.nTest, 2);
+  const zone = $("bFzone");
+  if ([0,1,2,3,4].some(v => Math.abs(v - B3.nTest) < 0.05)) { zone.textContent = "trained"; zone.style.color = "#6ECD93"; }
+  else if (B3.nTest <= 4) { zone.textContent = "interpolation"; zone.style.color = "#7FC2EA"; }
+  else { zone.textContent = "extrapolation!"; zone.style.color = "#E88A8A"; }
+  const yMin = Math.min(-0.35, Math.min(...B3.exact.map(p => p[1])) - 0.1);
+  const svg = $("bch3"); svg.innerHTML = "";
+  const s = makeScales(0, B3XM, yMin, 1.1, 920, 400, 64, 18, 26, 42);
+  axes(svg, s, niceTicks(0, B3XM, 6), niceTicks(yMin, 1.1, 5), "radius x", "", v => fmt(v,1), v => fmt(v,1));
+  el("line", { x1: s.padL, x2: 920-18, y1: fmt(s.y(0),1), y2: fmt(s.y(0),1), stroke: C.line }, svg);
+  el("path", { d: linePath(B3.exact.map(p => [s.x(p[0]), s.y(p[1])])), stroke: C.muted, "stroke-width": 2, "stroke-dasharray": "6 4", fill: "none" }, svg);
+  el("path", { d: linePath(B3.exact.map(p => [s.x(p[0]), s.y(Math.max(-2, Math.min(2, B3.pinn.evalY(p[0], B3.nTest))))])), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  el("text", { x: 920-24, y: 44, "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = "exact (dashed)";
+  dCharts["bch3"] = { scale: s };
+  $("b3step").textContent = B3.pinn.P.step;
+  let mx = 0;
+  B3.exact.forEach(([x, ye]) => { const e = Math.abs(B3.pinn.evalY(x, B3.nTest) - ye); if (e > mx) mx = e; });
+  $("b3err").textContent = mx < 1 ? mx.toExponential(1) : fmt(mx, 2);
+  $("b3loss").textContent = B3.lastLoss !== undefined ? B3.lastLoss.toExponential(1) : "–";
+}
+
+/* training loop */
+function batyTick() {
+  if (B2.playing) {
+    for (let i = 0; i < 25; i++) B2.lastLoss = B2.pinn.trainStep(B2.colloc);
+    B2.hist.push({ s: B2.pinn.P.step, l: Math.log10(B2.lastLoss + 1e-12), e: Math.log10(Math.pow(b2Metrics(), 2) + 1e-14) });
+    if (B2.hist.length > 400) B2.hist = B2.hist.filter((_, i) => i % 2 === 0);
+    drawB2();
+  }
+  if (B3.playing) {
+    for (let i = 0; i < 8; i++) B3.lastLoss = B3.pinn.trainStep(B3.colloc);
+    drawB3();
+  }
+  if (B2.playing || B3.playing) requestAnimationFrame(batyTick);
+}
+function setPlay(which, on) {
+  const wasIdle = !B2.playing && !B3.playing;
+  which.playing = on;
+  $(which === B2 ? "btn-btrain" : "btn-btrainF").textContent = on ? "⏸ Pause" : (which === B2 ? "▶ Train" : "▶ Train on n = 0…4");
+  if (on && wasIdle) requestAnimationFrame(batyTick);
+}
+$("btn-btrain").addEventListener("click", () => setPlay(B2, !B2.playing));
+$("btn-breset").addEventListener("click", () => { setPlay(B2, false); B2.lastLoss = undefined; b2Reset(); });
+$("btn-btrainF").addEventListener("click", () => setPlay(B3, !B3.playing));
+$("btn-bresetF").addEventListener("click", () => { setPlay(B3, false); B3.lastLoss = undefined; b3Reset(); });
+$("in-bn1").addEventListener("input", () => { B1.n = +$("in-bn1").value; drawB1(); });
+$("in-bnF").addEventListener("input", () => { B3.nTest = +$("in-bnF").value; b3Exact(); drawB3(); });
+kubSeg("seg-bn2", v => { B2.n = +v; }, () => { setPlay(B2, false); B2.lastLoss = undefined; b2Reset(); });
+
+/* Baty hovers */
+attachHover($("cb-b1"), $("bch1"), { padL: 64, padR: 18, W: 920, H: 380 },
+  (px, py, cx, cy) => {
+    const c = dCharts["bch1"], x = c.scale.inv(px);
+    let b = c.sol[0]; c.sol.forEach(p => { if (Math.abs(p[0]-x) < Math.abs(b[0]-x)) b = p; });
+    setTip($("tip-b1"), cx, cy, "<b>x = " + fmt(b[0],2) + "</b><br><span class='mono'>y = " + fmt(b[1],3) +
+      " · ρ/ρc = " + fmt(Math.pow(Math.max(b[1],0), c.n),3) + "</span>", $("cb-b1").clientWidth);
+  }, () => $("tip-b1").hidden = true);
+attachHover($("cb-b2"), $("bch2"), { padL: 46, padR: 12, W: 460, H: 380 },
+  (px, py, cx, cy) => {
+    const s = dCharts["bch2"].scale, x = s.inv(px);
+    let b = B2.exact[0]; B2.exact.forEach(p => { if (Math.abs(p[0]-x) < Math.abs(b[0]-x)) b = p; });
+    const yp = B2.pinn.evalY(b[0], B2.n);
+    setTip($("tip-b2"), cx, cy, "<b>x = " + fmt(b[0],2) + "</b><br><span class='mono'>exact " + fmt(b[1],3) +
+      " · PINN " + fmt(yp,3) + "</span><br><span class='mono'>|err| = " + Math.abs(yp-b[1]).toExponential(1) + "</span>", $("cb-b2").clientWidth);
+  }, () => $("tip-b2").hidden = true);
+attachHover($("cb-b2l"), $("bch2l"), { padL: 46, padR: 12, W: 460, H: 380 },
+  (px, py, cx, cy) => {
+    const c = dCharts["bch2l"]; if (!c) { $("tip-b2l").hidden = true; return; }
+    const st = c.scale.inv(px);
+    let b = c.hist[0]; c.hist.forEach(h => { if (Math.abs(h.s-st) < Math.abs(b.s-st)) b = h; });
+    setTip($("tip-b2l"), cx, cy, "<b>step " + b.s + "</b><br><span class='mono'>loss 10^" + fmt(b.l,1) +
+      " · MSE 10^" + fmt(b.e,1) + "</span>", $("cb-b2l").clientWidth);
+  }, () => $("tip-b2l").hidden = true);
+attachHover($("cb-b3"), $("bch3"), { padL: 64, padR: 18, W: 920, H: 400 },
+  (px, py, cx, cy) => {
+    const s = dCharts["bch3"].scale, x = s.inv(px);
+    let b = B3.exact[0]; B3.exact.forEach(p => { if (Math.abs(p[0]-x) < Math.abs(b[0]-x)) b = p; });
+    const yp = B3.pinn.evalY(b[0], B3.nTest);
+    setTip($("tip-b3"), cx, cy, "<b>x = " + fmt(b[0],2) + "</b><br><span class='mono'>exact " + fmt(b[1],3) +
+      " · PINN " + fmt(yp,3) + "</span>", $("cb-b3").clientWidth);
+  }, () => $("tip-b3").hidden = true);
+
+/* ================= Moseley 2020: simulator & surrogate ================= */
+/* ---- 2D FD wavefield (station M1) ---- */
+const MW = 140, MH = 120;
+const M1 = { v: [1.8, 2.4, 3.0], playing: false, t: 0, msAcc: 0 };
+const m1p = new Float32Array(MW*MH), m1pp = new Float32Array(MW*MH);
+const m1c2 = new Float32Array(MH), m1damp = new Float32Array(MW*MH);
+(function () {
+  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+    const dEdge = Math.min(x, MW-1-x, MH-1-y, 18);
+    m1damp[y*MW+x] = dEdge >= 18 ? 1 : 1 - 0.05*Math.pow((18-dEdge)/18, 2);
+  }
+})();
+function m1SetVel() {
+  for (let y = 0; y < MH; y++) {
+    const v = M1.v[y < 40 ? 0 : y < 80 ? 1 : 2];
+    m1c2[y] = Math.pow(v*0.2, 2);
+  }
+}
+const mRicker = (t, t0, f) => { const a = Math.PI*f*(t-t0); return (1-2*a*a)*Math.exp(-a*a); };
+function m1Step() {
+  for (let y = 1; y < MH-1; y++) {
+    const c2 = m1c2[y], off = y*MW;
+    for (let x = 1; x < MW-1; x++) {
+      const i = off+x;
+      const lap = m1p[i-1]+m1p[i+1]+m1p[i-MW]+m1p[i+MW]-4*m1p[i];
+      const pn = (2*m1p[i]-m1pp[i]+c2*lap)*m1damp[i];
+      m1pp[i] = m1p[i]; m1p[i] = pn;
+    }
+  }
+  m1p[4*MW+70] += mRicker(M1.t, 40, 0.06)*2;
+  M1.t++;
+}
+const m1ctx = $("mcv").getContext("2d");
+const m1img = m1ctx.createImageData(MW, MH);
+function m1Render() {
+  const d = m1img.data;
+  for (let y = 0; y < MH; y++) {
+    const v = M1.v[y < 40 ? 0 : y < 80 ? 1 : 2];
+    const sh = (v-1)/2.4;
+    let br = 19+sh*20, bg = 26+sh*24, bb = 44+sh*30;
+    if (y === 40 || y === 80) { br += 12; bg += 12; bb += 14; }
+    for (let x = 0; x < MW; x++) {
+      const i = y*MW+x, a = m1p[i]*2.4;
+      let r = br, g = bg, b = bb;
+      if (a > 0) { const w = Math.min(1, a); r += (201-br)*w; g += (118-bg)*w; b += (51-bb)*w; }
+      else if (a < 0) { const w = Math.min(1, -a); r += (61-br)*w; g += (155-bg)*w; b += (217-bb)*w; }
+      const o = i*4; d[o] = r; d[o+1] = g; d[o+2] = b; d[o+3] = 255;
+    }
+  }
+  m1ctx.putImageData(m1img, 0, 0);
+}
+function m1Fire() {
+  m1p.fill(0); m1pp.fill(0); M1.t = 0; M1.msAcc = 0;
+  m1SetVel(); M1.playing = true; mWake();
+}
+
+/* ---- 1D FD simulator (dataset generator for M2/M3) ---- */
+function sim1D(v1, v2, v3) {
+  const n = 220, steps = 600, out = new Float64Array(150);
+  const p = new Float64Array(n), pp = new Float64Array(n), c2 = new Float64Array(n);
+  for (let i = 0; i < n; i++) c2[i] = Math.pow((i < 73 ? v1 : i < 146 ? v2 : v3)*0.25, 2);
+  for (let t = 0; t < steps; t++) {
+    for (let i = 1; i < n-1; i++) {
+      const pn = 2*p[i]-pp[i]+c2[i]*(p[i+1]-2*p[i]+p[i-1]);
+      pp[i] = p[i]; p[i] = pn;
+    }
+    for (let i = n-31; i < n; i++) { const f = 1-0.08*Math.pow((i-(n-31))/30, 2); p[i] *= f; pp[i] *= f; }
+    p[5] += mRicker(t, 50, 0.05);
+    if (t % 4 === 0 && t/4 < 150) out[t/4] = p[8];
+  }
+  return out;
+}
+
+/* ---- supervised surrogate network ---- */
+function MNet(lr) {
+  const I = 3, H = 64, O = 150;
+  const P = { W1: new Float64Array(H*I), b1: new Float64Array(H),
+              W2: new Float64Array(H*H), b2: new Float64Array(H),
+              W3: new Float64Array(O*H), b3: new Float64Array(O), step: 0 };
+  for (let i = 0; i < H*I; i++) P.W1[i] = (rand()*2-1)/Math.sqrt(I);
+  for (let i = 0; i < H*H; i++) P.W2[i] = (rand()*2-1)/Math.sqrt(H);
+  for (let i = 0; i < O*H; i++) P.W3[i] = (rand()*2-1)/Math.sqrt(H);
+  const keys = ["W1","b1","W2","b2","W3","b3"], opt = {};
+  keys.forEach(k => opt[k] = { g: new Float64Array(P[k].length), m: new Float64Array(P[k].length), v: new Float64Array(P[k].length) });
+  const a1 = new Float64Array(H), a2 = new Float64Array(H), yo = new Float64Array(O);
+  function fwd(x) {
+    for (let j = 0; j < H; j++) a1[j] = Math.tanh(P.W1[j*I]*x[0]+P.W1[j*I+1]*x[1]+P.W1[j*I+2]*x[2]+P.b1[j]);
+    for (let k = 0; k < H; k++) { let z = P.b2[k]; const off = k*H;
+      for (let j = 0; j < H; j++) z += P.W2[off+j]*a1[j];
+      a2[k] = Math.tanh(z); }
+    for (let o = 0; o < O; o++) { let z = P.b3[o]; const off = o*H;
+      for (let k = 0; k < H; k++) z += P.W3[off+k]*a2[k];
+      yo[o] = z; }
+    return yo;
+  }
+  return {
+    P, fwd,
+    predict(x) { return Float64Array.from(fwd(x)); },
+    trainStep(batch) {
+      keys.forEach(k => opt[k].g.fill(0));
+      let loss = 0;
+      const B = batch.length;
+      for (const ex of batch) {
+        fwd(ex.x);
+        const gy = new Float64Array(O);
+        for (let o = 0; o < O; o++) { const e = yo[o]-ex.t[o]; gy[o] = 2*e/(O*B); loss += e*e/(O*B); }
+        const g2 = new Float64Array(H);
+        for (let o = 0; o < O; o++) { const off = o*H, g = gy[o];
+          opt.b3.g[o] += g;
+          for (let k = 0; k < H; k++) { opt.W3.g[off+k] += g*a2[k]; g2[k] += P.W3[off+k]*g; } }
+        const g1 = new Float64Array(H);
+        for (let k = 0; k < H; k++) { const gz = g2[k]*(1-a2[k]*a2[k]), off = k*H;
+          opt.b2.g[k] += gz;
+          for (let j = 0; j < H; j++) { opt.W2.g[off+j] += gz*a1[j]; g1[j] += P.W2[off+j]*gz; } }
+        for (let j = 0; j < H; j++) { const gz = g1[j]*(1-a1[j]*a1[j]);
+          opt.b1.g[j] += gz;
+          opt.W1.g[j*I] += gz*ex.x[0]; opt.W1.g[j*I+1] += gz*ex.x[1]; opt.W1.g[j*I+2] += gz*ex.x[2]; }
+      }
+      P.step++;
+      const t = P.step, b1c = 1-Math.pow(0.9,t), b2c = 1-Math.pow(0.999,t);
+      keys.forEach(k => { const o = opt[k], p = P[k];
+        for (let i = 0; i < p.length; i++) {
+          o.m[i] = 0.9*o.m[i]+0.1*o.g[i];
+          o.v[i] = 0.999*o.v[i]+0.001*o.g[i]*o.g[i];
+          p[i] -= lr*(o.m[i]/b1c)/(Math.sqrt(o.v[i]/b2c)+1e-8);
+        } });
+      return loss;
+    },
+  };
+}
+
+/* ---- dataset + stations M2/M3 ---- */
+const mNorm = v => (v-2)/0.8;
+const M2 = { playing: false, net: null, train: [], val: [], valShow: null, hist: [], scale: 1, lastLoss: undefined };
+const MS3 = { V1: 1.6, V3: 2.2, v2: 2.0, simCache: {}, grid: [] };
+function mGetSim(v2) {
+  const key = v2.toFixed(3);
+  if (!MS3.simCache[key]) MS3.simCache[key] = sim1D(MS3.V1, v2, MS3.V3);
+  return MS3.simCache[key];
+}
+function mMakeExample(v1, v2, v3) {
+  return { v: [v1, v2, v3], x: [mNorm(v1), mNorm(v2), mNorm(v3)], t: sim1D(v1, v2, v3) };
+}
+function mInitData() {
+  const rv = () => 1.2 + rand()*1.6;
+  for (let i = 0; i < 140; i++) M2.train.push(mMakeExample(rv(), rv(), rv()));
+  for (let i = 0; i < 12; i++) M2.val.push(mMakeExample(rv(), rv(), rv()));
+  M2.valShow = mMakeExample(1.7, 2.35, 1.5);
+  let mx = 0;
+  M2.train.forEach(ex => ex.t.forEach(v => { const a = Math.abs(v); if (a > mx) mx = a; }));
+  M2.scale = 1/mx;
+  [...M2.train, ...M2.val, M2.valShow].forEach(ex => { for (let i = 0; i < 150; i++) ex.t[i] *= M2.scale; });
+  for (let v2 = 0.9; v2 <= 3.401; v2 += 0.1) { MS3.grid.push(v2); mGetSim(v2); }
+}
+function m2Reset() { M2.net = MNet(0.003); M2.hist = []; M2.lastLoss = undefined; drawM2(); drawM3(); }
+function m2Val() {
+  let s = 0;
+  M2.val.forEach(ex => { const p = M2.net.fwd(ex.x); for (let i = 0; i < 150; i++) s += Math.pow(p[i]-ex.t[i], 2); });
+  return s/(M2.val.length*150);
+}
+function traceChart(svgId, truth, pred) {
+  const svg = $(svgId); svg.innerHTML = "";
+  const s = makeScales(0, 149, -1.15, 1.15, 460, 380, 40, 12, 22, 40);
+  axes(svg, s, [0, 50, 100, 149], [-1, 0, 1], "time sample", "", v => Math.round(v), v => fmt(v,0));
+  el("path", { d: linePath(Array.from(truth).map((v, i) => [s.x(i), s.y(Math.max(-1.1, Math.min(1.1, v)))])),
+               stroke: C.muted, "stroke-width": 2, "stroke-dasharray": "5 4", fill: "none" }, svg);
+  el("path", { d: linePath(Array.from(pred).map((v, i) => [s.x(i), s.y(Math.max(-1.1, Math.min(1.1, v)))])),
+               stroke: C.ice, "stroke-width": 2.2, fill: "none" }, svg);
+  return s;
+}
+function drawM2() {
+  const pred = M2.net.predict(M2.valShow.x);
+  dCharts["mch2a"] = { scale: traceChart("mch2a", M2.valShow.t, pred), truth: M2.valShow.t, pred };
+  const svg = $("mch2b"); svg.innerHTML = "";
+  if (M2.hist.length > 1) {
+    const Hh = M2.hist, lo = Math.min(...Hh.map(h => Math.min(h.l, h.v)))-0.3, hi = Math.max(...Hh.map(h => Math.max(h.l, h.v)))+0.3;
+    const s2 = makeScales(0, Hh[Hh.length-1].s, lo, hi, 460, 380, 46, 12, 22, 40);
+    axes(svg, s2, niceTicks(0, Hh[Hh.length-1].s, 4), niceTicks(lo, hi, 4), "step", "log₁₀",
+         v => v >= 1000 ? Math.round(v/1000)+"k" : Math.round(v), v => fmt(v,0));
+    el("path", { d: linePath(Hh.map(h => [s2.x(h.s), s2.y(h.l)])), stroke: C.ice, "stroke-width": 2, fill: "none" }, svg);
+    el("path", { d: linePath(Hh.map(h => [s2.x(h.s), s2.y(h.v)])), stroke: C.rock, "stroke-width": 2, fill: "none" }, svg);
+    dCharts["mch2b"] = { scale: s2, hist: Hh };
+  } else dCharts["mch2b"] = null;
+  $("m2step").textContent = M2.net.P.step;
+  $("m2loss").textContent = M2.lastLoss !== undefined ? M2.lastLoss.toExponential(1) : "–";
+  $("m2val").textContent = M2.net.P.step ? m2Val().toExponential(1) : "–";
+}
+function drawM3() {
+  $("o-m3v").textContent = fmt(MS3.v2, 2);
+  const truth = Float64Array.from(mGetSim(MS3.v2), v => v*M2.scale);
+  const pred = M2.net.predict([mNorm(MS3.V1), mNorm(MS3.v2), mNorm(MS3.V3)]);
+  dCharts["mch3a"] = { scale: traceChart("mch3a", truth, pred), truth, pred };
+  // error curve
+  const errs = MS3.grid.map(v2 => {
+    const tr = mGetSim(v2), p = M2.net.fwd([mNorm(MS3.V1), mNorm(v2), mNorm(MS3.V3)]);
+    let s = 0; for (let i = 0; i < 150; i++) s += Math.pow(p[i]-tr[i]*M2.scale, 2);
+    return Math.sqrt(s/150);
+  });
+  const svg = $("mch3b"); svg.innerHTML = "";
+  const yMax = Math.max(...errs)*1.15 + 1e-6;
+  const s = makeScales(0.9, 3.4, 0, yMax, 460, 380, 46, 12, 22, 40);
+  axes(svg, s, [1, 1.5, 2, 2.5, 3], niceTicks(0, yMax, 4), "v₂", "RMSE", v => fmt(v,1), v => fmt(v,2));
+  el("rect", { x: fmt(s.x(1.2),1), y: s.padT, width: fmt(s.x(2.8)-s.x(1.2),1), height: 380-s.padT-s.padB,
+               fill: "rgba(61,155,217,.08)" }, svg);
+  el("text", { x: fmt(s.x(2.0),1), y: s.padT+14, "text-anchor": "middle", class: "serieslabel", fill: C.muted }, svg)
+    .textContent = "training range";
+  el("path", { d: linePath(MS3.grid.map((v2, i) => [s.x(v2), s.y(errs[i])])), stroke: C.rock, "stroke-width": 2.2, fill: "none" }, svg);
+  el("line", { x1: fmt(s.x(MS3.v2),1), x2: fmt(s.x(MS3.v2),1), y1: s.padT, y2: 380-s.padB,
+               stroke: C.ink, "stroke-width": 1, "stroke-dasharray": "3 3" }, svg);
+  dCharts["mch3b"] = { scale: s, grid: MS3.grid, errs };
+}
+
+/* ---- RAF loop for Moseley tab ---- */
+let mRunning = false;
+function mTick() {
+  let more = false;
+  if (M1.playing) {
+    const t0 = performance.now();
+    for (let i = 0; i < 5; i++) m1Step();
+    M1.msAcc += performance.now()-t0;
+    m1Render();
+    if (M1.t >= 900) { M1.playing = false; $("m1ms").innerHTML = fmt(M1.msAcc,0) + "<small> ms (this browser)</small>"; }
+    else more = true;
+  }
+  if (M2.playing) {
+    for (let i = 0; i < 8; i++) {
+      const batch = [];
+      for (let b = 0; b < 16; b++) batch.push(M2.train[Math.floor(rand()*M2.train.length)]);
+      M2.lastLoss = M2.net.trainStep(batch);
+    }
+    M2.hist.push({ s: M2.net.P.step, l: Math.log10(M2.lastLoss+1e-12), v: Math.log10(m2Val()+1e-12) });
+    if (M2.hist.length > 400) M2.hist = M2.hist.filter((_, i) => i % 2 === 0);
+    drawM2();
+    if (M2.net.P.step % 40 < 8) drawM3();
+    more = true;
+  }
+  mRunning = more;
+  if (more) requestAnimationFrame(mTick);
+}
+function mWake() { if (!mRunning) { mRunning = true; requestAnimationFrame(mTick); } }
+
+/* ---- Moseley wiring ---- */
+["mv1","mv2","mv3"].forEach((id, i) => $("in-"+id).addEventListener("input", () => {
+  M1.v[i] = +$("in-"+id).value;
+  $("o-"+id).textContent = fmt(M1.v[i],1);
+  m1Fire();
+}));
+$("btn-mfire").addEventListener("click", m1Fire);
+$("btn-mtrain").addEventListener("click", () => {
+  M2.playing = !M2.playing;
+  $("btn-mtrain").textContent = M2.playing ? "⏸ Pause" : "▶ Train surrogate";
+  if (M2.playing) mWake();
+});
+$("btn-mreset").addEventListener("click", () => {
+  M2.playing = false; $("btn-mtrain").textContent = "▶ Train surrogate"; m2Reset();
+});
+$("in-m3v").addEventListener("input", () => { MS3.v2 = +$("in-m3v").value; drawM3(); });
+$("btn-mbench").addEventListener("click", () => {
+  let t0 = performance.now();
+  for (let i = 0; i < 30; i++) sim1D(1.5+rand(), 1.5+rand(), 1.5+rand());
+  const tSim = (performance.now()-t0)/30;
+  t0 = performance.now();
+  for (let i = 0; i < 3000; i++) M2.net.fwd([rand()-0.5, rand()-0.5, rand()-0.5]);
+  const tNet = (performance.now()-t0)/3000;
+  $("m3speed").innerHTML = fmt(tSim/Math.max(tNet,1e-4),0) + "×<small> (" + fmt(tSim,2) + " vs " + fmt(tNet,4) + " ms)</small>";
+});
+
+/* Moseley hovers */
+function mTraceHover(boxId, svgId, tipId) {
+  attachHover($(boxId), $(svgId), { padL: 40, padR: 12, W: 460, H: 380 },
+    (px, py, cx, cy) => {
+      const c = dCharts[svgId], i = Math.max(0, Math.min(149, Math.round(c.scale.inv(px))));
+      setTip($(tipId), cx, cy, "<b>sample " + i + "</b><br><span class='mono'>simulator " + fmt(c.truth[i],3) +
+        " · surrogate " + fmt(c.pred[i],3) + "</span>", $(boxId).clientWidth);
+    }, () => $(tipId).hidden = true);
+}
+mTraceHover("cb-m2a", "mch2a", "tip-m2a");
+mTraceHover("cb-m3a", "mch3a", "tip-m3a");
+attachHover($("cb-m2b"), $("mch2b"), { padL: 46, padR: 12, W: 460, H: 380 },
+  (px, py, cx, cy) => {
+    const c = dCharts["mch2b"]; if (!c) { $("tip-m2b").hidden = true; return; }
+    const st = c.scale.inv(px);
+    let b = c.hist[0]; c.hist.forEach(h => { if (Math.abs(h.s-st) < Math.abs(b.s-st)) b = h; });
+    setTip($("tip-m2b"), cx, cy, "<b>step " + b.s + "</b><br><span class='mono'>train 10^" + fmt(b.l,1) +
+      " · val 10^" + fmt(b.v,1) + "</span>", $("cb-m2b").clientWidth);
+  }, () => $("tip-m2b").hidden = true);
+attachHover($("cb-m3b"), $("mch3b"), { padL: 46, padR: 12, W: 460, H: 380 },
+  (px, py, cx, cy) => {
+    const c = dCharts["mch3b"], v2 = c.scale.inv(px);
+    let bi = 0; c.grid.forEach((v, i) => { if (Math.abs(v-v2) < Math.abs(c.grid[bi]-v2)) bi = i; });
+    setTip($("tip-m3b"), cx, cy, "<b>v₂ = " + fmt(c.grid[bi],1) + "</b><br><span class='mono'>RMSE " +
+      fmt(c.errs[bi],3) + (c.grid[bi] < 1.2 || c.grid[bi] > 2.8 ? " · outside training" : "") + "</span>", $("cb-m3b").clientWidth);
+  }, () => $("tip-m3b").hidden = true);
+
+/* ================= tabs ================= */
+const TABS = ["alibert", "dorn", "kub", "baty", "mos"];
+function showTab(t) {
+  TABS.forEach(x => {
+    $("page-" + x).hidden = x !== t;
+    $("tab-" + x).setAttribute("aria-selected", x === t);
+  });
+  try { localStorage.setItem("vw-tab", t); } catch (e) {}
+}
+TABS.forEach(x => $("tab-" + x).addEventListener("click", () => showTab(x)));
+let tab0 = "alibert";
+try { tab0 = localStorage.getItem("vw-tab") || "alibert"; } catch (e) {}
+if (!TABS.includes(tab0)) tab0 = "alibert";
+
+updateS1(); drawS2(); drawS3(); resampleS4(true); dornLabels(); dornDraw();
+drawK1(); drawK2(); drawK3();
+drawB1(); b2Reset(); b3Reset();
+mInitData(); m1SetVel(); m1Render(); m2Reset(); showTab(tab0);
+</script>
