@@ -1203,9 +1203,96 @@
   <p class="takeaway"><em>Two of the paper's findings are visible right here.</em> First, watch the early arrivals lock on quickly while the <em>late</em> wiggles — multiple reverberations bouncing between layers — fit last and worst: Moseley's WaveNet had exactly this weakness. Second, the paper's key design choice was physics-aware <em>input encoding</em>: they feed the network the reflectivity series (which is causally aligned with the output) rather than raw velocities, and a causal WaveNet beats a plain CNN. Physics can inform a surrogate through its <em>representation</em>, not only through a loss.</p>
 </section>
 
+<!-- ================= STATION MN ================= -->
+<section id="mn">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Inside the two networks</h2></div>
+  <p class="prose">Two architectures, one loss. The <strong>WaveNet</strong> takes the reflectivity series and answers it sample by sample through causal, dilated convolutions, so no output sample can depend on a reflector the wave has not reached yet. The <strong>conditional autoencoder</strong> takes the raw 2-D velocity model, squeezes it through a 1 × 1 latent vector, glues on the source position and unfolds it into a 32-receiver gather. Both are trained on the same loss: a distance to the finite-difference truth multiplied by a time gain t<sup>g</sup>, so the loud direct wave cannot drown the quiet late reflections. Every number below is the paper's; hover anything.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;max-width:none;"><label>Convolutions</label>
+        <div class="seg" id="seg-mncausal" role="group" aria-label="Convolution type">
+          <button aria-pressed="true" data-v="1">causal, dilated · the paper</button>
+          <button aria-pressed="false" data-v="0">standard, centred · Fig. A1 comparison</button>
+        </div></div>
+    </div>
+    <div class="chart-box" id="cb-mnw">
+      <p class="chart-title">WaveNet · the causal cone behind one output sample</p>
+      <p class="chart-sub">Toy scale: 32 samples and 5 dilated layers stand in for the paper's 500 samples and 9 layers (dilations 1 … 256) · the reflectivity spikes come from the §1 velocities · hover a column</p>
+      <svg id="mnw" viewBox="0 0 920 372" aria-label="WaveNet receptive field diagram"></svg>
+      <div class="tip" id="tip-mnw" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">hovered output sample sees</div><div class="v" id="mnw-sees" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">future samples used</div><div class="v" id="mnw-future">–</div></div>
+      <div class="chip"><div class="k">paper · hidden layers</div><div class="v">9<small> · 256 channels · filter 2 · ReLU</small></div></div>
+      <div class="chip"><div class="k">paper · output layer</div><div class="v">11<small> receivers · filter 101 · identity</small></div></div>
+      <div class="chip"><div class="k">free parameters</div><div class="v" id="mnw-params">–</div></div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:22px;">
+    <div class="chart-box" id="cb-mna">
+      <p class="chart-title">Conditional autoencoder · the 25 layers of Table A1</p>
+      <p class="chart-sub">Height: spatial extent of the tensor (log) · width and colour: channels · rust: the latent vector with the source position concatenated · hover a layer</p>
+      <svg id="mna" viewBox="0 0 920 400" aria-label="Conditional autoencoder layer diagram"></svg>
+      <div class="tip" id="tip-mna" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">encoder</div><div class="v">10<small> conv · 128² × 1 → 1 × 1 × 1024</small></div></div>
+      <div class="chip"><div class="k">conditioning</div><div class="v">+1<small> channel · source x-position</small></div></div>
+      <div class="chip"><div class="k">decoder</div><div class="v">14<small> conv · → 32 receivers × 512 samples</small></div></div>
+      <div class="chip"><div class="k">free parameters</div><div class="v" id="mna-params">–</div></div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:22px;">
+    <div class="esc-formula">L = (1/N) · ‖ G ⊙ (Ŷ − Y) ‖<sup>p</sup><sub>p</sub> &nbsp;·&nbsp; G(t) = t<sup>g</sup> &nbsp;·&nbsp; Ŷ network gather, Y finite-difference truth, N batch &nbsp;(eq. 3)</div>
+    <div class="controls">
+      <div class="ctl"><label>Gain exponent g <output id="o-mng">2.50</output></label>
+        <input type="range" id="in-mng" min="0" max="5" step="0.25" value="2.5" aria-label="Gain exponent"></div>
+      <div class="ctl" style="flex:none;"><label>Norm p</label>
+        <div class="seg" id="seg-mnnorm" role="group" aria-label="Loss norm">
+          <button aria-pressed="true" data-v="2">L2 · WaveNet</button>
+          <button aria-pressed="false" data-v="1">L1 · autoencoder</button>
+        </div></div>
+      <div class="ctl" style="flex:none;max-width:none;"><label>Paper settings</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn preset" id="btn-mng0">g = 0 · no gain</button>
+          <button class="btn preset" id="btn-mng25">g = 2.5 · chosen</button>
+          <button class="btn preset" id="btn-mng5">g = 5 · unstable</button>
+        </div></div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-mnl1">
+        <p class="chart-title">What the loss compares</p>
+        <p class="chart-sub">Dashed: a real trace from the §1 solver (wider absorbing frame), receiver 30 cells from the source, with genuine 2-D geometric spreading · dotted: the gain G(t) · solid: the gained trace G · Y</p>
+        <svg id="mnl1" viewBox="0 0 460 380" aria-label="Trace before and after the time gain"></svg>
+        <div class="tip" id="tip-mnl1" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-mnl2">
+        <p class="chart-title">Where the loss puts its weight</p>
+        <p class="chart-sub">Bars: |G · Y|<sup>p</sup> per sample as a share of the total, the weight an untrained network's residual would carry · line: cumulative share</p>
+        <svg id="mnl2" viewBox="0 0 460 380" aria-label="Loss weight per time sample"></svg>
+        <div class="tip" id="tip-mnl2" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">weight · first third</div><div class="v" id="mnl-a">–</div></div>
+      <div class="chip"><div class="k">middle third</div><div class="v" id="mnl-b">–</div></div>
+      <div class="chip"><div class="k">last third</div><div class="v" id="mnl-c">–</div></div>
+      <div class="chip" style="display:flex;align-items:center;"><span class="verdict" id="mnl-verdict">–</span></div>
+    </div>
+    <table class="cf-dict" style="margin-top:22px;">
+      <tr><th>Network</th><th>Loss</th><th>Optimiser</th><th>Why</th></tr>
+      <tr><td>WaveNet, forward</td><td><span class="mono" style="white-space:nowrap">L2 · g = 2.5</span></td><td>Adam · 10⁻⁵ · batch 20 · 500 000 steps · 0.5 d</td><td>The gain compensates spherical spreading; without it only the direct arrival and the first reflections are learned</td></tr>
+      <tr><td>Conditional autoencoder</td><td><span class="mono" style="white-space:nowrap">L1 · g = 2.5</span></td><td>Adam · 10⁻⁴ · batch 100 · 3 000 000 steps · batch norm · 4 d</td><td>L1 beat L2 in the appendix; L1 forgives a few large residuals where a sharp arrival is slightly mistimed</td></tr>
+      <tr><td>WaveNet, inverse</td><td><span class="mono" style="white-space:nowrap">L2 · g = 0</span></td><td>as forward · 128 channels</td><td>The target is a reflectivity series, which does not decay with time, so there is nothing to compensate (eq. 4)</td></tr>
+    </table>
+  </div>
+  <p class="takeaway"><em>Why it is built this way, in the paper's own ablations.</em> Causality is physics made architecture: in a layered medium a reflection recorded at time t has only crossed the reflectors whose reflectivity value sits before t, and the causal cone above enforces exactly that; switch to centred convolutions and the cone reaches into the future. The same nine layers without dilation never converged, and with dilation but without causality converged to a worse error. The autoencoder's bottleneck is not decoration either: the same depth without the squeeze to 1 × 1 × 1024 did not converge. And the gain exponent is a tuned compromise: at g = 0 the loss is the direct wave and the late record is ignored, at g = 5 the first 0.2 s carry no weight and training became unstable, so 2.5 sits between the two failures.</p>
+</section>
+
 <!-- ================= STATION M3 ================= -->
 <section id="m3">
-  <div class="sec-head"><span class="sec-num">§3</span><h2>The distribution is the contract</h2></div>
+  <div class="sec-head"><span class="sec-num">§4</span><h2>The distribution is the contract</h2></div>
   <p class="prose">The surrogate was trained on velocities drawn from 1.2–2.8. Drag the middle layer's velocity — including <em>outside</em> that range — and compare surrogate against simulator. Then benchmark both. This is the paper's Marmousi experiment in one slider: a surrogate's accuracy is a promise made only over its training distribution.</p>
   <div class="panel">
     <div class="controls">
@@ -1236,7 +1323,7 @@
 </section>
 
 <footer>
-  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The simulations and the learning on this page are real — a 2-D leapfrog finite-difference acoustic solver with sponge boundaries, and a 3→64→64→150 MLP trained with Adam on 140 one-dimensional three-layer simulations generated in your browser. The paper operates at scale: a 9-layer causal WaveNet (1.3 M parameters) on 50 000 FD simulations of layered media, and an 18.4 M-parameter conditional autoencoder on 300 000 simulations of <em>faulted</em> media with variable source position, trained for days on GPUs, with a t<sup>2.5</sup> time-gain loss to counter spherical spreading. It also retrains the WaveNet backwards as a fast seismic inverter. Code: <a href="https://github.com/benmoseley/seismic-simulation-complex-media">github.com/benmoseley/seismic-simulation-complex-media</a>.</p>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The simulations and the learning on this page are real — a 2-D leapfrog finite-difference acoustic solver with sponge boundaries, and a 3→64→64→150 MLP trained with Adam on 140 one-dimensional three-layer simulations generated in your browser. The paper operates at scale: a 9-layer causal WaveNet (1.3 M parameters) on 50 000 FD simulations of layered media, and an 18.4 M-parameter conditional autoencoder on 300 000 simulations of <em>faulted</em> media with variable source position, trained for days on GPUs, with a t<sup>2.5</sup> time-gain loss to counter spherical spreading. It also retrains the WaveNet backwards as a fast seismic inverter. §3 draws both architectures from the paper's Sect. 2.2, 3.1 and Table A1 at reduced scale, and recomputes their parameter counts. Code: <a href="https://github.com/benmoseley/seismic-simulation-complex-media">github.com/benmoseley/seismic-simulation-complex-media</a>.</p>
   <p>B. Moseley, T. Nissen-Meyer &amp; A. Markham (2020), “Deep learning for fast simulation of seismic waves in complex media”, Solid Earth 11, 1527–1549 · <a href="https://doi.org/10.5194/se-11-1527-2020">doi:10.5194/se-11-1527-2020</a></p>
 </footer>
 </div><!-- /page-mos -->
@@ -2815,6 +2902,213 @@ attachHover($("cb-m3b"), $("mch3b"), { padL: 46, padR: 12, W: 460, H: 380 },
       fmt(c.errs[bi],3) + (c.grid[bi] < 1.2 || c.grid[bi] > 2.8 ? " · outside training" : "") + "</span>", $("cb-m3b").clientWidth);
   }, () => $("tip-m3b").hidden = true);
 
+/* ---- station MN: anatomy of the paper's two networks and their loss ----
+   WaveNet: 9 causal dilated conv layers (filter 2, dilations 1..256, 256 channels, ReLU,
+   no bias) + causal output conv (filter 101, 11 channels, identity, bias) = 1 333 515 params.
+   Conditional autoencoder: Table A1, batch norm after every conv but the last = 18 382 296.
+   Loss: eq. 3, L = (1/N) ||G (Y_hat - Y)||_p^p with G = t^g. Prefix mn / MN.                */
+const MN = { causal: true, hover: 24, aeHover: -1, g: 2.5, norm: 2, trace: null };
+const MN_T = 32, MN_DIL = [1, 2, 4, 8, 16], MN_OUTW = 7;
+const MN_WN = { hidden: 9, ch: 256, filt: 2, outFilt: 101, outCh: 11, params: 1 * 256 * 2 + 8 * 256 * 256 * 2 + 256 * 11 * 101 + 11 };
+// [type, in, out, kh, kw, stride] ; spatial shapes follow from the strides (input 128 x 128, 5 m over 640 m)
+const MN_AE = [
+  ["Conv2d", 1, 8, 3, 3, 1], ["Conv2d", 8, 16, 2, 2, 2], ["Conv2d", 16, 16, 3, 3, 1], ["Conv2d", 16, 32, 2, 2, 2], ["Conv2d", 32, 32, 3, 3, 1],
+  ["Conv2d", 32, 64, 2, 2, 2], ["Conv2d", 64, 128, 2, 2, 2], ["Conv2d", 128, 256, 2, 2, 2], ["Conv2d", 256, 512, 2, 2, 2], ["Conv2d", 512, 1024, 2, 2, 2],
+  ["Concat", 1024, 1025, 0, 0, 1], ["ConvT2d", 1025, 1025, 2, 2, 2], ["ConvT2d", 1025, 512, 2, 4, 2], ["Conv2d", 512, 512, 3, 3, 1], ["Conv2d", 512, 512, 3, 3, 1],
+  ["ConvT2d", 512, 256, 2, 4, 2], ["Conv2d", 256, 256, 3, 3, 1], ["Conv2d", 256, 256, 3, 3, 1], ["ConvT2d", 256, 64, 2, 4, 2], ["Conv2d", 64, 64, 3, 3, 1],
+  ["Conv2d", 64, 64, 3, 3, 1], ["ConvT2d", 64, 8, 2, 4, 2], ["Conv2d", 8, 8, 3, 3, 1], ["Conv2d", 8, 8, 3, 3, 1], ["Conv2d", 8, 1, 1, 1, 1],
+].map((l, i, arr) => {
+  const [type, cin, cout, kh, kw, st] = l;
+  const w = type === "Concat" ? 0 : cin * cout * kh * kw, b = type === "Concat" ? 0 : cout, bn = (type === "Concat" || i === arr.length - 1) ? 0 : 2 * cout;
+  return { i: i + 1, type, cin, cout, kh, kw, st, params: w + b + bn, bn: bn > 0 };
+});
+(function () {   // tensor shapes: encoder halves 128 -> 1, decoder grows 1 -> 32 x 512
+  let h = 128, w = 128;
+  MN_AE.forEach((l, i) => {
+    if (i <= 9) { if (l.st === 2) { h /= 2; w /= 2; } }
+    else if (l.type === "ConvT2d") { h *= l.kh; w *= l.kw; }
+    l.h = h; l.w = w;
+  });
+})();
+const MN_AE_PARAMS = MN_AE.reduce((s, l) => s + l.params, 0);
+
+function mnReflectivity() {   // two-way times and reflectivities of the §1 interfaces, mapped onto MN_T columns of the 900-step window
+  const v = M1.v, c = v.map(x => x * 0.2);
+  const t1 = 2 * 36 / c[0], t2 = t1 + 2 * 40 / c[1];
+  return [{ t: t1 / 900 * MN_T, R: (v[1] - v[0]) / (v[1] + v[0]) }, { t: t2 / 900 * MN_T, R: (v[2] - v[1]) / (v[2] + v[1]) }];
+}
+function mnCone(tOut) {
+  const L = MN_DIL.length, rows = new Array(L + 2);
+  const spread = (set, offs) => { const n = new Set(); set.forEach(t => offs.forEach(o => { const s = t + o; if (s >= 0 && s < MN_T) n.add(s); })); return n; };
+  rows[L + 1] = new Set([tOut]);
+  const outOffs = []; for (let k = 0; k < MN_OUTW; k++) outOffs.push(MN.causal ? -k : k - (MN_OUTW >> 1));
+  rows[L] = spread(rows[L + 1], outOffs);
+  for (let l = L; l >= 1; l--) { const d = MN_DIL[l - 1]; rows[l - 1] = spread(rows[l], MN.causal ? [0, -d] : [-d, 0, d]); }
+  return rows;
+}
+const mnX = t => 96 + t * 25.5, mnY = r => 72 + r * 40;   // row 0 = input, 1..5 hidden, 6 output
+function mnDrawWave() {
+  const svg = $("mnw"); svg.innerHTML = "";
+  const L = MN_DIL.length, rows = mnCone(MN.hover), tOut = MN.hover;
+  // reflectivity spikes above the input row
+  const refl = mnReflectivity();
+  el("line", { x1: mnX(0), x2: mnX(MN_T - 1), y1: 40, y2: 40, stroke: C["line-soft"] }, svg);
+  refl.forEach(r => { const x = mnX(Math.min(MN_T - 1, r.t)), h = Math.min(30, Math.abs(r.R) * 150);
+    el("line", { x1: fmt(x, 1), x2: fmt(x, 1), y1: 40, y2: fmt(40 - Math.sign(r.R) * h, 1), stroke: C.rock, "stroke-width": 3 }, svg); });
+  el("text", { x: mnX(MN_T - 1), y: 22, "text-anchor": "end", class: "serieslabel", fill: C.rock }, svg).textContent = "reflectivity series R(t) · " + refl.map(r => (r.R >= 0 ? "+" : "") + fmt(r.R, 2)).join(", ");
+  // row labels
+  const labels = ["input"].concat(MN_DIL.map(d => "dilation " + d)).concat(["output"]);
+  labels.forEach((lab, r) => el("text", { x: 84, y: fmt(mnY(r) + 4, 1), "text-anchor": "end", fill: r === 0 || r === L + 1 ? C.ink2 : C.muted, style: "font-family:var(--mono);font-size:11px" }, svg).textContent = lab);
+  el("text", { x: 84, y: fmt(mnY(L + 1) + 18, 1), "text-anchor": "end", fill: C.muted, style: "font-family:var(--mono);font-size:10px" }, svg).textContent = "filter " + MN_OUTW;
+  // edges of the cone, drawn layer by layer from the output down
+  const edge = (r, tFrom, tTo, hot) => el("line", { x1: fmt(mnX(tFrom), 1), y1: fmt(mnY(r - 1), 1), x2: fmt(mnX(tTo), 1), y2: fmt(mnY(r), 1),
+    stroke: hot ? C.rock : C.ice, "stroke-width": hot ? 1.6 : 1.1, opacity: hot ? 0.9 : 0.55 }, svg);
+  const outOffs = []; for (let k = 0; k < MN_OUTW; k++) outOffs.push(MN.causal ? -k : k - (MN_OUTW >> 1));
+  outOffs.forEach(o => { const s = tOut + o; if (s >= 0 && s < MN_T) edge(L + 1, s, tOut, s > tOut); });
+  for (let l = L; l >= 1; l--) { const d = MN_DIL[l - 1];
+    rows[l].forEach(t => (MN.causal ? [0, -d] : [-d, 0, d]).forEach(o => { const s = t + o; if (s >= 0 && s < MN_T) edge(l, s, t, s > tOut); })); }
+  // nodes
+  let future = 0;
+  for (let r = 0; r <= L + 1; r++) for (let t = 0; t < MN_T; t++) {
+    const on = rows[r].has(t), isOut = r === L + 1 && t === tOut, fut = on && t > tOut;
+    if (r === 0 && fut) future++;
+    el("circle", { cx: fmt(mnX(t), 1), cy: fmt(mnY(r), 1), r: isOut ? 6.5 : on ? 4.6 : 3,
+      fill: isOut ? C.ink : fut ? C.rock : on ? C.ice : C.surface2 || "#182136", stroke: on || isOut ? "#0C111E" : C.line, "stroke-width": on ? 1.5 : 1 }, svg);
+  }
+  // time axis
+  [0, 8, 16, 24, 31].forEach(t => el("text", { x: fmt(mnX(t), 1), y: fmt(mnY(L + 1) + 30, 1), "text-anchor": "middle", fill: C.muted, style: "font-family:var(--mono);font-size:10.5px" }, svg).textContent = t);
+  el("text", { x: fmt(mnX(MN_T - 1), 1), y: fmt(mnY(L + 1) + 30 + 14, 1), "text-anchor": "end", fill: C.muted, style: "font-family:var(--mono);font-size:10.5px" }, svg).textContent = "time sample · paper: 500 at 2 ms";
+  // "now" line at the hovered sample
+  el("line", { x1: fmt(mnX(tOut), 1), x2: fmt(mnX(tOut), 1), y1: 46, y2: fmt(mnY(L + 1) + 12, 1), stroke: C.line, "stroke-dasharray": "3 3" }, svg);
+  // readouts
+  const seen = [...rows[0]].sort((a, b) => a - b);
+  $("mnw-sees").innerHTML = seen.length ? "input samples " + seen[0] + " – " + seen[seen.length - 1] + "<small> · " + seen.length + " of " + MN_T + "</small>" : "–";
+  $("mnw-future").innerHTML = future ? "<span style='color:#E5A468'>" + future + "</span><small> · non-causal: the output at t sees reflectors the wave has not reached</small>" : "0<small> · causal: only the past</small>";
+  $("mnw-params").innerHTML = MN_WN.params.toLocaleString("en-US") + "<small> · matches the paper's 1 333 515 with no bias on the hidden layers</small>";
+}
+function mnDrawAE() {
+  const svg = $("mna"); svg.innerHTML = "";
+  const x0 = 46, dx = 34.5, ymid = 196;
+  const hOf = l => 26 + 11 * Math.log2(l.h * l.w), wOf = l => 6 + 2.4 * Math.log2(l.cout);
+  // group brackets
+  const bracket = (i0, i1, y, lab, col) => {
+    const xa = x0 + i0 * dx - 8, xb = x0 + i1 * dx + 8;
+    el("line", { x1: fmt(xa, 1), x2: fmt(xb, 1), y1: y, y2: y, stroke: C.line }, svg);
+    el("text", { x: fmt((xa + xb) / 2, 1), y: y - 6, "text-anchor": "middle", class: "serieslabel", fill: col }, svg).textContent = lab;
+  };
+  bracket(0, 9, 30, "encoder · 10 convolutions, stride 2 halves the model 7 times", C.ice);
+  bracket(11, 24, 30, "decoder · 14 convolutions, transposed (2, 4) kernels grow it to 32 × 512", C.ice);
+  MN_AE.forEach((l, i) => {
+    const x = x0 + i * dx, h = hOf(l), w = wOf(l), hot = i === MN.aeHover, latent = l.type === "Concat";
+    const fill = latent ? C.rock : escLerpHex("#1B2A44", "#3D9BD9", Math.min(1, Math.log2(l.cout) / 10));
+    el("rect", { x: fmt(x - w / 2, 1), y: fmt(ymid - h / 2, 1), width: fmt(w, 1), height: fmt(h, 1), rx: 2, fill, stroke: hot ? C.ink : "#0C111E", "stroke-width": hot ? 2 : 1 }, svg);
+    if (i > 0 && !latent && MN_AE[i - 1].type !== "Concat") el("line", { x1: fmt(x - dx + wOf(MN_AE[i - 1]) / 2, 1), x2: fmt(x - w / 2, 1), y1: ymid, y2: ymid, stroke: C.line }, svg);
+    el("text", { x: fmt(x, 1), y: 366, "text-anchor": "middle", fill: hot ? C.ink : C.muted, style: "font-family:var(--mono);font-size:9.5px" }, svg).textContent = l.i;
+  });
+  // source position joining the latent vector
+  const xl = x0 + 10 * dx;
+  el("line", { x1: fmt(xl, 1), x2: fmt(xl, 1), y1: 92, y2: fmt(ymid - 18, 1), stroke: C.rock, "stroke-width": 1.5 }, svg);
+  el("polygon", { points: fmt(xl, 1) + "," + fmt(ymid - 16, 1) + " " + fmt(xl - 4, 1) + "," + fmt(ymid - 24, 1) + " " + fmt(xl + 4, 1) + "," + fmt(ymid - 24, 1), fill: C.rock }, svg);
+  el("text", { x: fmt(xl, 1), y: 72, "text-anchor": "middle", class: "serieslabel", fill: C.rock }, svg).textContent = "source x-position";
+  el("text", { x: fmt(xl, 1), y: 86, "text-anchor": "middle", fill: C.muted, style: "font-family:var(--mono);font-size:10px" }, svg).textContent = "concatenated → 1 × 1 × 1025";
+  // shape callouts
+  const callout = (i, txt, dy, anchor) => el("text", { x: fmt(x0 + i * dx + (anchor === "start" ? -wOf(MN_AE[i]) / 2 : anchor === "end" ? wOf(MN_AE[i]) / 2 : 0), 1), y: fmt(ymid + hOf(MN_AE[i]) / 2 + dy, 1), "text-anchor": anchor, fill: C.ink2, style: "font-family:var(--mono);font-size:10.5px" }, svg).textContent = txt;
+  callout(0, "128 × 128 × 8", 16, "start"); callout(0, "velocity model in", 30, "start");
+  callout(10, "1 × 1 × 1025", 16, "middle"); callout(10, "latent", 30, "middle");
+  callout(24, "32 × 512 × 1", 16, "end"); callout(24, "receiver gather out", 30, "end");
+  el("text", { x: fmt(x0 + 24 * dx + 12, 1), y: 384, "text-anchor": "end", fill: C.muted, style: "font-family:var(--mono);font-size:10.5px" }, svg).textContent = "layer index · Table A1";
+  $("mna-params").innerHTML = MN_AE_PARAMS.toLocaleString("en-US") + "<small> · matches the paper's 18 382 296 with batch norm on every layer but the last</small>";
+}
+function mnRecordTrace() {
+  // Synchronous run of the §1 solver at the default velocities, receiver on the surface 30 cells
+  // from the source. The absorbing frame is 30 cells wide instead of §1's 18: the narrow frame
+  // leaks guided waves along the low-velocity top layer back into the record, and the point of
+  // this trace is the genuine decay that the paper's gain is there to compensate.
+  const v = [1.8, 2.4, 3.0], n = MW * MH, wd = 30;
+  let p = new Float32Array(n), pp = new Float32Array(n), pn = new Float32Array(n);
+  const c2 = new Float32Array(MH); for (let y = 0; y < MH; y++) c2[y] = Math.pow(v[y < 40 ? 0 : y < 80 ? 1 : 2] * 0.2, 2);
+  const damp = new Float32Array(n);
+  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) { const d = Math.min(x, MW - 1 - x, MH - 1 - y, wd); damp[y * MW + x] = d >= wd ? 1 : 1 - 0.05 * Math.pow((wd - d) / wd, 2); }
+  const out = new Float64Array(150), rx = 4 * MW + 100;
+  for (let t = 0; t < 900; t++) {
+    for (let y = 1; y < MH - 1; y++) { const cc = c2[y], off = y * MW;
+      for (let x = 1; x < MW - 1; x++) { const i = off + x; pn[i] = (2 * p[i] - pp[i] + cc * (p[i - 1] + p[i + 1] + p[i - MW] + p[i + MW] - 4 * p[i])) * damp[i]; } }
+    const tmp = pp; pp = p; p = pn; pn = tmp;
+    p[4 * MW + 70] += mRicker(t, 40, 0.06) * 2;
+    if (t % 6 === 0) out[t / 6] = p[rx];
+  }
+  let mx = 0; for (let i = 0; i < 150; i++) mx = Math.max(mx, Math.abs(out[i]));
+  for (let i = 0; i < 150; i++) out[i] /= mx;
+  return out;
+}
+function mnDrawLoss() {
+  $("o-mng").textContent = fmt(MN.g, 2);
+  const Y = MN.trace, n = 150, G = new Float64Array(n), GY = new Float64Array(n), w = new Float64Array(n);
+  let gmax = 0, tot = 0;
+  for (let i = 0; i < n; i++) { G[i] = Math.pow((i + 1) / n, MN.g); GY[i] = G[i] * Y[i]; gmax = Math.max(gmax, Math.abs(GY[i])); }
+  for (let i = 0; i < n; i++) { GY[i] /= gmax; w[i] = Math.pow(Math.abs(G[i] * Y[i]), MN.norm); tot += w[i]; }
+  for (let i = 0; i < n; i++) w[i] /= tot;
+  // chart 1: trace and gained trace
+  let svg = $("mnl1"); svg.innerHTML = "";
+  const s1 = makeScales(0, n - 1, -1.15, 1.15, 460, 380, 40, 12, 22, 40);
+  axes(svg, s1, [0, 50, 100, 149], [-1, 0, 1], "time sample", "", v => Math.round(v), v => fmt(v, 0));
+  el("path", { d: linePath(Array.from(Y).map((v, i) => [s1.x(i), s1.y(v)])), stroke: C.muted, "stroke-width": 1.6, "stroke-dasharray": "5 4", fill: "none" }, svg);
+  el("path", { d: linePath(Array.from(GY).map((v, i) => [s1.x(i), s1.y(v)])), stroke: C.ice, "stroke-width": 2.2, fill: "none" }, svg);
+  el("path", { d: linePath(Array.from(G).map((v, i) => [s1.x(i), s1.y(v / Math.max(...G) * 1.1)])), stroke: C.rock, "stroke-width": 1.2, "stroke-dasharray": "2 3", fill: "none" }, svg);
+  el("text", { x: s1.x(n - 1) - 4, y: fmt(s1.y(1.1) + 12, 1), "text-anchor": "end", class: "serieslabel", fill: C.rock }, svg).textContent = "G(t) = t^" + fmt(MN.g, 2).replace(/\.?0+$/, "");
+  // chart 2: weight per sample and cumulative
+  svg = $("mnl2"); svg.innerHTML = "";
+  const wmax = Math.max(...w) * 1.15;
+  const s2 = makeScales(0, n, 0, wmax, 460, 380, 46, 40, 22, 40);
+  axes(svg, s2, [0, 50, 100, 150], niceTicks(0, wmax, 4), "time sample", "share", v => Math.round(v), v => fmt(v * 100, 1) + "%");
+  const bw = (s2.x(1) - s2.x(0));
+  for (let i = 0; i < n; i++) el("rect", { x: fmt(s2.x(i), 2), y: fmt(s2.y(w[i]), 1), width: fmt(bw + 0.3, 2), height: fmt(s2.y(0) - s2.y(w[i]), 1), fill: C.rock, opacity: 0.75 }, svg);
+  let c = 0; const cum = Array.from(w).map(v => (c += v));
+  el("path", { d: linePath(cum.map((v, i) => [s2.x(i + 0.5), s2.y(v * wmax)])), stroke: C.ink, "stroke-width": 1.8, fill: "none" }, svg);
+  [0.5, 1].forEach(q => { el("line", { x1: s2.W - s2.padR, x2: s2.W - s2.padR + 5, y1: fmt(s2.y(q * wmax), 1), y2: fmt(s2.y(q * wmax), 1), stroke: C.line }, svg);
+    el("text", { x: s2.W - s2.padR + 8, y: fmt(s2.y(q * wmax) + 4, 1), fill: C.muted, style: "font-family:var(--mono);font-size:10.5px" }, svg).textContent = Math.round(q * 100) + "%"; });
+  const shares = [0, 1, 2].map(k => { let s = 0; for (let i = k * 50; i < (k + 1) * 50; i++) s += w[i]; return s; });
+  const pc = x => (x * 100 < 10 ? fmt(x * 100, 1) : Math.round(x * 100)) + " %";
+  $("mnl-a").textContent = pc(shares[0]); $("mnl-b").textContent = pc(shares[1]); $("mnl-c").textContent = pc(shares[2]);
+  const v = $("mnl-verdict");
+  if (MN.g < 1) { v.textContent = "the loss is the direct wave: late reflections barely count (paper: g = 0 learns only the first arrivals)"; v.className = "verdict no"; }
+  else if (MN.g < 4) { v.textContent = "the late, quiet reflections now carry the loss (the paper's choice, g = 2.5)"; v.className = "verdict yes"; }
+  else { v.textContent = "the first 0.2 s weigh nothing: unstable, early arrivals lost (paper: g = 5)"; v.className = "verdict no"; }
+  dCharts["mnl1"] = { scale: s1, Y, GY }; dCharts["mnl2"] = { scale: s2, w, cum };
+}
+function mnInit() { MN.trace = mnRecordTrace(); mnDrawWave(); mnDrawAE(); mnDrawLoss(); }
+/* MN hovers and wiring */
+attachHover($("cb-mnw"), $("mnw"), { padL: 84, padR: 20, W: 920, H: 372 },
+  (px, py, cx, cy) => {
+    const t = Math.max(0, Math.min(MN_T - 1, Math.round((px - 96) / 25.5)));
+    if (t !== MN.hover) { MN.hover = t; mnDrawWave(); }
+    const seen = [...mnCone(t)[0]].sort((a, b) => a - b);
+    setTip($("tip-mnw"), cx, cy, "<b>output sample " + t + "</b><br><span class='mono'>reads input " + (seen.length ? seen[0] + " – " + seen[seen.length - 1] : "–") +
+      (seen.some(s => s > t) ? " · <span style='color:#E5A468'>" + seen.filter(s => s > t).length + " in the future</span>" : " · past only") + "</span>", $("cb-mnw").clientWidth);
+  }, () => $("tip-mnw").hidden = true);
+attachHover($("cb-mna"), $("mna"), { padL: 20, padR: 20, W: 920, H: 400 },
+  (px, py, cx, cy) => {
+    const i = Math.max(0, Math.min(MN_AE.length - 1, Math.round((px - 46) / 34.5)));
+    if (i !== MN.aeHover) { MN.aeHover = i; mnDrawAE(); }
+    const l = MN_AE[i];
+    const body = l.type === "Concat" ? "latent 1 × 1 × 1024 + source position → 1025 channels"
+      : l.type + " " + l.cin + " → " + l.cout + " · kernel " + l.kh + " × " + l.kw + " · stride " + l.st + (l.bn ? " · ReLU · batch norm" : " · identity");
+    setTip($("tip-mna"), cx, cy, "<b>layer " + l.i + "</b><br><span class='mono'>" + body + "</span><br><span class='mono'>out " + l.h + " × " + l.w + " × " + l.cout + " · " + l.params.toLocaleString("en-US") + " params</span>", $("cb-mna").clientWidth);
+  }, () => { $("tip-mna").hidden = true; if (MN.aeHover !== -1) { MN.aeHover = -1; mnDrawAE(); } });
+attachHover($("cb-mnl1"), $("mnl1"), { padL: 40, padR: 12, W: 460, H: 380 },
+  (px, py, cx, cy) => { const c = dCharts["mnl1"], i = Math.max(0, Math.min(149, Math.round(c.scale.inv(px))));
+    setTip($("tip-mnl1"), cx, cy, "<b>sample " + i + "</b><br><span class='mono'>Y " + fmt(c.Y[i], 3) + " · G·Y " + fmt(c.GY[i], 3) + " · G " + Math.pow((i + 1) / 150, MN.g).toExponential(2) + "</span>", $("cb-mnl1").clientWidth); },
+  () => $("tip-mnl1").hidden = true);
+attachHover($("cb-mnl2"), $("mnl2"), { padL: 46, padR: 40, W: 460, H: 380 },
+  (px, py, cx, cy) => { const c = dCharts["mnl2"], i = Math.max(0, Math.min(149, Math.floor(c.scale.inv(px))));
+    setTip($("tip-mnl2"), cx, cy, "<b>sample " + i + "</b><br><span class='mono'>share " + fmt(c.w[i] * 100, 2) + " % · cumulative " + fmt(c.cum[i] * 100, 1) + " %</span>", $("cb-mnl2").clientWidth); },
+  () => $("tip-mnl2").hidden = true);
+escSegWire("seg-mncausal", v => MN.causal = v === "1", mnDrawWave);
+escSegWire("seg-mnnorm", v => MN.norm = +v, mnDrawLoss);
+$("in-mng").addEventListener("input", () => { MN.g = +$("in-mng").value; mnDrawLoss(); });
+[["btn-mng0", 0], ["btn-mng25", 2.5], ["btn-mng5", 5]].forEach(([id, g]) => $(id).addEventListener("click", () => { MN.g = g; $("in-mng").value = g; mnDrawLoss(); }));
+["mv1", "mv2", "mv3"].forEach(id => $("in-" + id).addEventListener("input", mnDrawWave));
+
 /* ================= Gas escape (concept tab) =================
    Real formulas: exact Jeans flux for a Maxwellian exobase; the hydro-based
    approximation (HBA) of Kubyshkina et al. 2018 (ApJL 866, L18, Table 1);
@@ -3789,5 +4083,5 @@ drawE2(); drawE3(); drawE4(); drawE5();
 cfDrawAll();
 egDrawAll();
 drawB1(); b2Reset(); b3Reset();
-mInitData(); m1SetVel(); m1Render(); m2Reset(); showTab(tab0);
+mInitData(); m1SetVel(); m1Render(); m2Reset(); mnInit(); showTab(tab0);
 </script>
