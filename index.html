@@ -44,6 +44,25 @@
   .pagehero{margin-top:36px;}
   .pagehero .standfirst{font-family:var(--serif);font-weight:400;font-size:19px;color:var(--ink2);max-width:60ch;margin:10px 0 0;}
 
+  /* ---------- escape (concept) tab ---------- */
+  .tabbtn.concept{border-style:dashed;}
+  .esc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media (max-width:760px){.esc-grid{grid-template-columns:1fr;}}
+  .mech{background:var(--surface2);border:1px solid var(--line-soft);border-radius:12px;padding:16px 18px 14px;display:flex;flex-direction:column;gap:8px;}
+  .mech h3{font-family:var(--sans);font-size:15.5px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .mech p{font-size:13.5px;color:var(--ink2);}
+  .mech .where{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.03em;margin-top:auto;padding-top:4px;}
+  .mech .where b{color:var(--ink2);font-weight:500;}
+  .tag.therm{background:var(--rock-soft);color:#E5A468;}
+  .tag.star{background:var(--ice-soft);color:#7FC2EA;}
+  .tag.other{background:rgba(174,182,196,.14);color:#C8CFDA;}
+  .inkub{margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);}
+  .inkub.yes{color:#6ECD93;border-color:rgba(76,187,120,.4);}
+  .esc-note{font-size:13px;color:var(--muted);margin-top:14px;max-width:70ch;}
+  .esc-note .mono{color:var(--ink2);}
+  .chip.warn .v{color:#E88A8A;font-size:14px;line-height:1.4;}
+  .esc-formula{font-family:var(--mono);font-size:12.5px;color:var(--ink2);background:var(--surface2);border:1px solid var(--line-soft);border-radius:8px;padding:8px 12px;display:inline-block;margin:6px 0 14px;}
+
   /* ---------- dorn tab ---------- */
   .hist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:6px;}
   @media (max-width:760px){.hist-grid{grid-template-columns:1fr;}}
@@ -169,6 +188,7 @@
     <button class="tabbtn" id="tab-alibert" role="tab" aria-selected="true">Alibert 2016 <small>break the degeneracy</small></button>
     <button class="tabbtn" id="tab-dorn" role="tab" aria-selected="false">Dorn 2017 <small>map the degeneracy</small></button>
     <button class="tabbtn" id="tab-kub" role="tab" aria-selected="false">Kubyshkina 2022 <small>evolve the population</small></button>
+    <button class="tabbtn concept" id="tab-esc" role="tab" aria-selected="false">Gas escape <small>concept · how gas leaves</small></button>
     <button class="tabbtn" id="tab-baty" role="tab" aria-selected="false">Baty 2023 <small>learn the equation</small></button>
     <button class="tabbtn" id="tab-mos" role="tab" aria-selected="false">Moseley 2020 <small>emulate the simulator</small></button>
   </div>
@@ -574,6 +594,237 @@
   <p>D. Kubyshkina &amp; L. Fossati (2022), “The mass–radius relation of intermediate-mass planets outlined by hydrodynamic escape and thermal evolution”, A&amp;A 668, A178 · <a href="https://arxiv.org/abs/2211.10166">arXiv:2211.10166</a></p>
 </footer>
 </div><!-- /page-kub -->
+
+<div id="page-esc" role="tabpanel" aria-labelledby="tab-esc" hidden>
+<section class="pagehero">
+  <p class="eyebrow">Concept tab · atmospheric escape · not a paper</p>
+  <p class="standfirst">Kubyshkina's population is carved by one family of processes — hydrodynamic escape, fed by stellar XUV and by the planet's own leftover heat. But gas leaves planets in many more ways, and the same word “escape” hides very different physics: a statistical tail, a fluid wind, a chemical kick, a plasma sweep, a hammer blow. This tab lays them side by side, then lets you play with the three that a formula can capture.</p>
+</section>
+
+<!-- ================= STATION E1 ================= -->
+<section id="e1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>Eight ways to lose an atmosphere</h2></div>
+  <p class="prose">Sort them by <strong>what supplies the energy</strong>. Thermal processes run on the gas temperature; stellar processes on photons or plasma from the star; the rest on collisions or tides. The badge on each card says whether Kubyshkina &amp; Fossati (2022) include it.</p>
+  <div class="esc-grid">
+    <div class="mech"><h3>Jeans escape <span class="tag therm">thermal</span><span class="inkub">not in K&amp;F 2022</span></h3>
+      <p>At the exobase — the height where collisions stop — the fastest molecules in the Maxwell–Boltzmann tail exceed the escape speed and leave one by one. The flux scales as (1+λ)e<sup>−λ</sup> with λ = GMm/(kTr), so it is exquisitely sensitive to particle mass and gravity: hydrogen from small, warm bodies leaks; everything heavier stays.</p>
+      <p class="where"><b>Where</b> · H from Earth (~¼ of its hydrogen loss), Mars, Titan's H₂ · negligible for H/He envelopes with λ ≳ 30</p></div>
+    <div class="mech"><h3>XUV-driven hydrodynamic escape <span class="tag star">stellar</span><span class="inkub yes">in K&amp;F 2022</span></h3>
+      <p>X-ray and extreme-UV photons are absorbed high up, heat the gas to ~10⁴ K, and the whole upper atmosphere expands outward as a transonic wind — a fluid, not a tail, and species do not need to be fast individually, they are carried. In the energy-limited approximation Ṁ ≈ επF<sub>XUV</sub>R³/(GM); at very high flux radiative cooling caps it below that.</p>
+      <p class="where"><b>Where</b> · hot Jupiters (HD 209458 b's Lyα tail), sub-Neptunes, early Venus and Earth under the young Sun</p></div>
+    <div class="mech"><h3>Boil-off / core-powered escape <span class="tag therm">thermal</span><span class="inkub yes">in K&amp;F 2022</span></h3>
+      <p>A freshly formed planet is puffy and hot; if its gravity is too weak for its temperature — Λ = GMm<sub>H</sub>/(kT<sub>eq</sub>R) ≲ 15–25 — the envelope flows out hydrodynamically <em>without</em> XUV, powered by the cooling luminosity of the interior and the star's bolometric light. It is the fluid limit that Jeans escape tends to when λ → few, and it lasts only the first tens of Myr — but it sets the starting point for everything after.</p>
+      <p class="where"><b>Where</b> · every low-mass planet in the first 50 Myr · the reason K&amp;F's youngest sub-Neptunes shrink so fast</p></div>
+    <div class="mech"><h3>Photochemical escape <span class="tag star">stellar · chemistry</span><span class="inkub">not in K&amp;F 2022</span></h3>
+      <p>An exothermic reaction hands a single atom more than its escape energy: dissociative recombination O₂⁺ + e⁻ → O + O releases up to 7 eV, enough to launch oxygen off Mars. Needs no hot exobase and is species-selective — it removes heavy atoms that Jeans never could.</p>
+      <p class="where"><b>Where</b> · Mars's dominant oxygen loss today · Venus (O, C) · Titan (N)</p></div>
+    <div class="mech"><h3>Ion pickup &amp; sputtering <span class="tag star">stellar wind</span><span class="inkub">not in K&amp;F 2022</span></h3>
+      <p>Atoms ionised above the exobase are swept away by the stellar wind's motional electric field (pickup); some are slammed back into the atmosphere and knock neutrals out (sputtering). Decisive for unmagnetised Mars and Venus; a magnetic field redirects rather than stops it, and can even feed escape along open field lines.</p>
+      <p class="where"><b>Where</b> · Mars (MAVEN measures ~2–3 kg/s of ions leaving) · Venus · likely close-in rocky exoplanets around M dwarfs</p></div>
+    <div class="mech"><h3>Charge exchange &amp; polar wind <span class="tag star">plasma</span><span class="inkub">not in K&amp;F 2022</span></h3>
+      <p>Inside a magnetosphere, hot plasma ions swap an electron with cold neutral atoms, producing fast neutrals that are no longer confined by the field and escape. Along open polar field lines, light ions (H⁺, He⁺, O⁺) are accelerated outward by the ambipolar electric field — the polar wind.</p>
+      <p class="where"><b>Where</b> · Earth loses a few kg/s of hydrogen this way — more than by Jeans · Saturn, Jupiter</p></div>
+    <div class="mech"><h3>Impact erosion <span class="tag other">collisional</span><span class="inkub">not in K&amp;F 2022</span></h3>
+      <p>A large impactor's vapour plume drives away all atmosphere above the tangent plane of the impact site; giant impacts can eject a sizeable fraction globally through the ground shock. Dominant during accretion and heavy bombardment, and it does not care about particle mass at all.</p>
+      <p class="where"><b>Where</b> · Mars and the Moon-forming impact · a competing explanation for thin atmospheres on small bodies</p></div>
+    <div class="mech"><h3>Roche-lobe overflow <span class="tag other">tidal</span><span class="inkub">not in K&amp;F 2022</span></h3>
+      <p>For ultra-short-period planets the star's gravity truncates the atmosphere at the Roche lobe; any gas that expands beyond it belongs to the star and streams away through the L1 point. This is how runaway inflation ends and why hot Jupiters have a maximum radius near the Roche limit.</p>
+      <p class="where"><b>Where</b> · WASP-12 b, KELT-9 b · the end state of the most irradiated giants</p></div>
+  </div>
+  <p class="takeaway"><em>The Jeans-vs-thermal confusion, settled:</em> Jeans escape and boil-off both run on the gas's own temperature. The difference is <em>how</em> the gas leaves — Jeans is a statistical leak from the tail of the velocity distribution (collisionless, one particle at a time, only when λ is large); boil-off is the fluid limit where λ has dropped so low that the bulk atmosphere itself flows outward. Kubyshkina's models include the fluid case and skip the tail — because for H/He envelopes on planets heavy enough to matter, the tail is empty (see §2).</p>
+</section>
+
+<!-- ================= STATION E2 ================= -->
+<section id="e2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>The tail of the velocity distribution</h2></div>
+  <p class="prose">Pick a body and a species. The curve is the Maxwell–Boltzmann speed distribution at the exobase; the dashed line is the escape speed there. Everything to the right of it leaves — Jeans escape is literally that shaded sliver, weighted by how often molecules are pointed upward. The single number that controls it is the <strong>Jeans parameter λ</strong>: gravitational binding energy over thermal energy for one particle.</p>
+  <div class="esc-formula">Φ<sub>J</sub> = n v<sub>p</sub>/(2√π) · (1+λ) e<sup>−λ</sup> &nbsp;·&nbsp; λ = GMm/(kT r<sub>exo</sub>) &nbsp;·&nbsp; v<sub>p</sub> = √(2kT/m)</div>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;max-width:none;"><label>Body</label>
+        <div class="seg" id="seg-e2p" role="group" aria-label="Preset body">
+          <button aria-pressed="false" data-v="mars">Mars</button>
+          <button aria-pressed="true" data-v="earth">Earth</button>
+          <button aria-pressed="false" data-v="venus">Venus</button>
+          <button aria-pressed="false" data-v="titan">Titan</button>
+          <button aria-pressed="false" data-v="jupiter">Jupiter</button>
+          <button aria-pressed="false" data-v="subnep">sub-Neptune</button>
+          <button aria-pressed="false" data-v="hotjup">hot Jupiter</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Species</label>
+        <div class="seg" id="seg-e2s" role="group" aria-label="Escaping species">
+          <button aria-pressed="true" data-v="H">H</button>
+          <button aria-pressed="false" data-v="H2">H₂</button>
+          <button aria-pressed="false" data-v="He">He</button>
+          <button aria-pressed="false" data-v="O">O</button>
+          <button aria-pressed="false" data-v="N2">N₂</button>
+          <button aria-pressed="false" data-v="CO2">CO₂</button>
+        </div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Mass <output id="o-e2m">1.00 M⊕</output></label>
+        <input type="range" id="in-e2m" min="-2" max="2.7" step="0.01" value="0" aria-label="Planet mass (log)"></div>
+      <div class="ctl"><label>Exobase radius <output id="o-e2r">1.08 R⊕</output></label>
+        <input type="range" id="in-e2r" min="-0.6" max="1.3" step="0.01" value="0.033" aria-label="Exobase radius (log)"></div>
+      <div class="ctl"><label>Exobase temperature <output id="o-e2t">1000 K</output></label>
+        <input type="range" id="in-e2t" min="2" max="4.3" step="0.01" value="3" aria-label="Exobase temperature (log)"></div>
+      <div class="ctl"><label>Exobase density <output id="o-e2n">10⁵ cm⁻³</output></label>
+        <input type="range" id="in-e2n" min="3" max="9" step="0.1" value="5" aria-label="Exobase number density (log)"></div>
+      <div class="ctl" style="flex:none;"><label>Vertical scale</label>
+        <div class="seg" id="seg-e2y" role="group" aria-label="Y scale">
+          <button aria-pressed="true" data-v="lin">linear</button>
+          <button aria-pressed="false" data-v="log">log</button>
+        </div></div>
+    </div>
+    <div class="chart-box" id="cb-e2">
+      <p class="chart-title">Speed distribution at the exobase, with the escape speed</p>
+      <p class="chart-sub">Shaded: the fraction of molecules moving faster than escape · switch to log to see how deep the tail really goes</p>
+      <svg id="ech2" viewBox="0 0 920 340" aria-label="Maxwell-Boltzmann speed distribution with escape velocity"></svg>
+      <svg id="ech2m" viewBox="0 0 920 64" aria-label="Jeans parameter meter"></svg>
+      <div class="tip" id="tip-e2" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">escape speed</div><div class="v" id="e2vesc">–</div></div>
+      <div class="chip"><div class="k">most probable speed</div><div class="v" id="e2vp">–</div></div>
+      <div class="chip answer"><div class="k">λ = (v<sub>esc</sub>/v<sub>p</sub>)²</div><div class="v" id="e2lam">–</div></div>
+      <div class="chip"><div class="k">faster than escape</div><div class="v" id="e2frac">–</div></div>
+      <div class="chip"><div class="k">Jeans loss rate</div><div class="v" id="e2rate">–</div></div>
+      <div class="chip"><div class="k">to lose 1 % of the planet</div><div class="v" id="e2time">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Try this sequence:</em> Earth + H (λ ≈ 7 — hydrogen leaks at about a kilogram per second, as it does in reality). Earth + O (λ ≈ 110 — a rate of essentially zero; oxygen needs the non-thermal routes of §1). Jupiter + H (λ ≈ 240 — nothing). Then the sub-Neptune + H and drag its exobase radius out to 8–10 R⊕ as if it were newborn and puffy: λ collapses to ~4, a few per cent of all molecules are now faster than escape, and the Jeans picture is breaking down — below λ ≈ 3 the gas leaves as a fluid, not as a tail. That transition is boil-off, and it is why Kubyshkina never needed a Jeans term.</p>
+</section>
+
+<!-- ================= STATION E3 ================= -->
+<section id="e3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>The hydrodynamic regime map</h2></div>
+  <p class="prose">Kubyshkina et al. (2018) fitted their grid of ~7000 hydrodynamic upper-atmosphere models with one analytic formula in F<sub>XUV</sub>, orbit, radius and Λ — with two sets of coefficients: one where escape is powered by the star's XUV, one where the planet's own thermal energy and low gravity dominate (boil-off). The map below is that formula, evaluated for the planet you set; the white line is the boundary Λ = e<sup>Σ</sup> between the two regimes. Move the dot with the sliders.</p>
+  <div class="esc-formula">Ṁ = e<sup>β</sup> · F<sub>XUV</sub><sup>α₁</sup> · d₀<sup>α₂</sup> · R<sub>pl</sub><sup>α₃</sup> · Λ<sup>ζ + θ ln d₀</sup> &nbsp;(Kubyshkina et al. 2018, Table 1)</div>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Planet mass <output id="o-e3m">5.0 M⊕</output></label>
+        <input type="range" id="in-e3m" min="1" max="40" step="0.5" value="5" aria-label="Planet mass"></div>
+      <div class="ctl"><label>Planet radius <output id="o-e3r">2.5 R⊕</output></label>
+        <input type="range" id="in-e3r" min="1" max="10" step="0.1" value="2.5" aria-label="Planet radius"></div>
+      <div class="ctl"><label>Age <output id="o-e3t">50 Myr</output></label>
+        <input type="range" id="in-e3t" min="-2.3" max="1" step="0.01" value="-1.3" aria-label="Age (log)"></div>
+      <div class="ctl" style="flex:none;"><label>Orbit (AU)</label>
+        <div class="seg" id="seg-e3a" role="group" aria-label="Orbital separation">
+          <button aria-pressed="false" data-v="0.03">0.03</button>
+          <button aria-pressed="false" data-v="0.05">0.05</button>
+          <button aria-pressed="true" data-v="0.1">0.1</button>
+          <button aria-pressed="false" data-v="0.2">0.2</button>
+          <button aria-pressed="false" data-v="0.35">0.35</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Stellar rotation</label>
+        <div class="seg" id="seg-e3rot" role="group" aria-label="Rotator class">
+          <button aria-pressed="false" data-v="slow">slow</button>
+          <button aria-pressed="true" data-v="mod">moderate</button>
+          <button aria-pressed="false" data-v="fast">fast</button>
+        </div></div>
+    </div>
+    <div class="chart-box" id="cb-e3">
+      <p class="chart-title">Escape rate across (F<sub>XUV</sub>, Λ) for this radius and orbit — the planet is the rust dot</p>
+      <p class="chart-sub">Colour: log₁₀ Ṁ in g/s · white line: regime boundary · below it the planet's own heat drives the loss, above it the star's XUV does · hover anywhere</p>
+      <svg id="ech3" viewBox="0 0 920 420" aria-label="Escape rate map in XUV flux and Jeans parameter"></svg>
+      <div class="tip" id="tip-e3" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">F<sub>XUV</sub> at the planet</div><div class="v" id="e3f">–</div></div>
+      <div class="chip"><div class="k">Λ (H at T<sub>eq</sub>, R<sub>pl</sub>)</div><div class="v" id="e3lam">–</div></div>
+      <div class="chip answer"><div class="k">regime</div><div class="v" id="e3reg">–</div></div>
+      <div class="chip"><div class="k">Ṁ hydro fit</div><div class="v" id="e3hba">–</div></div>
+      <div class="chip"><div class="k">Ṁ energy-limited (ε = 0.15)</div><div class="v" id="e3el">–</div></div>
+      <div class="chip"><div class="k">to lose 1 % of the planet</div><div class="v" id="e3time">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Two things to notice:</em> the map is steep in Λ at the right (Ṁ ∝ Λ<sup>−2 to −4</sup> in the XUV regime, steeper the closer the orbit), so a newborn planet's puffiness — small Λ — matters more than anything the star does. And the energy-limited estimate, the textbook formula, can miss the hydrodynamic fit by an order of magnitude in either direction: it is not a law, it is a budget. Push the age slider from 5 Myr to 5 Gyr and watch the dot fall leftward as the star's XUV fades — the planet ends up in the quiet corner whatever it did in its youth.</p>
+</section>
+
+<!-- ================= STATION E4 ================= -->
+<section id="e4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>The cosmic shoreline</h2></div>
+  <p class="prose">Zoom all the way out. Zahnle &amp; Catling (2017) plotted every solar-system body by escape speed and insolation and found one line separates the ones with atmospheres from the ones without: <strong>I ∝ v<sub>esc</sub><sup>4</sup></strong>. It is not derived from any single mechanism — it is the empirical sum of all of §1 over 4.5 Gyr. Exoplanets are drawn as rings; the rust star is the planet from §3.</p>
+  <div class="panel">
+    <div class="chart-box" id="cb-e4">
+      <p class="chart-title">Insolation vs. escape speed — the line is v<sub>esc</sub> = 6 km/s · I<sup>1/4</sup></p>
+      <p class="chart-sub">Filled: has a substantial atmosphere · half: thin or tenuous · hollow: airless · rings: exoplanets (with what is known) · hover any body</p>
+      <svg id="ech4" viewBox="0 0 920 440" aria-label="Cosmic shoreline diagram"></svg>
+      <div class="tip" id="tip-e4" hidden></div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--ice)"></i>atmosphere</span>
+      <span><i style="border-color:var(--muted)"></i>thin / tenuous</span>
+      <span><i style="border-color:var(--rock)"></i>airless</span>
+      <span><i style="border-color:var(--ink)"></i>exoplanet</span>
+    </div>
+  </div>
+  <p class="takeaway"><em>What the line says:</em> to hold an atmosphere at a given insolation you need escape speed ∝ I<sup>1/4</sup>. Mars sits right on it — hence its thin remnant; Titan sits comfortably inside despite its tiny gravity because it is so cold. Most known sub-Neptunes sit far to the right of the line — they are not marginal, they are safe — which is exactly why the radius gap must come from the <em>early</em>, XUV-bright, puffy phase (§3, §5) and not from today's conditions. And the hot rocky planets at the top (55 Cnc e, TRAPPIST-1 b) sit on the wrong side: the shoreline predicts they are bare, and JWST largely agrees.</p>
+</section>
+
+<!-- ================= STATION E5 ================= -->
+<section id="e5">
+  <div class="sec-head"><span class="sec-num">§5</span><h2>Three mechanisms, one envelope, ten billion years</h2></div>
+  <p class="prose">Now put the three formula-friendly mechanisms in one integration and switch them off one at a time. Boil-off is applied as an instantaneous relaxation whenever Λ falls below the regime boundary (the gas simply cannot stay); XUV escape uses the hydrodynamic fit of §3 with the saturated-then-decaying XUV history of the Kubyshkina tab; Jeans escape of hydrogen is evaluated at T<sub>eq</sub> with an exobase density of 10⁵ cm⁻³.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Core mass <output id="o-e5m">5.0 M⊕</output></label>
+        <input type="range" id="in-e5m" min="1" max="40" step="0.5" value="5" aria-label="Core mass"></div>
+      <div class="ctl"><label>Initial envelope <output id="o-e5f">5.0 %</output></label>
+        <input type="range" id="in-e5f" min="0.5" max="50" step="0.5" value="5" aria-label="Initial atmospheric mass fraction"></div>
+      <div class="ctl" style="flex:none;"><label>Orbit (AU)</label>
+        <div class="seg" id="seg-e5a" role="group" aria-label="Orbital separation">
+          <button aria-pressed="false" data-v="0.05">0.05</button>
+          <button aria-pressed="true" data-v="0.1">0.1</button>
+          <button aria-pressed="false" data-v="0.2">0.2</button>
+          <button aria-pressed="false" data-v="0.35">0.35</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Stellar rotation</label>
+        <div class="seg" id="seg-e5rot" role="group" aria-label="Rotator class">
+          <button aria-pressed="false" data-v="slow">slow</button>
+          <button aria-pressed="true" data-v="mod">moderate</button>
+          <button aria-pressed="false" data-v="fast">fast</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Mechanisms (click to toggle)</label>
+        <div class="seg" id="tog-e5" role="group" aria-label="Mechanisms">
+          <button aria-pressed="true" data-v="boil">boil-off</button>
+          <button aria-pressed="true" data-v="xuv">XUV hydro</button>
+          <button aria-pressed="true" data-v="jeans">Jeans (H)</button>
+        </div></div>
+    </div>
+    <div class="chart-box" id="cb-e5a">
+      <p class="chart-title">Envelope mass through time</p>
+      <p class="chart-sub">Solid: the mechanisms you switched on · faint dashed: all three on, for reference</p>
+      <svg id="ech5a" viewBox="0 0 920 320" aria-label="Envelope mass fraction versus age"></svg>
+      <div class="tip" id="tip-e5a" hidden></div>
+    </div>
+    <div class="chart-box" id="cb-e5b" style="margin-top:22px;">
+      <p class="chart-title">Mass-loss rate per mechanism</p>
+      <p class="chart-sub">log scale · boil-off is drawn as the mass it removes per time step</p>
+      <svg id="ech5b" viewBox="0 0 920 300" aria-label="Mass loss rate per mechanism versus age"></svg>
+      <div class="tip" id="tip-e5b" hidden></div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--rock)"></i>boil-off</span>
+      <span><i style="border-color:var(--ice)"></i>XUV hydrodynamic</span>
+      <span><i style="border-color:var(--muted)"></i>Jeans (H)</span>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">lost before 100 Myr</div><div class="v" id="e5l100">–</div></div>
+      <div class="chip"><div class="k">by boil-off</div><div class="v" id="e5lb">–</div></div>
+      <div class="chip"><div class="k">by XUV</div><div class="v" id="e5lx">–</div></div>
+      <div class="chip"><div class="k">by Jeans</div><div class="v" id="e5lj">–</div></div>
+      <div class="chip answer"><div class="k">at 10 Gyr</div><div class="v" id="e5end">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to look for:</em> with everything on, a 5 M⊕ core at 0.1 AU sheds about a third of its envelope at birth to boil-off — before the star has done anything — and the XUV wind strips the rest within a few tens of Myr. Switch boil-off off and the loss starts later but ends in the same place; switch XUV off and the planet keeps what boil-off left it; switch everything off but Jeans and nothing happens at all, at any mass. Go to 20 M⊕ and boil-off never triggers — Λ is already 20 at birth — so the whole story becomes the star's rotation history, which is precisely the mass range where Kubyshkina finds the rotation spread written into today's radii.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> §2 is the exact Jeans formula for a Maxwellian exobase; the exobase radius, temperature and density are inputs, not modelled. §3 is the published hydro-based approximation of Kubyshkina et al. (2018), coefficients as in their Table 1, valid for 1–39 M⊕, 1–10 R⊕, 300–2000 K and 0.002–1.3 AU (checked here against their Table 2 to within a few per cent); the energy-limited line uses ε = 0.15. §4 uses Zahnle &amp; Catling's fit v<sub>esc</sub> = 6 km/s · I<sup>1/4</sup> and literature masses, radii and equilibrium temperatures. §5 couples the 2018 fit to this site's toy radius model (with an extra ×3 inflation at birth decaying over 20 Myr) and a saturated (10³ erg cm⁻² s⁻¹ at 1 AU) then t<sup>−1.5</sup> XUV history — not to MESA, not to the 2021 grid Kubyshkina &amp; Fossati actually use. Inside ~0.05 AU the fit sits at the edge of its grid and the toy radius is too puffy, so survival masses there come out lower than the paper's; trends and the mechanism hierarchy are robust, absolute masses within a factor of a few.</p>
+  <p>Kubyshkina et al. (2018), “Overcoming the limitations of the energy-limited approximation for planet atmospheric escape”, ApJL 866, L18 · <a href="https://arxiv.org/abs/1810.06920">arXiv:1810.06920</a> (the fit; the grid itself is Kubyshkina et al. 2018, A&amp;A 619, A151) &nbsp;·&nbsp; Zahnle &amp; Catling (2017), “The cosmic shoreline”, ApJ 843, 122 · <a href="https://arxiv.org/abs/1702.03386">arXiv:1702.03386</a> &nbsp;·&nbsp; Fossati et al. (2017), A&amp;A 598, A90 (boil-off, Λ ≲ 15–25)</p>
+</footer>
+</div><!-- /page-esc -->
 
 <div id="page-baty" role="tabpanel" aria-labelledby="tab-baty" hidden>
 <section class="pagehero">
@@ -2205,8 +2456,427 @@ attachHover($("cb-m3b"), $("mch3b"), { padL: 46, padR: 12, W: 460, H: 380 },
       fmt(c.errs[bi],3) + (c.grid[bi] < 1.2 || c.grid[bi] > 2.8 ? " · outside training" : "") + "</span>", $("cb-m3b").clientWidth);
   }, () => $("tip-m3b").hidden = true);
 
+/* ================= Gas escape (concept tab) =================
+   Real formulas: exact Jeans flux for a Maxwellian exobase; the hydro-based
+   approximation (HBA) of Kubyshkina et al. 2018 (ApJL 866, L18, Table 1);
+   energy-limited escape with eps = 0.15; Zahnle & Catling's shoreline.
+   cgs throughout, inputs in Earth units / AU / Gyr.                       */
+const ESCC = { G: 6.674e-8, kB: 1.381e-16, mH: 1.6735e-24, ME: 5.972e27, RE: 6.371e8, yr: 3.156e7, Fsat: 1000 };
+const escFxuv = (a, t, rot) => ESCC.Fsat / (a * a) * (t < KROT[rot] ? 1 : Math.pow(t / KROT[rot], -1.5));
+const escTeq = a => 278.6 / Math.sqrt(a);
+const escLam = (M, R, T, mu = 1) => ESCC.G * M * ESCC.ME * mu * ESCC.mH / (ESCC.kB * T * R * ESCC.RE);
+const ESC_HBA = { lo: [32.0199, 0.4222, -1.7489, 3.7679, -6.8618, 0.0095], hi: [16.4084, 1.0, -3.2861, 2.75, -1.2978, 0.8846] };
+const escSigma = (F, d, R) => (15.611 - 0.578 * Math.log(F) + 1.537 * Math.log(d) + 1.018 * Math.log(R)) / (5.564 + 0.894 * Math.log(d));
+function escHBA(F, d, R, L) {
+  const lo = L < Math.exp(escSigma(F, d, R));
+  const c = ESC_HBA[lo ? "lo" : "hi"];
+  const K = c[4] + c[5] * Math.log(d);
+  return { mdot: Math.exp(c[0]) * Math.pow(F, c[1]) * Math.pow(d, c[2]) * Math.pow(R, c[3]) * Math.pow(L, K), lo };
+}
+const escEL = (F, R, M, eps = 0.15) => eps * Math.PI * F * Math.pow(R * ESCC.RE, 3) / (ESCC.G * M * ESCC.ME);
+function escErfc(z) { // Numerical Recipes erfcc, z >= 0, relative error < 1.2e-7 without cancellation
+  const t = 1 / (1 + 0.5 * z);
+  return t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 +
+         t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+}
+function escJeans(M, R, T, n, mu) {        // M [M_E], R [R_E] exobase, T [K], n [cm^-3], mu [amu]
+  const m = mu * ESCC.mH, vp = Math.sqrt(2 * ESCC.kB * T / m), L = escLam(M, R, T, mu);
+  const x = Math.sqrt(L);
+  const phi = n * vp / (2 * Math.sqrt(Math.PI)) * (1 + L) * Math.exp(-L);
+  return { vp, L, phi, frac: escErfc(x) + 2 * x / Math.sqrt(Math.PI) * Math.exp(-L),
+           rate: 4 * Math.PI * Math.pow(R * ESCC.RE, 2) * phi * m,
+           vesc: Math.sqrt(2 * ESCC.G * M * ESCC.ME / (R * ESCC.RE)) };
+}
+const escPow = v => "10" + String(v).replace(/-/g, "⁻").replace(/\./g, "·").replace(/\d/g, c => "⁰¹²³⁴⁵⁶⁷⁸⁹"[+c]);
+function escSci(x, d = 1) {
+  if (!(x > 0)) return "0";
+  let e = Math.floor(Math.log10(x)), mant = x / Math.pow(10, e);
+  if (+mant.toFixed(d) >= 10) { mant /= 10; e += 1; }
+  return mant.toFixed(d) + "×10<sup>" + e + "</sup>";
+}
+function escTime(sec) {
+  const y = sec / ESCC.yr;
+  if (!isFinite(y) || y > 1e30) return "never";
+  if (y < 1) return "&lt; 1 yr";
+  if (y < 1e3) return Math.round(y) + " yr";
+  if (y < 1e6) return fmt(y / 1e3, 1) + " kyr";
+  if (y < 1e9) return fmt(y / 1e6, 1) + " Myr";
+  if (y < 1e12) return fmt(y / 1e9, 1) + " Gyr";
+  return escSci(y, 1) + " yr";
+}
+const escAge = t => t < 1 ? Math.round(t * 1000) + " Myr" : fmt(t, 1) + " Gyr";
+function escLerpHex(a, b, t) {
+  const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const A = p(a), B = p(b);
+  return "rgb(" + A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(",") + ")";
+}
+const escHeat = t => t < 0.5 ? escLerpHex("#131A2C", "#3D9BD9", t * 2) : escLerpHex("#3D9BD9", "#A8D8F0", (t - 0.5) * 2);
+function escSegPath(pts) { // pts may contain null -> path breaks
+  let d = "", pen = false;
+  pts.forEach(p => { if (!p) { pen = false; return; } d += (pen ? "L" : "M") + fmt(p[0], 1) + " " + fmt(p[1], 1); pen = true; });
+  return d;
+}
+
+/* ---- E2: velocity distribution ---- */
+const ESC_SP = { H: [1, "H"], H2: [2, "H₂"], He: [4, "He"], O: [16, "O"], N2: [28, "N₂"], CO2: [44, "CO₂"] };
+const ESC_PRESETS = { mars: [0.107, 0.564, 250, "H"], earth: [1, 1.08, 1000, "H"], venus: [0.815, 0.98, 275, "H"],
+  titan: [0.0225, 0.64, 150, "H2"], jupiter: [317.8, 11.21, 900, "H"], subnep: [5, 2.5, 1000, "H"], hotjup: [220, 15.4, 10000, "H"] };
+const ESC2 = { lgM: 0, lgR: Math.log10(1.08), lgT: 3, lgN: 5, sp: "H", log: false };
+let e2data = null;
+function drawE2() {
+  const M = Math.pow(10, ESC2.lgM), R = Math.pow(10, ESC2.lgR), T = Math.pow(10, ESC2.lgT), n = Math.pow(10, ESC2.lgN);
+  const mu = ESC_SP[ESC2.sp][0];
+  $("o-e2m").textContent = (M < 1 ? M.toPrecision(3) : M < 10 ? fmt(M, 2) : Math.round(M)) + " M⊕";
+  $("o-e2r").textContent = fmt(R, 2) + " R⊕";
+  $("o-e2t").textContent = Math.round(T) + " K";
+  $("o-e2n").innerHTML = "10<sup>" + fmt(ESC2.lgN, 1).replace(".0", "") + "</sup> cm⁻³";
+  const J = escJeans(M, R, T, n, mu);
+  const vp = J.vp / 1e5, vesc = J.vesc / 1e5;
+  const xmax = Math.min(Math.max(3.2 * vp, 1.25 * vesc), 8 * vp);
+  const off = vesc > xmax;
+  const svg = $("ech2"); svg.innerHTML = "";
+  const y0 = ESC2.log ? -12 : 0, y1 = ESC2.log ? 0.15 : 1.08;
+  const s = makeScales(0, xmax, y0, y1, 920, 340, 64, 18, 26, 42);
+  const g = u => u * u * Math.exp(1 - u * u);            // Maxwellian speed pdf, normalised to its peak
+  const yOf = u => { const v = g(u); return ESC2.log ? Math.max(Math.log10(Math.max(v, 1e-300)), y0) : v; };
+  axes(svg, s, niceTicks(0, xmax, 6), ESC2.log ? [-12, -9, -6, -3, 0] : [0, 0.25, 0.5, 0.75, 1],
+       "speed, km/s", ESC2.log ? "fraction of peak (log)" : "fraction of peak",
+       v => fmt(v, xmax < 5 ? 1 : 0), v => ESC2.log ? escPow(v) : fmt(v, 2));
+  const N = 400, pts = [];
+  for (let i = 0; i <= N; i++) { const v = xmax * i / N; pts.push([s.x(v), s.y(yOf(v / vp))]); }
+  // shaded tail beyond v_esc
+  if (!off) {
+    const tail = [];
+    for (let i = 0; i <= N; i++) { const v = xmax * i / N; if (v >= vesc) tail.push([s.x(v), s.y(yOf(v / vp))]); }
+    if (tail.length > 1) {
+      tail.unshift([s.x(vesc), s.y(yOf(vesc / vp))]);
+      const d = linePath(tail) + "L" + fmt(s.x(xmax), 1) + " " + fmt(s.y(y0), 1) + "L" + fmt(s.x(vesc), 1) + " " + fmt(s.y(y0), 1) + "Z";
+      el("path", { d, fill: C.rock, opacity: 0.45 }, svg);
+    }
+  }
+  el("path", { d: linePath(pts), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  // most probable speed
+  el("line", { x1: fmt(s.x(vp), 1), x2: fmt(s.x(vp), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.muted, "stroke-dasharray": "2 4" }, svg);
+  el("text", { x: fmt(s.x(vp) + 6, 1), y: s.padT + 14, class: "serieslabel", fill: C.muted }, svg).textContent = "v_p = " + fmt(vp, 1) + " km/s";
+  // escape speed
+  const xe = off ? s.W - s.padR - 2 : s.x(vesc);
+  el("line", { x1: fmt(xe, 1), x2: fmt(xe, 1), y1: s.padT, y2: s.H - s.padB, stroke: C.rock, "stroke-width": 2, "stroke-dasharray": "6 5" }, svg);
+  el("text", { x: fmt(xe - 6, 1), y: s.padT + 32, class: "serieslabel", fill: C.rock, "text-anchor": "end" }, svg)
+    .textContent = (off ? "v_esc = " + fmt(vesc, 1) + " km/s → off scale" : "v_esc = " + fmt(vesc, 1) + " km/s");
+  e2data = { s, vp, vesc, J, M, R, T, n, mu };
+  // lambda meter
+  const m = $("ech2m"); m.innerHTML = "";
+  const mx = v => 64 + (v + 0.5) / 3 * (902 - 64);
+  const zones = [[-0.5, Math.log10(3), "rgba(201,118,51,.28)", "blow-off · gas leaves as a fluid"],
+                 [Math.log10(3), Math.log10(30), "rgba(61,155,217,.22)", "Jeans leak · the tail matters"],
+                 [Math.log10(30), 2.5, "#182136", "bound · nothing thermal leaves"]];
+  zones.forEach(z => {
+    el("rect", { x: fmt(mx(z[0]), 1), y: 22, width: fmt(mx(z[1]) - mx(z[0]), 1), height: 20, fill: z[2] }, m);
+    el("text", { x: fmt((mx(z[0]) + mx(z[1])) / 2, 1), y: 58, "text-anchor": "middle", fill: C.muted,
+                 style: "font-family:var(--mono);font-size:10.5px" }, m).textContent = z[3];
+  });
+  [1, 3, 10, 30, 100].forEach(v => el("text", { x: fmt(mx(Math.log10(v)), 1), y: 14, "text-anchor": "middle", fill: C.muted,
+    style: "font-family:var(--mono);font-size:10px" }, m).textContent = "λ = " + v);
+  const lx = mx(Math.min(Math.max(Math.log10(J.L), -0.5), 2.5));
+  el("polygon", { points: fmt(lx, 1) + ",22 " + fmt(lx - 6, 1) + ",14 " + fmt(lx + 6, 1) + ",14", fill: C.ink }, m);
+  el("line", { x1: fmt(lx, 1), x2: fmt(lx, 1), y1: 22, y2: 42, stroke: C.ink, "stroke-width": 2 }, m);
+  // readouts
+  $("e2vesc").innerHTML = fmt(vesc, 1) + "<small> km/s</small>";
+  $("e2vp").innerHTML = fmt(vp, 2) + "<small> km/s · " + ESC_SP[ESC2.sp][1] + "</small>";
+  $("e2lam").innerHTML = J.L < 100 ? fmt(J.L, 1) : Math.round(J.L);
+  $("e2frac").innerHTML = J.frac > 1e-3 ? fmt(J.frac * 100, J.frac > 0.1 ? 0 : 1) + " %" : J.frac < 1e-300 ? "0" : escSci(J.frac, 1);
+  $("e2rate").innerHTML = J.rate < 1e-3 ? "≈ 0<small> g/s</small>" : escSci(J.rate, 1) + "<small> g/s</small>";
+  $("e2time").innerHTML = J.rate < 1e-30 ? "never" : escTime(0.01 * M * ESCC.ME / J.rate);
+}
+attachHover($("cb-e2"), $("ech2"), { padL: 64, padR: 18, W: 920, H: 340 },
+  (px, py, cx, cy) => {
+    const d = e2data, v = Math.max(d.s.inv(px), 0), u = v / d.vp;
+    const above = escErfc(u) + 2 * u / Math.sqrt(Math.PI) * Math.exp(-u * u);
+    setTip($("tip-e2"), cx, cy, "<b>" + fmt(v, 1) + " km/s</b> = " + fmt(u, 2) + " v_p<br><span class='mono'>faster than this: " +
+      (above > 1e-3 ? fmt(above * 100, above > 0.1 ? 0 : 1) + " %" : above < 1e-300 ? "0" : escSci(above, 1)) + "</span>", $("cb-e2").clientWidth);
+  }, () => $("tip-e2").hidden = true);
+function escSegWire(id, apply, redraw) {
+  $(id).querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    $(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    apply(b.dataset.v); redraw();
+  }));
+}
+function escPress(id, val) { $(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === val)); }
+escSegWire("seg-e2p", v => {
+  const p = ESC_PRESETS[v];
+  ESC2.lgM = Math.log10(p[0]); ESC2.lgR = Math.log10(p[1]); ESC2.lgT = Math.log10(p[2]); ESC2.sp = p[3];
+  $("in-e2m").value = ESC2.lgM; $("in-e2r").value = ESC2.lgR; $("in-e2t").value = ESC2.lgT;
+  escPress("seg-e2s", p[3]);
+}, drawE2);
+escSegWire("seg-e2s", v => ESC2.sp = v, drawE2);
+escSegWire("seg-e2y", v => ESC2.log = v === "log", drawE2);
+[["in-e2m", "lgM"], ["in-e2r", "lgR"], ["in-e2t", "lgT"], ["in-e2n", "lgN"]].forEach(([id, key]) =>
+  $(id).addEventListener("input", () => { ESC2[key] = +$(id).value; escPress("seg-e2p", null); drawE2(); }));
+
+/* ---- E3: HBA regime map ---- */
+const ESC3 = { M: 5, R: 2.5, a: 0.1, lgAge: -1.3, rot: "mod" };
+let e3data = null;
+function drawE3() {
+  const { M, R, a, rot } = ESC3, age = Math.pow(10, ESC3.lgAge);
+  $("o-e3m").textContent = fmt(M, 1) + " M⊕"; $("o-e3r").textContent = fmt(R, 1) + " R⊕"; $("o-e3t").textContent = escAge(age);
+  const svg = $("ech3"); svg.innerHTML = "";
+  const XH = 6.5, s = makeScales(0, XH, 0, 2.5, 920, 420, 64, 110, 26, 42);
+  const nx = 50, ny = 40, lgLo = 5, lgHi = 13;
+  const cw = (s.W - s.padL - s.padR) / nx, ch = (s.H - s.padT - s.padB) / ny;
+  axes(svg, s, [0, 1, 2, 3, 4, 5, 6], [0, 0.5, 1, 1.5, 2, 2.5], "F_XUV at the planet, erg cm⁻² s⁻¹ (log)", "Jeans parameter Λ (log)",
+       escPow, v => v % 1 ? fmt(Math.pow(10, v), 0) : Math.pow(10, v).toFixed(0));
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+    const F = Math.pow(10, XH * (i + 0.5) / nx), L = Math.pow(10, 2.5 * (j + 0.5) / ny);
+    const lg = Math.log10(escHBA(F, a, R, L).mdot);
+    el("rect", { x: fmt(s.padL + i * cw, 2), y: fmt(s.H - s.padB - (j + 1) * ch, 2), width: fmt(cw + 0.5, 2), height: fmt(ch + 0.5, 2),
+                 fill: escHeat(Math.min(Math.max((lg - lgLo) / (lgHi - lgLo), 0), 1)) }, svg);
+  }
+  // regime boundary Lambda = e^Sigma
+  const bd = [];
+  for (let i = 0; i <= 100; i++) { const lgF = XH * i / 100, lgL = escSigma(Math.pow(10, lgF), a, R) / Math.LN10;
+    bd.push(lgL >= 0 && lgL <= 2.5 ? [s.x(lgF), s.y(lgL)] : null); }
+  el("path", { d: escSegPath(bd), stroke: C.ink, "stroke-width": 2, fill: "none", "stroke-dasharray": "7 5" }, svg);
+  const bl = bd.filter(Boolean);
+  if (bl.length) { const p = bl[Math.min(bl.length - 1, 60)];
+    el("text", { x: fmt(p[0], 1), y: fmt(p[1] - 12, 1), class: "serieslabel", fill: C.ink, "text-anchor": "middle" }, svg).textContent = "Λ = e^Σ boundary";
+    el("text", { x: fmt(s.x(0.15), 1), y: fmt(s.y(0.12), 1), class: "serieslabel", fill: C.ink2 }, svg).textContent = "planet's own heat drives escape (boil-off)";
+    el("text", { x: fmt(s.x(0.15), 1), y: fmt(s.y(2.4), 1), class: "serieslabel", fill: C.ink2 }, svg).textContent = "stellar XUV drives escape";
+  }
+  // colour bar
+  const bx = s.W - 92, by0 = s.padT, by1 = s.H - s.padB, nb = 40;
+  for (let k = 0; k < nb; k++) el("rect", { x: bx, y: fmt(by1 - (k + 1) * (by1 - by0) / nb, 1), width: 14, height: fmt((by1 - by0) / nb + 0.5, 1), fill: escHeat((k + 0.5) / nb) }, svg);
+  [5, 7, 9, 11, 13].forEach(v => el("text", { x: bx + 20, y: fmt(by1 - (v - lgLo) / (lgHi - lgLo) * (by1 - by0) + 4, 1), fill: C.muted,
+    style: "font-family:var(--mono);font-size:11px" }, svg).textContent = escPow(v));
+  el("text", { x: bx, y: by0 - 8, fill: C.muted, style: "font-family:var(--mono);font-size:11px" }, svg).textContent = "Ṁ, g/s";
+  // the planet
+  const F = escFxuv(a, age, rot), T = escTeq(a), L = escLam(M, R, T);
+  const h = escHBA(F, a, R, L), elr = escEL(F, R, M);
+  const lgF = Math.min(Math.max(Math.log10(F), 0), XH), lgL = Math.min(Math.max(Math.log10(L), 0), 2.5);
+  const inside = Math.log10(F) >= 0 && Math.log10(F) <= XH && Math.log10(L) >= 0 && Math.log10(L) <= 2.5;
+  el("circle", { cx: fmt(s.x(lgF), 1), cy: fmt(s.y(lgL), 1), r: 8, fill: C.rock, stroke: "#0C111E", "stroke-width": 2, opacity: inside ? 1 : 0.5 }, svg);
+  e3data = { s, F, L, h, elr, a, R };
+  $("e3f").innerHTML = escSci(F, 1) + "<small> erg cm⁻² s⁻¹</small>";
+  $("e3lam").innerHTML = fmt(L, 1) + (inside ? "" : "<small> · off the map</small>");
+  $("e3reg").innerHTML = h.lo ? "boil-off" : "XUV-driven";
+  $("e3hba").innerHTML = escSci(h.mdot, 1) + "<small> g/s</small>";
+  $("e3el").innerHTML = escSci(elr, 1) + "<small> g/s · " + (elr > h.mdot ? "×" + fmt(elr / h.mdot, 1) + " above" : "÷" + fmt(h.mdot / elr, 1) + " below") + " the fit</small>";
+  $("e3time").innerHTML = escTime(0.01 * M * ESCC.ME / h.mdot);
+}
+attachHover($("cb-e3"), $("ech3"), { padL: 64, padR: 110, W: 920, H: 420 },
+  (px, py, cx, cy) => {
+    const d = e3data, s = d.s;
+    const lgF = s.inv(px), lgL = s.y0 + (s.H - s.padB - py) / (s.H - s.padT - s.padB) * (s.y1 - s.y0);
+    if (lgL < 0 || lgL > 2.5) { $("tip-e3").hidden = true; return; }
+    const F = Math.pow(10, lgF), L = Math.pow(10, lgL), h = escHBA(F, d.a, d.R, L);
+    setTip($("tip-e3"), cx, cy, "<b>F = " + escSci(F, 1) + " · Λ = " + fmt(L, 1) + "</b><br><span class='mono'>Ṁ = " + escSci(h.mdot, 1) +
+      " g/s · " + (h.lo ? "boil-off regime" : "XUV regime") + "</span>", $("cb-e3").clientWidth);
+  }, () => $("tip-e3").hidden = true);
+$("in-e3m").addEventListener("input", () => { ESC3.M = +$("in-e3m").value; drawE3(); drawE4(); });
+$("in-e3r").addEventListener("input", () => { ESC3.R = +$("in-e3r").value; drawE3(); drawE4(); });
+$("in-e3t").addEventListener("input", () => { ESC3.lgAge = +$("in-e3t").value; drawE3(); });
+escSegWire("seg-e3a", v => ESC3.a = +v, () => { drawE3(); drawE4(); });
+escSegWire("seg-e3rot", v => ESC3.rot = v, drawE3);
+
+/* ---- E4: cosmic shoreline ---- */
+// [name, insolation (Earth = 1), v_esc km/s, kind, atmosphere, label dx, dy, anchor, note]
+const ESC_BODIES = [
+  ["Mercury", 6.67, 4.25, "ss", "no", 8, 4, "start", "airless (exosphere only)"],
+  ["Venus", 1.91, 10.36, "ss", "yes", -8, 4, "end", "92 bar CO₂"],
+  ["Earth", 1, 11.19, "ss", "yes", 8, 4, "start", "1 bar N₂/O₂"],
+  ["Moon", 1, 2.38, "ss", "no", 8, 4, "start", "airless"],
+  ["Mars", 0.431, 5.03, "ss", "thin", 8, 4, "start", "6 mbar CO₂ · sits on the line"],
+  ["Ceres", 0.13, 0.51, "ss", "no", 8, 4, "start", "airless"],
+  ["Jupiter", 0.037, 59.5, "ss", "yes", -8, 4, "end", "H/He giant"],
+  ["Europa", 0.037, 2.03, "ss", "no", -6, 14, "end", "10⁻¹² bar O₂ exosphere"],
+  ["Callisto", 0.037, 2.44, "ss", "no", 0, -8, "middle", "trace CO₂ exosphere"],
+  ["Io", 0.037, 2.56, "ss", "thin", 6, 14, "start", "nbar SO₂, volcanic"],
+  ["Ganymede", 0.037, 2.74, "ss", "no", 8, 4, "start", "trace O₂ exosphere"],
+  ["Saturn", 0.011, 35.5, "ss", "yes", -8, 4, "end", "H/He giant"],
+  ["Titan", 0.011, 2.64, "ss", "yes", 8, 4, "start", "1.5 bar N₂ — cold enough to keep it"],
+  ["Uranus", 0.0027, 21.3, "ss", "yes", -8, 4, "end", "H/He/ices"],
+  ["Neptune", 0.0011, 23.5, "ss", "yes", -8, 4, "end", "H/He/ices"],
+  ["Triton", 0.0011, 1.45, "ss", "thin", 8, 4, "start", "14 μbar N₂"],
+  ["Pluto", 0.00064, 1.21, "ss", "thin", 8, 4, "start", "10 μbar N₂"],
+  ["55 Cnc e", 2440, 23.1, "exo", "yes", 8, 4, "start", "JWST: secondary atmosphere fed by a magma ocean (Hu+2024)"],
+  ["TOI-849 b", 1740, 37.7, "exo", "thin", 8, 4, "start", "39 M⊕ remnant core, ≤ 4 % H/He"],
+  ["HD 209458 b", 733, 42.3, "exo", "yes", 8, 4, "start", "hot Jupiter, escaping H seen in Lyα"],
+  ["π Men c", 290, 16.6, "exo", "unk", 8, 4, "start", "sub-Neptune; no Lyα H detected"],
+  ["WASP-107 b", 50, 19.2, "exo", "yes", -8, 4, "end", "super-puff; He escape detected"],
+  ["GJ 436 b", 36.7, 25.6, "exo", "yes", 8, 4, "start", "warm Neptune with a giant H cloud"],
+  ["GJ 1214 b", 21, 19.4, "exo", "yes", -8, 4, "end", "hazy, likely water-rich"],
+  ["Kepler-51 b", 13, 8.2, "exo", "yes", 0, 17, "middle", "super-puff, 3.7 M⊕ at 6.9 R⊕"],
+  ["TRAPPIST-1 b", 4.25, 12.4, "exo", "no", 8, 4, "start", "JWST: no thick atmosphere"],
+  ["K2-18 b", 1, 20.4, "exo", "yes", 8, 4, "start", "H₂-rich; CH₄, CO₂ detected"],
+  ["TRAPPIST-1 e", 0.65, 9.7, "exo", "unk", 0, 17, "middle", "temperate; unknown"],
+  ["LHS 1140 b", 0.43, 20.1, "exo", "unk", 8, 14, "start", "temperate super-Earth; unknown"],
+];
+let e4data = null;
+function drawE4() {
+  const svg = $("ech4"); svg.innerHTML = "";
+  const s = makeScales(Math.log10(0.3), 2, -4, 4, 920, 440, 64, 18, 26, 42);
+  axes(svg, s, [0.3, 1, 3, 10, 30, 100].map(Math.log10), [-4, -2, 0, 2, 4], "escape speed, km/s (log)", "insolation relative to Earth (log)",
+       v => Math.pow(10, v) < 1 ? fmt(Math.pow(10, v), 1) : Math.round(Math.pow(10, v)), v => v === 0 ? "1" : escPow(v));
+  // shoreline I = (v/6)^4 -> log I = 4 (log v - log 6)
+  const sh = [[s.x(Math.log10(0.6)), s.y(-4)], [s.x(Math.log10(60)), s.y(4)]];
+  el("path", { d: linePath(sh), stroke: C.ink, "stroke-width": 2, "stroke-dasharray": "7 5" }, svg);
+  el("text", { x: fmt(s.x(Math.log10(1.15)), 1), y: fmt(s.y(-1.9), 1), class: "serieslabel", fill: C.ink2, transform: "rotate(-52 " + fmt(s.x(Math.log10(1.15)), 1) + " " + fmt(s.y(-1.9), 1) + ")" }, svg)
+    .textContent = "cosmic shoreline · airless to the left, atmosphere to the right";
+  const col = { yes: C.ice, thin: C.muted, no: C.rock, unk: C.ink };
+  const plotted = [];
+  ESC_BODIES.forEach(b => {
+    const px = s.x(Math.log10(b[2])), py = s.y(Math.log10(b[1]));
+    if (b[3] === "ss") {
+      el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 5.5, fill: b[4] === "no" ? "#0C111E" : col[b[4]], stroke: col[b[4]], "stroke-width": 2 }, svg);
+      if (b[4] === "thin") el("path", { d: "M" + fmt(px, 1) + " " + fmt(py - 5.5, 1) + "A5.5 5.5 0 0 0 " + fmt(px, 1) + " " + fmt(py + 5.5, 1) + "Z", fill: "#0C111E" }, svg);
+    } else {
+      el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: "none", stroke: col[b[4]], "stroke-width": 2 }, svg);
+      el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 2, fill: col[b[4]] }, svg);
+    }
+    el("text", { x: fmt(px + b[5], 1), y: fmt(py + b[6], 1), "text-anchor": b[7], fill: b[3] === "exo" ? C.ink2 : C.muted,
+                 style: "font-family:var(--sans);font-size:10.5px" }, svg).textContent = b[0];
+    plotted.push([px, py, b]);
+  });
+  // the §3 planet
+  const v = 11.19 * Math.sqrt(ESC3.M / ESC3.R), I = 1 / (ESC3.a * ESC3.a);
+  const px = s.x(Math.log10(v)), py = s.y(Math.log10(I));
+  const star = []; for (let k = 0; k < 10; k++) { const r = k % 2 ? 4.5 : 10, an = -Math.PI / 2 + k * Math.PI / 5; star.push(fmt(px + r * Math.cos(an), 1) + "," + fmt(py + r * Math.sin(an), 1)); }
+  el("polygon", { points: star.join(" "), fill: C.rock, stroke: "#0C111E", "stroke-width": 1.5 }, svg);
+  el("text", { x: fmt(px + 12, 1), y: fmt(py + 4, 1), class: "serieslabel", fill: C.rock }, svg).textContent = "your §3 planet";
+  plotted.push([px, py, ["your §3 planet", I, v, "you", "unk", 0, 0, "", fmt(ESC3.M, 1) + " M⊕, " + fmt(ESC3.R, 1) + " R⊕ at " + ESC3.a + " AU" +
+    (v > 6 * Math.pow(I, 0.25) ? " · right of the line: can hold gas today" : " · left of the line: should be bare")]]);
+  e4data = { s, pts: plotted };
+}
+attachHover($("cb-e4"), $("ech4"), { padL: 64, padR: 18, W: 920, H: 440 },
+  (px, py, cx, cy) => {
+    let best = null, bd = 1e9;
+    e4data.pts.forEach(p => { const d = Math.hypot(p[0] - px, p[1] - py); if (d < bd) { bd = d; best = p; } });
+    if (!best || bd > 18) { $("tip-e4").hidden = true; return; }
+    const b = best[2];
+    setTip($("tip-e4"), cx, cy, "<b>" + b[0] + "</b><br><span class='mono'>v_esc " + fmt(b[2], 1) + " km/s · I = " + (b[1] >= 100 ? Math.round(b[1]) : b[1] >= 0.01 ? fmt(b[1], 2) : escSci(b[1], 1)) +
+      " · shoreline needs " + fmt(6 * Math.pow(b[1], 0.25), 1) + " km/s</span><br>" + b[8], $("cb-e4").clientWidth);
+  }, () => $("tip-e4").hidden = true);
+
+/* ---- E5: envelope through time with switchable mechanisms ---- */
+const ESC5 = { mc: 5, fat: 0.05, a: 0.1, rot: "mod", boil: true, xuv: true, jeans: true };
+const escRadius = (mc, fat, t) => kRc(mc) + (fat > 1e-5 ? dRgas5(fat, mc) * kContr(t) * (1 + 2 * Math.exp(-t / 0.02)) : 0);
+function escState(mc, Matm, t, T) {
+  const M = mc + Matm / ESCC.ME, fat = Matm / (M * ESCC.ME), R = escRadius(mc, fat, t);
+  return { M, fat, R, L: escLam(M, R, T) };
+}
+function escRelax(mc, Matm, t, a, T, F) {   // boil-off: shed envelope until Lambda >= e^Sigma (instantaneous)
+  const st = escState(mc, Matm, t, T);
+  if (st.L >= Math.exp(escSigma(F, a, st.R))) return Matm;
+  const bare = escState(mc, 0, t, T);
+  if (bare.L < Math.exp(escSigma(F, a, bare.R))) return 0;
+  let lo = 0, hi = Matm;
+  for (let i = 0; i < 50; i++) { const mid = (lo + hi) / 2, m = escState(mc, mid, t, T);
+    if (m.L >= Math.exp(escSigma(F, a, m.R))) lo = mid; else hi = mid; }
+  return lo;
+}
+function escEvolve(mc, fat0, a, rot, fl) {
+  const T = escTeq(a), n = kSteps.length;
+  const fat = new Array(n), R = new Array(n), L = new Array(n), rB = new Array(n), rX = new Array(n), rJ = new Array(n);
+  let Matm = fat0 / (1 - fat0) * mc * ESCC.ME, prev = kSteps[0];
+  const lost = { b: 0, x: 0, j: 0, l100: 0 }; let bareAt = null;
+  const dt0 = (kSteps[1] - kSteps[0]) * 1e9 * ESCC.yr;
+  for (let k = 0; k < n; k++) {
+    const t = kSteps[k], dt = (t - prev) * 1e9 * ESCC.yr; prev = t;
+    const F = escFxuv(a, t, rot);
+    let dB = 0, dX = 0, dJ = 0;
+    if (fl.boil && Matm > 0) { const m2 = escRelax(mc, Matm, t, a, T, F); dB = Matm - m2; Matm = m2; }
+    if (fl.xuv && dt > 0 && Matm > 0) {
+      let rem = dt, md = 0;
+      for (let i = 0; i < 60 && rem > 0 && Matm > 0; i++) {
+        const st = escState(mc, Matm, t, T), Lc = Math.max(st.L, 1), h = escHBA(F, a, st.R, Lc);
+        md = h.lo ? escEL(F, st.R, st.M) : h.mdot;
+        if (md <= 0) break;
+        const step = Math.min(rem, 0.05 * Matm / md);
+        Matm = Math.max(0, Matm - md * step); dX += md * step; rem -= step;
+      }
+      if (rem > 0 && Matm > 0) { const d = Math.min(Matm, md * rem); Matm -= d; dX += d; }
+    }
+    if (fl.jeans && dt > 0 && Matm > 0) {
+      const st = escState(mc, Matm, t, T), j = escJeans(st.M, st.R, T, 1e5, 1);
+      dJ = Math.min(Matm, j.rate * dt); Matm -= dJ;
+      rJ[k] = j.rate;
+    } else rJ[k] = 0;
+    lost.b += dB; lost.x += dX; lost.j += dJ;
+    if (t <= 0.1) lost.l100 += dB + dX + dJ;
+    rB[k] = dB / (dt > 0 ? dt : dt0); rX[k] = dt > 0 ? dX / dt : 0;
+    const st = escState(mc, Matm, t, T);
+    fat[k] = st.fat; R[k] = st.R; L[k] = st.L;
+    if (bareAt === null && Matm <= 0) bareAt = t;
+  }
+  return { fat, R, L, rB, rX, rJ, lost, bareAt, M0: fat0 / (1 - fat0) * mc * ESCC.ME };
+}
+let e5data = null;
+function drawE5() {
+  const { mc, fat, a, rot } = ESC5;
+  $("o-e5m").textContent = fmt(mc, 1) + " M⊕"; $("o-e5f").textContent = fmt(fat * 100, 1) + " %";
+  const cur = escEvolve(mc, fat, a, rot, ESC5);
+  const allOn = ESC5.boil && ESC5.xuv && ESC5.jeans;
+  const ref = allOn ? cur : escEvolve(mc, fat, a, rot, { boil: true, xuv: true, jeans: true });
+  const lx = t => Math.log10(t), xt = [0.01, 0.05, 0.3, 1, 3, 10].map(lx);
+  // chart a: envelope fraction
+  let svg = $("ech5a"); svg.innerHTML = "";
+  const yMax = fat * 100 * 1.1;
+  const sa = makeScales(lx(0.005), 1, 0, yMax, 920, 320, 64, 34, 26, 42);
+  axes(svg, sa, xt, niceTicks(0, yMax, 5), "age (log scale)", "envelope, % of planet mass", v => escAge(Math.pow(10, v)), v => fmt(v, 1));
+  // prepend the pre-boil-off state so the birth step is visible
+  const envPts = r => [[sa.x(lx(kSteps[0])), sa.y(fat * 100)]].concat(kSteps.map((t, k) => [sa.x(lx(t)), sa.y(r.fat[k] * 100)]));
+  if (!allOn) el("path", { d: linePath(envPts(ref)), stroke: C.muted, "stroke-width": 1.5, fill: "none", "stroke-dasharray": "5 5" }, svg);
+  el("path", { d: linePath(envPts(cur)), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  el("circle", { cx: fmt(sa.x(lx(kSteps[0])), 1), cy: fmt(sa.y(fat * 100), 1), r: 4, fill: C.ice }, svg);
+  if (cur.fat[0] < fat * 0.97) el("text", { x: fmt(sa.x(lx(kSteps[0])) + 8, 1), y: fmt(sa.y(fat * 100) + 4, 1), class: "serieslabel", fill: C.rock }, svg)
+    .textContent = "boil-off at birth: " + fmt((1 - cur.fat[0] / fat) * 100, 0) + " % of the envelope gone at once";
+  if (cur.bareAt !== null) el("text", { x: fmt(sa.x(lx(cur.bareAt)) + 6, 1), y: fmt(sa.y(0) - 8, 1), class: "serieslabel", fill: C.iron }, svg).textContent = "bare at " + escAge(cur.bareAt);
+  // chart b: rates
+  svg = $("ech5b"); svg.innerHTML = "";
+  const sb = makeScales(lx(0.005), 1, 4, 14, 920, 300, 64, 34, 26, 42);
+  axes(svg, sb, xt, [4, 6, 8, 10, 12, 14], "age (log scale)", "mass-loss rate, g/s (log)", v => escAge(Math.pow(10, v)), escPow);
+  const rp = (arr, on) => on ? kSteps.map((t, k) => arr[k] > 1e4 ? [sb.x(lx(t)), sb.y(Math.min(Math.log10(arr[k]), 14))] : null) : [];
+  el("path", { d: escSegPath(rp(cur.rJ, ESC5.jeans)), stroke: C.muted, "stroke-width": 2, fill: "none" }, svg);
+  el("path", { d: escSegPath(rp(cur.rX, ESC5.xuv)), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  el("path", { d: escSegPath(rp(cur.rB, ESC5.boil)), stroke: C.rock, "stroke-width": 2.5, fill: "none" }, svg);
+  if (ESC5.boil) kSteps.forEach((t, k) => { if (cur.rB[k] > 1e4) el("circle", { cx: fmt(sb.x(lx(t)), 1), cy: fmt(sb.y(Math.min(Math.log10(cur.rB[k]), 14)), 1), r: 3, fill: C.rock }, svg); });
+  if (ESC5.jeans && !cur.rJ.some(r => r > 1e4)) el("text", { x: fmt(sb.x(lx(0.02)), 1), y: fmt(sb.y(4.6), 1), class: "serieslabel", fill: C.muted }, svg)
+    .textContent = "Jeans (H): below 10⁴ g/s the whole time — off the bottom of this chart";
+  e5data = { sa, sb, cur, ref };
+  // chips
+  const M0 = cur.M0, pctOf = m => M0 > 0 ? fmt(m / M0 * 100, m / M0 > 0.1 ? 0 : 1) + " %" : "–";
+  $("e5l100").innerHTML = pctOf(cur.lost.l100) + "<small> of envelope</small>";
+  $("e5lb").innerHTML = ESC5.boil ? pctOf(cur.lost.b) + "<small> · " + fmt(cur.lost.b / ESCC.ME, 2) + " M⊕</small>" : "<small>off</small>";
+  $("e5lx").innerHTML = ESC5.xuv ? pctOf(cur.lost.x) + "<small> · " + fmt(cur.lost.x / ESCC.ME, 2) + " M⊕</small>" : "<small>off</small>";
+  $("e5lj").innerHTML = ESC5.jeans ? (cur.lost.j / M0 < 1e-4 ? "≈ 0" : pctOf(cur.lost.j)) + "<small> · " + escSci(cur.lost.j, 1) + " g</small>" : "<small>off</small>";
+  const fEnd = cur.fat[cur.fat.length - 1];
+  $("e5end").innerHTML = cur.bareAt !== null ? "bare<small> since " + escAge(cur.bareAt) + "</small>" : fmt(fEnd * 100, 2) + " %<small> · R " + fmt(cur.R[cur.R.length - 1], 2) + " R⊕</small>";
+}
+function escE5Hover(boxId, svgId, tipId, which) {
+  attachHover($(boxId), $(svgId), { padL: 64, padR: 34, W: 920, H: which === "a" ? 320 : 300 },
+    (px, py, cx, cy) => {
+      const d = e5data, s = which === "a" ? d.sa : d.sb, t = Math.pow(10, s.inv(px));
+      let k = 0; while (k < kSteps.length - 1 && kSteps[k] < t) k++;
+      const c = d.cur;
+      const html = which === "a"
+        ? "<b>" + escAge(t) + "</b><br><span class='mono'>envelope " + fmt(c.fat[k] * 100, 2) + " % · R " + fmt(c.R[k], 2) + " R⊕ · Λ " + fmt(c.L[k], 0) + "</span>"
+        : "<b>" + escAge(t) + "</b><br><span class='mono'>boil-off " + (c.rB[k] > 0 ? escSci(c.rB[k], 1) : "0") + " · XUV " + (c.rX[k] > 0 ? escSci(c.rX[k], 1) : "0") +
+          " · Jeans " + (c.rJ[k] > 0 ? escSci(c.rJ[k], 1) : "0") + " g/s</span>";
+      setTip($(tipId), cx, cy, html, $(boxId).clientWidth);
+    }, () => $(tipId).hidden = true);
+}
+escE5Hover("cb-e5a", "ech5a", "tip-e5a", "a");
+escE5Hover("cb-e5b", "ech5b", "tip-e5b", "b");
+$("in-e5m").addEventListener("input", () => { ESC5.mc = +$("in-e5m").value; drawE5(); });
+$("in-e5f").addEventListener("input", () => { ESC5.fat = +$("in-e5f").value / 100; drawE5(); });
+escSegWire("seg-e5a", v => ESC5.a = +v, drawE5);
+escSegWire("seg-e5rot", v => ESC5.rot = v, drawE5);
+$("tog-e5").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+  const on = b.getAttribute("aria-pressed") !== "true";
+  b.setAttribute("aria-pressed", on); ESC5[b.dataset.v] = on; drawE5();
+}));
+
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "kub", "baty", "mos"];
+const TABS = ["alibert", "dorn", "kub", "esc", "baty", "mos"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -2221,6 +2891,7 @@ if (!TABS.includes(tab0)) tab0 = "alibert";
 
 updateS1(); drawS2(); drawS3(); resampleS4(true); dornLabels(); dornDraw();
 drawK1(); drawK2(); drawK3();
+drawE2(); drawE3(); drawE4(); drawE5();
 drawB1(); b2Reset(); b3Reset();
 mInitData(); m1SetVel(); m1Render(); m2Reset(); showTab(tab0);
 </script>
