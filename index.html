@@ -1584,6 +1584,8 @@
       <div class="chip"><div class="k">it survives</div><div class="v" id="rv2t">–</div></div>
       <div class="chip"><div class="k">radius it gives the planet</div><div class="v" id="rv2r">–</div></div>
       <div class="chip"><div class="k">bare core</div><div class="v" id="rv2rc">–</div></div>
+      <div class="chip"><div class="k">steepness dR/df at 0.3 % gas</div><div class="v" id="rv2s1">–</div></div>
+      <div class="chip"><div class="k">steepness dR/df at 10 % gas</div><div class="v" id="rv2s2">–</div></div>
     </div>
   </div>
   <p class="takeaway"><em>This is the whole argument of Owen &amp; Wu (2017) in one curve.</em> The population divides into planets that never had enough envelope to pass the maximum, which end as bare cores at the small-radius peak, and planets that had more, which keep a few per cent and sit at the large-radius peak. Nothing lasts in between. Move the core mass up and the maximum shifts to a longer survival time, which is why heavier cores keep their envelopes and why the valley bends with mass and period.</p>
@@ -1592,7 +1594,7 @@
 <!-- ================= STATION V3 ================= -->
 <section id="v3">
   <div class="sec-head"><span class="sec-num">§3</span><h2>Make it</h2></div>
-  <p class="prose">A synthetic population of 2000 planets: core masses log-normal around 4 M⊕ with a spread of 0.3 dex, periods log-uniform from 1 to 100 days, initial envelopes log-uniform from 3 to 30 per cent as in Owen &amp; Wu's fiducial model, a random rotation history for each star. Evolve them with the same escape physics as §2, with the Kubyshkina tab's saturated-then-decaying XUV history, and watch the histogram. Then switch the energy source: the planet-powered variant removes gas whenever the envelope is too loosely bound for its own temperature, with no XUV at all, the boil-off of the Gas escape tab applied over the planet's contraction.</p>
+  <p class="prose">A synthetic population of 2000 planets: core masses log-normal around 4 M⊕ with a spread of 0.3 dex, periods log-uniform from 1 to 100 days, initial envelopes log-uniform from 3 to 30 per cent as in Owen &amp; Wu's fiducial model, a random rotation history for each star. The switch adds the ingredients one at a time. <strong>Nothing:</strong> no loss, only cooling and contraction, so you see the initial envelope distribution stretched into radius by the steep radius–fraction relation of §2. <strong>Fixed-rate escape:</strong> the same XUV energy budget, but the loss rate is evaluated at the bare-core radius, so a puffed-up envelope does not enlarge its own target. <strong>Stellar XUV with feedback:</strong> the real thing, loss rate at the actual radius, which is what creates the survival-time maximum. <strong>Boil-off:</strong> the planet-powered variant of the Gas escape tab, no XUV at all.</p>
   <div class="panel">
     <div class="controls">
       <div class="ctl" style="flex:none;"><label>Age</label>
@@ -1602,9 +1604,11 @@
           <button aria-pressed="false" data-v="1">1 Gyr</button>
           <button aria-pressed="true" data-v="5">5 Gyr</button>
         </div></div>
-      <div class="ctl" style="flex:none;"><label>What removes the gas</label>
+      <div class="ctl" style="flex:none;max-width:none;"><label>What removes the gas · the ingredients, one at a time</label>
         <div class="seg" id="seg-rv3e" role="group" aria-label="Escape engine">
-          <button aria-pressed="true" data-v="xuv">stellar XUV · photoevaporation</button>
+          <button aria-pressed="false" data-v="none">nothing · stretching only</button>
+          <button aria-pressed="false" data-v="flat">fixed-rate escape · no radius feedback</button>
+          <button aria-pressed="true" data-v="xuv">stellar XUV · with feedback</button>
           <button aria-pressed="false" data-v="boil">planet's own heat · boil-off</button>
         </div></div>
       <div class="ctl" style="flex:none;justify-content:flex-end;">
@@ -1632,7 +1636,7 @@
       <div class="chip"><div class="k">valley depth</div><div class="v" id="rv3dep">–<small> of the peaks' mean</small></div></div>
     </div>
   </div>
-  <p class="takeaway"><em>Watch the ages.</em> At 10 Myr the population is one broad hump of puffy planets. By 100 Myr the thin envelopes are gone and the lower peak has formed; over the next few Gyr the gap clears as the survivors contract, and it then barely moves, because the star's XUV has faded. The toy's gap sits near 2.2 R⊕ rather than the observed 1.8, because its surviving envelopes are a few per cent and puffy; Owen &amp; Wu tune the core-mass distribution to place it correctly, which this tab deliberately does not do. In the full models the valley also slopes to smaller radii at longer period, since far-out planets receive less flux and lighter envelopes survive there; this toy's twenty-bin histogram is too coarse to measure that slope honestly, so it is not reported. The planet-powered version carves a shallower gap in this toy, and in the literature both mechanisms reproduce the observed valley well enough that current data cannot tell them apart.</p>
+  <p class="takeaway"><em>Read the switch left to right at 5 Gyr.</em> With nothing removing gas there are no small planets at all: every bare core in the final population was manufactured by escape. Fixed-rate escape strips only the thinnest tenth and leaves the survivors on a thin, stretched band: a thinning made by the stretching alone, too shallow for the valley finder to count as a gap. Switch the feedback on and half the population is stripped, the band is evacuated, and the lower peak becomes the dominant one. Stretching makes the gap visible; feedback makes it empty. <em>Then watch the ages.</em> At 10 Myr the population is one broad hump of puffy planets. By 100 Myr the thin envelopes are gone and the lower peak has formed; over the next few Gyr the gap clears as the survivors contract, and it then barely moves, because the star's XUV has faded. The toy's gap sits near 2.2 R⊕ rather than the observed 1.8, because its surviving envelopes are a few per cent and puffy; Owen &amp; Wu tune the core-mass distribution to place it correctly, which this tab deliberately does not do. In the full models the valley also slopes to smaller radii at longer period, since far-out planets receive less flux and lighter envelopes survive there; this toy's twenty-bin histogram is too coarse to measure that slope honestly, so it is not reported. The planet-powered version carves a shallower gap in this toy, and in the literature both mechanisms reproduce the observed valley well enough that current data cannot tell them apart.</p>
 </section>
 
 <!-- ================= STATION V4 ================= -->
@@ -4105,16 +4109,23 @@ function rvDraw2() {
   $("rv2t").innerHTML = escAge(ts[im] / 1000) + "<small> at saturated XUV</small>";
   $("rv2r").innerHTML = fmt(Rs[im], 2) + "<small> R⊕</small>";
   $("rv2rc").innerHTML = fmt(rc, 2) + "<small> R⊕</small>";
+  const slope = f => (rvR(mc, f * 1.01, F, 0.1) - rvR(mc, f * 0.99, F, 0.1)) / (0.02 * f);
+  $("rv2s1").innerHTML = fmt(slope(0.003) / 1000, 2) + "<small> R⊕ per 0.1 % of gas</small>";
+  $("rv2s2").innerHTML = fmt(slope(0.1) / 1000, 3) + "<small> R⊕ per 0.1 % of gas</small>";
 }
 /* §3 synthetic population */
 let rvPop = null;
 function rvEvolve(mc, f0, a, rot, mode) {
-  const F = 1 / (a * a), T = escTeq(a), R = new Array(kSteps.length);
+  // modes: "none" = no loss, only contraction; "flat" = the same XUV energy budget but the loss rate
+  // is evaluated at the bare-core radius, so a puffy envelope does not raise its own loss (no feedback);
+  // "xuv" = energy-limited loss at the actual radius (photoevaporation); "boil" = Jeans-parameter relaxation
+  const F = 1 / (a * a), T = escTeq(a), R = new Array(kSteps.length), Rc = egRsolid(mc, 0.325, 0);
   let f = f0, prev = kSteps[0];
   for (let k = 0; k < kSteps.length; k++) {
     const t = kSteps[k], dt = (t - prev) * 1e9 * ESCC.yr; prev = t;
-    if (mode === "xuv") {
-      if (dt > 0 && f > 0) { const n = 3, sub = dt / n; for (let i = 0; i < n && f > 0; i++) { const M = mc / (1 - f), Menv = f * M * ESCC.ME - escEL(escFxuv(a, t, rot), rvR(mc, f, F, t), M, 0.1) * sub; f = Menv <= 0 ? 0 : Menv / (mc * ESCC.ME + Menv); } }
+    if (mode === "none") {
+    } else if (mode === "xuv" || mode === "flat") {
+      if (dt > 0 && f > 0) { const n = 3, sub = dt / n; for (let i = 0; i < n && f > 0; i++) { const M = mc / (1 - f), Menv = f * M * ESCC.ME - escEL(escFxuv(a, t, rot), mode === "flat" ? Rc : rvR(mc, f, F, t), M, 0.1) * sub; f = Menv <= 0 ? 0 : Menv / (mc * ESCC.ME + Menv); } }
     } else {
       for (let j = 0; j < 40 && f > 0; j++) { if (escLam(mc / (1 - f), rvR(mc, f, F, t), T) >= 20) break; f *= 0.9; if (f < 1e-5) f = 0; }
     }
@@ -4126,14 +4137,14 @@ function rvMakePop() {
   const N = 2000, pop = [];
   for (let i = 0; i < N; i++) {
     const mc = Math.min(25, Math.max(0.7, Math.pow(10, Math.log10(4) + 0.3 * randn()))), P = Math.pow(10, rand() * 2);
-    pop.push({ mc, P, a: rvPtoA(P), f0: Math.pow(10, Math.log10(0.03) + rand() * Math.log10(10)), rot: ["slow", "mod", "fast"][Math.floor(rand() * 3)], z4: randn(), xuv: null, boil: null });
+    pop.push({ mc, P, a: rvPtoA(P), f0: Math.pow(10, Math.log10(0.03) + rand() * Math.log10(10)), rot: ["slow", "mod", "fast"][Math.floor(rand() * 3)], z4: randn(), none: null, flat: null, xuv: null, boil: null });
   }
   pop.forEach(p => p.xuv = rvEvolve(p.mc, p.f0, p.a, p.rot, "xuv"));
   return pop;
 }
 function rvDraw3() {
   if (!rvPop) rvPop = rvMakePop();
-  if (RV.eng === "boil" && !rvPop[0].boil) rvPop.forEach(p => p.boil = rvEvolve(p.mc, p.f0, p.a, p.rot, "boil"));
+  if (!rvPop[0][RV.eng]) rvPop.forEach(p => p[RV.eng] = rvEvolve(p.mc, p.f0, p.a, p.rot, RV.eng));
   let k = 0; while (k < kSteps.length - 1 && kSteps[k] < RV.age3) k++;
   const rows = rvPop.map(p => ({ P: p.P, R: p[RV.eng].R[k], bare: p[RV.eng].f <= 0 && RV.age3 >= 5 || p[RV.eng].R[k] <= egRsolid(p.mc, 0.325, 0) + 1e-6, p }));
   const counts = rvHistCounts(rows.map(r => r.R)), v = rvValley(counts);
