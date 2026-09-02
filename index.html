@@ -34,7 +34,9 @@
   .dot{width:11px;height:11px;border-radius:50%;flex:none;}
 
   /* ---------- tabs ---------- */
-  .tabs{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap;}
+  .tabgroups{display:flex;flex-direction:column;gap:16px;margin-top:26px;}
+  .tab-label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+  .tabs{display:flex;gap:10px;flex-wrap:wrap;}
   .tabbtn{background:none;border:1px solid var(--line);border-radius:10px;color:var(--ink2);
           padding:10px 18px;font-family:var(--sans);font-size:14.5px;cursor:pointer;
           display:flex;flex-direction:column;align-items:flex-start;gap:3px;}
@@ -198,14 +200,24 @@
 <header>
   <p class="eyebrow">An interactive reading companion · exoplanet interiors</p>
   <h1>Volatile Worlds</h1>
-  <div class="tabs" role="tablist" aria-label="Papers">
-    <button class="tabbtn" id="tab-alibert" role="tab" aria-selected="true">Alibert 2016 <small>break the degeneracy</small></button>
-    <button class="tabbtn" id="tab-dorn" role="tab" aria-selected="false">Dorn 2017 <small>map the degeneracy</small></button>
-    <button class="tabbtn concept" id="tab-conf" role="tab" aria-selected="false">Photobombing <small>concept · Cacaj 2025 → interiors</small></button>
-    <button class="tabbtn" id="tab-kub" role="tab" aria-selected="false">Kubyshkina 2022 <small>evolve the population</small></button>
-    <button class="tabbtn concept" id="tab-esc" role="tab" aria-selected="false">Gas escape <small>concept · how gas leaves</small></button>
-    <button class="tabbtn" id="tab-baty" role="tab" aria-selected="false">Baty 2023 <small>learn the equation</small></button>
-    <button class="tabbtn" id="tab-mos" role="tab" aria-selected="false">Moseley 2020 <small>emulate the simulator</small></button>
+  <div class="tabgroups">
+    <div class="tabgroup">
+      <p class="tab-label">Papers · in reading order</p>
+      <div class="tabs" role="tablist" aria-label="Papers">
+        <button class="tabbtn" id="tab-alibert" role="tab" aria-selected="true">Alibert 2016 <small>break the degeneracy</small></button>
+        <button class="tabbtn" id="tab-dorn" role="tab" aria-selected="false">Dorn 2017 <small>map the degeneracy</small></button>
+        <button class="tabbtn" id="tab-kub" role="tab" aria-selected="false">Kubyshkina 2022 <small>evolve the population</small></button>
+        <button class="tabbtn" id="tab-baty" role="tab" aria-selected="false">Baty 2023 <small>learn the equation</small></button>
+        <button class="tabbtn" id="tab-mos" role="tab" aria-selected="false">Moseley 2020 <small>emulate the simulator</small></button>
+      </div>
+    </div>
+    <div class="tabgroup">
+      <p class="tab-label">Concept tabs · read alongside the papers they follow</p>
+      <div class="tabs" role="tablist" aria-label="Concept tabs">
+        <button class="tabbtn concept" id="tab-conf" role="tab" aria-selected="false">Photobombing <small>after Dorn · Cacaj 2025 → interiors</small></button>
+        <button class="tabbtn concept" id="tab-esc" role="tab" aria-selected="false">Gas escape <small>after Kubyshkina · how gas leaves</small></button>
+      </div>
+    </div>
   </div>
 </header>
 
