@@ -244,6 +244,7 @@
       <div class="tabs" role="tablist" aria-label="Concept tabs">
         <button class="tabbtn concept" id="tab-conf" role="tab" aria-selected="false">Photobombing <small>after Dorn · Cacaj 2025 → interiors</small></button>
         <button class="tabbtn concept" id="tab-esc" role="tab" aria-selected="false">Gas escape <small>after Kubyshkina · how gas leaves</small></button>
+        <button class="tabbtn concept" id="tab-pp" role="tab" aria-selected="false">PINN playground <small>after Baty · learn the tricks</small></button>
         <button class="tabbtn concept" id="tab-val" role="tab" aria-selected="false">Radius valley <small>after Egger · two peaks and a gap</small></button>
       </div>
     </div>
@@ -1139,6 +1140,521 @@
   <p>H. Baty (2023), “Modelling Lane–Emden type equations using Physics-Informed Neural Networks”, Astronomy and Computing 44, 100734 · <a href="https://insu.hal.science/insu-04178275">HAL insu-04178275</a></p>
 </footer>
 </div><!-- /page-baty -->
+
+<div id="page-pp" role="tabpanel" aria-labelledby="tab-pp" hidden>
+<section class="pagehero">
+  <p class="eyebrow">Concept tab · physics-informed neural networks · a playground, not a paper</p>
+  <p class="standfirst">The Baty tab showed one PINN learning one equation. This tab takes the idea apart. Eleven stations, each with one small problem, one dial, one trick and a switch that turns the trick off, so you can watch the failure and the fix on the same seed. Every network here is real and trains in your browser; every curve is compared with an exact or Runge–Kutta reference, never with the training loss alone, because the first lesson of the field is that a PINN can converge to a small loss and a wrong answer.</p>
+  <p class="esc-note">Reading order: §1–3 what a PINN is and how it lies to you · §4–5 the loss and the points · §6–7 the network · §8–9 the schedule and the optimiser · §10 a sharper loss · §11 a planet. The tricks are from the report in <span class="mono">docs/pinn-playground-research.md</span>; each station names its source. One station trains at a time.</p>
+</section>
+
+<!-- ================= STATION P1 ================= -->
+<section id="p1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>The simplest PINN, and its first lie</h2></div>
+  <p class="prose">The smallest equation that couples a function to its own derivative: <span class="mono">y' = −k y</span>, <span class="mono">y(0) = 1</span>. The network takes t, returns ŷ, and the loss is the squared residual <span class="mono">ŷ' + k ŷ</span> at 32 points, plus a term for the initial condition. Nothing else. Now notice that <span class="mono">y ≡ 0</span> satisfies the equation exactly: drop the initial-condition term and the network finds that answer, with a loss of zero. That is the trivial solution, the first of several ways a PINN can be perfectly confident and perfectly wrong.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Decay rate k <output id="o-pp1k">1.0</output></label>
+        <input type="range" id="in-pp1k" min="0.5" max="3" step="0.25" value="1" aria-label="Decay rate"></div>
+      <div class="ctl" style="flex:none;"><label>Initial condition</label>
+        <div class="seg" id="seg-pp1ic" role="group" aria-label="Initial condition treatment">
+          <button aria-pressed="false" data-v="0">dropped · λ = 0</button>
+          <button aria-pressed="true" data-v="1">soft · λ = 1</button>
+          <button aria-pressed="false" data-v="10">soft · λ = 10</button>
+          <button aria-pressed="false" data-v="hard">hard · ŷ = 1 + t·N(t)</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp1train">▶ Train</button>
+        <button class="btn" id="btn-pp1reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp1a">
+        <p class="chart-title">Network vs exact solution</p>
+        <p class="chart-sub">Ticks: the 32 collocation points · dashed: e<sup>−kt</sup></p>
+        <svg id="pp1a" viewBox="0 0 460 380" aria-label="PINN solution versus exact decay"></svg>
+        <div class="tip" id="tip-pp1a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp1b">
+        <p class="chart-title">Training loss and true error</p>
+        <p class="chart-sub">Blue: loss · rust: relative L² error against the exact solution (log₁₀)</p>
+        <svg id="pp1b" viewBox="0 0 460 380" aria-label="Loss and error history"></svg>
+        <div class="tip" id="tip-pp1b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">step</div><div class="v" id="pp1step">0</div></div>
+      <div class="chip"><div class="k">loss</div><div class="v" id="pp1loss">–</div></div>
+      <div class="chip"><div class="k">relative L² error</div><div class="v" id="pp1err">–</div></div>
+      <div class="chip"><div class="k">ŷ(0)</div><div class="v" id="pp1y0">–</div></div>
+      <div class="chip" style="display:flex;align-items:center;"><span class="verdict" id="pp1verdict">–</span></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to try.</em> Train with the condition dropped: the loss falls to 10⁻⁸ and the curve is flat at zero. Put the condition back at λ = 1 and the same network finds e<sup>−kt</sup> in a few hundred steps. Then switch to the hard form ŷ = 1 + t·N(t), the trial-function trick of Lagaris, Likas and Fotiadis (1998): the initial condition is now satisfied by construction and the loss has a single term. It is not automatically more accurate, as Baty found on Lane–Emden, but a whole class of failures is gone. The chart on the right is the habit to keep for the rest of this tab: loss and true error, side by side, always.</p>
+</section>
+
+<!-- ================= STATION P2 ================= -->
+<section id="p2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>What autodiff is doing</h2></div>
+  <p class="prose">A PINN is only as good as the derivatives it takes of itself. Here the network solves <span class="mono">u'' = −π² sin πx</span> with the boundary values built in, and the second chart shows the derivative u'' the network computes internally, next to the exact one. Every neuron on this page carries not just its value but its first and second derivative with respect to the input, propagated forward exactly, so u'' is not a finite difference. Then swap the activation: ReLU's second derivative is zero everywhere, so a ReLU network cannot express u'' at all, and the residual has nothing to push against.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Activation</label>
+        <div class="seg" id="seg-pp2act" role="group" aria-label="Activation function">
+          <button aria-pressed="true" data-v="tanh">tanh</button>
+          <button aria-pressed="false" data-v="sin">sin</button>
+          <button aria-pressed="false" data-v="relu">ReLU</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp2train">▶ Train</button>
+        <button class="btn" id="btn-pp2reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp2a">
+        <p class="chart-title">u and its second derivative, straight from the network</p>
+        <p class="chart-sub">Blue: û · rust: û'' from the propagated derivatives · dashed: exact</p>
+        <svg id="pp2a" viewBox="0 0 460 380" aria-label="Solution and second derivative"></svg>
+        <div class="tip" id="tip-pp2a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp2b">
+        <p class="chart-title">Loss and true error</p>
+        <p class="chart-sub">Blue: loss · rust: relative L² error of û (log₁₀)</p>
+        <svg id="pp2b" viewBox="0 0 460 380" aria-label="Loss and error history"></svg>
+        <div class="tip" id="tip-pp2b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">step</div><div class="v" id="pp2step">0</div></div>
+      <div class="chip"><div class="k">loss</div><div class="v" id="pp2loss">–</div></div>
+      <div class="chip"><div class="k">error in û</div><div class="v" id="pp2err">–</div></div>
+      <div class="chip"><div class="k">error in û''</div><div class="v" id="pp2err2">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>The rule.</em> The activation must have non-trivial derivatives up to the order of the equation. Tanh and sin do; ReLU and every piecewise-linear function do not, which is why no PINN paper uses them for second-order problems. Sin converges fastest here and will return in §6 for a different reason. The derivative curve is also your best debugging tool: if û looks right and û'' looks wrong, the network is fitting the values and cheating on the physics.</p>
+</section>
+
+<!-- ================= STATION P3 ================= -->
+<section id="p3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Wrong answer, small loss</h2></div>
+  <p class="prose">Rohrhofer and colleagues (2023) found that the physics loss of a dynamical system has spurious minima at the system's fixed points. Take <span class="mono">y' = y(1 − y²)</span> from <span class="mono">y(0) = 0.05</span>: the true solution climbs from the unstable equilibrium at 0 to the stable one at 1. With the initial condition hard-coded, the network still has a cheap option: stay near zero for the whole window, where the residual is tiny because y is tiny. The longer the horizon, the more attractive the cheat. Their table: 100 % success at T = 2.5, 0–14 % at T = 5 and beyond.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Horizon T</label>
+        <div class="seg" id="seg-pp3T" role="group" aria-label="Horizon">
+          <button aria-pressed="false" data-v="2.5">2.5</button>
+          <button aria-pressed="true" data-v="5">5</button>
+          <button aria-pressed="false" data-v="7.5">7.5</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Fix</label>
+        <div class="seg" id="seg-pp3fix" role="group" aria-label="Fix">
+          <button aria-pressed="true" data-v="none">none</button>
+          <button aria-pressed="false" data-v="curr">curriculum in T</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp3seed">seed 1 · next</button>
+        <button class="btn" id="btn-pp3train">▶ Train</button>
+        <button class="btn" id="btn-pp3reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp3a">
+        <p class="chart-title">Network vs exact solution</p>
+        <p class="chart-sub">64 collocation points · dashed: the exact logistic-type curve</p>
+        <svg id="pp3a" viewBox="0 0 460 380" aria-label="Solution versus exact"></svg>
+        <div class="tip" id="tip-pp3a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp3b">
+        <p class="chart-title">Loss and true error</p>
+        <p class="chart-sub">The trap: loss falls, error stays near 1</p>
+        <svg id="pp3b" viewBox="0 0 460 380" aria-label="Loss and error history"></svg>
+        <div class="tip" id="tip-pp3b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">step</div><div class="v" id="pp3step">0</div></div>
+      <div class="chip"><div class="k">loss</div><div class="v" id="pp3loss">–</div></div>
+      <div class="chip"><div class="k">relative L² error</div><div class="v" id="pp3err">–</div></div>
+      <div class="chip"><div class="k">curriculum stage</div><div class="v" id="pp3stage">–</div></div>
+      <div class="chip" style="display:flex;align-items:center;"><span class="verdict" id="pp3verdict">–</span></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to try.</em> At T = 2.5 every seed succeeds. At T = 5 most seeds park on the fixed point; step through the seeds and count. At T = 7.5 all of them do, and the loss chart says nothing is wrong. The curriculum (train on a short window first, then lengthen it, warm-starting each stage) is Krishnapriyan's fix and rescues T = 5 but not always 7.5. The systematic fixes, causal weighting and time-marching, are §8. Keep this station in mind whenever a PINN paper reports only its loss.</p>
+</section>
+
+<!-- ================= STATION P4 ================= -->
+<section id="p4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>Unbalanced gradients</h2></div>
+  <p class="prose">Back to Poisson, <span class="mono">u'' = −(2π)² sin 2πx</span>, but with the boundary values as soft loss terms, the way most PINNs are written. The residual involves a second derivative and the boundary terms do not, so the two parts of the loss live at different scales: Wang, Yu and Perdikaris (2022) showed that the neural tangent kernel of the residual dominates that of the boundary by orders of magnitude, so the residual is fitted long before the boundary, and with plain gradient descent the boundary is never fitted at all. The chart on the right shows the two kernels' eigenvalues live. Every fix in the menu attacks that ratio.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Residual</label>
+        <div class="seg" id="seg-pp4sc" role="group" aria-label="Residual scaling">
+          <button aria-pressed="true" data-v="raw">raw · u'' + f</button>
+          <button aria-pressed="false" data-v="scaled">non-dimensionalised · ÷(2π)²</button>
+        </div></div>
+      <div class="ctl" style="flex:none;max-width:none;"><label>Boundary treatment</label>
+        <div class="seg" id="seg-pp4w" role="group" aria-label="Boundary weighting">
+          <button aria-pressed="true" data-v="1">λ_b = 1</button>
+          <button aria-pressed="false" data-v="100">λ_b = 100</button>
+          <button aria-pressed="false" data-v="grad">gradient-norm balancing</button>
+          <button aria-pressed="false" data-v="ntk">NTK weighting</button>
+          <button aria-pressed="false" data-v="hard">hard · x(1−x)·N</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Optimiser</label>
+        <div class="seg" id="seg-pp4opt" role="group" aria-label="Optimiser">
+          <button aria-pressed="true" data-v="adam">Adam 10⁻³</button>
+          <button aria-pressed="false" data-v="gd">gradient descent 10⁻⁴</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp4train">▶ Train</button>
+        <button class="btn" id="btn-pp4reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp4a">
+        <p class="chart-title">Network vs exact, with the boundary marked</p>
+        <p class="chart-sub">Rust dots: the two boundary points the network must hit</p>
+        <svg id="pp4a" viewBox="0 0 460 380" aria-label="Solution with boundary values"></svg>
+        <div class="tip" id="tip-pp4a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp4b">
+        <p class="chart-title">Neural tangent kernel eigenvalues, now</p>
+        <p class="chart-sub">Blue: the residual kernel K_rr (top 12) · rust: the boundary kernel K_uu (2) · log₁₀ · the ratio of traces sets the weights</p>
+        <svg id="pp4b" viewBox="0 0 460 380" aria-label="NTK eigenvalue spectra"></svg>
+        <div class="tip" id="tip-pp4b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">step</div><div class="v" id="pp4step">0</div></div>
+      <div class="chip"><div class="k">relative L² error</div><div class="v" id="pp4err">–</div></div>
+      <div class="chip"><div class="k">boundary violation |û(0)|+|û(1)|</div><div class="v" id="pp4bc">–</div></div>
+      <div class="chip"><div class="k">current λ_b</div><div class="v" id="pp4lam">–</div></div>
+      <div class="chip"><div class="k">Tr K_rr / Tr K_uu</div><div class="v" id="pp4tr">–</div></div>
+      <div class="chip"><div class="k">‖∇L_r‖ / ‖∇L_b‖</div><div class="v" id="pp4gn">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Four fixes, one lesson.</em> With the raw residual the trace ratio is near 10⁴. Gradient descent at equal weights leaves the boundary unfitted; Adam gets there eventually because it rescales every parameter's step, but watch the boundary violation stay large for the first thousand steps. λ_b = 100 helps, gradient-norm balancing (Wang, Teng, Perdikaris 2021) finds a similar weight by itself, NTK weighting sets λ_b to the trace ratio, and the hard constraint removes the term altogether. Now switch the residual to non-dimensionalised: the trace ratio drops to order one and λ_b = 1 simply works. That is why the expert's guide makes rescaling the equation step one. And note that λ_b = 100 with the scaled residual stalls at u ≡ 0: bigger is not better, the ratio is what matters.</p>
+</section>
+
+<!-- ================= STATION P5 ================= -->
+<section id="p5">
+  <div class="sec-head"><span class="sec-num">§5</span><h2>Where to put the points</h2></div>
+  <p class="prose">A PINN only enforces its equation where you ask. The solution here is a front, <span class="mono">u = tanh 40(x − ½)</span>, and its forcing is a narrow spike that a coarse grid of collocation points straddles without seeing. Wu and colleagues (2023) ran six thousand trainings and concluded that the residual-based adaptive distribution, RAD, is the default to use for any new problem: every hundred steps, resample the points from a density proportional to the residual plus a floor. The chart on the right is that residual, and the ticks are the points.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Collocation points</label>
+        <div class="seg" id="seg-pp5N" role="group" aria-label="Number of points">
+          <button aria-pressed="false" data-v="16">16</button>
+          <button aria-pressed="true" data-v="32">32</button>
+          <button aria-pressed="false" data-v="64">64</button>
+        </div></div>
+      <div class="ctl" style="flex:none;max-width:none;"><label>Sampling</label>
+        <div class="seg" id="seg-pp5s" role="group" aria-label="Sampling strategy">
+          <button aria-pressed="true" data-v="grid">fixed grid</button>
+          <button aria-pressed="false" data-v="rand">random, resampled every 50 steps</button>
+          <button aria-pressed="false" data-v="rad">RAD every 100 steps</button>
+          <button aria-pressed="false" data-v="sa">self-adaptive weights</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp5train">▶ Train</button>
+        <button class="btn" id="btn-pp5reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp5a">
+        <p class="chart-title">Network vs exact, with the points</p>
+        <p class="chart-sub">Ticks: collocation points · tick height: their weight (self-adaptive) · dashed: exact</p>
+        <svg id="pp5a" viewBox="0 0 460 380" aria-label="Solution and collocation points"></svg>
+        <div class="tip" id="tip-pp5a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp5b">
+        <p class="chart-title">Residual map |r(x)| on a dense grid</p>
+        <p class="chart-sub">What RAD samples from · log₁₀ · the front is where the equation is violated</p>
+        <svg id="pp5b" viewBox="0 0 460 380" aria-label="Residual map"></svg>
+        <div class="tip" id="tip-pp5b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">step</div><div class="v" id="pp5step">0</div></div>
+      <div class="chip"><div class="k">loss</div><div class="v" id="pp5loss">–</div></div>
+      <div class="chip"><div class="k">relative L² error</div><div class="v" id="pp5err">–</div></div>
+      <div class="chip"><div class="k">points within 0.05 of the front</div><div class="v" id="pp5near">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to try.</em> At 16 points the fixed grid gives a smeared front and a small loss: the equation is satisfied at the points and violated between them, which the residual map shows plainly. RAD moves points to the front and cuts the error several-fold at the same budget; random resampling regularises but does not target; the self-adaptive weights of McClenny and Braga-Neto lift the front's points but, on a 1-D problem this small, buy little. At 64 points everything works, which is the other lesson: sampling tricks matter when points are scarce, as they are in three dimensions.</p>
+</section>
+
+<!-- ================= STATION P6 ================= -->
+<section id="p6">
+  <div class="sec-head"><span class="sec-num">§6</span><h2>Spectral bias</h2></div>
+  <p class="prose">The simplest problem of all, <span class="mono">u' = cos ωx</span>, <span class="mono">u(0) = 0</span> on [−2π, 2π], is the opening example of Moseley, Markham and Nissen-Meyer's FBPINN paper. At ω = 1 a two-layer tanh network solves it at once. At ω = 15 the same network fits a few cycles near the origin and gives up: networks learn low frequencies first, and a high-frequency solution is beyond a small tanh network's reach in any reasonable number of steps. Two remedies act on the input: Fourier features, which hand the network sines and cosines of a chosen bandwidth σ, and sinusoidal activations. Both have a knob, and the knob can be wrong.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Frequency ω</label>
+        <div class="seg" id="seg-pp6w" role="group" aria-label="Frequency">
+          <button aria-pressed="false" data-v="1">1</button>
+          <button aria-pressed="false" data-v="5">5</button>
+          <button aria-pressed="true" data-v="15">15</button>
+        </div></div>
+      <div class="ctl" style="flex:none;max-width:none;"><label>Input features · activation</label>
+        <div class="seg" id="seg-pp6f" role="group" aria-label="Features">
+          <button aria-pressed="true" data-v="raw">raw x · tanh</button>
+          <button aria-pressed="false" data-v="f10">Fourier σ = 10</button>
+          <button aria-pressed="false" data-v="f30">Fourier σ = 30</button>
+          <button aria-pressed="false" data-v="f60">Fourier σ = 60</button>
+          <button aria-pressed="false" data-v="sin">raw x · sin</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp6train">▶ Train</button>
+        <button class="btn" id="btn-pp6reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp6a">
+        <p class="chart-title">Network vs exact</p>
+        <p class="chart-sub">2×16 network, 200 points · dashed: sin(ωx)/ω</p>
+        <svg id="pp6a" viewBox="0 0 460 380" aria-label="Solution versus exact"></svg>
+        <div class="tip" id="tip-pp6a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp6b">
+        <p class="chart-title">Loss and true error</p>
+        <p class="chart-sub">Blue: loss · rust: relative L² error (log₁₀)</p>
+        <svg id="pp6b" viewBox="0 0 460 380" aria-label="Loss and error history"></svg>
+        <div class="tip" id="tip-pp6b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">step</div><div class="v" id="pp6step">0</div></div>
+      <div class="chip"><div class="k">parameters</div><div class="v" id="pp6np">–</div></div>
+      <div class="chip"><div class="k">loss</div><div class="v" id="pp6loss">–</div></div>
+      <div class="chip"><div class="k">relative L² error</div><div class="v" id="pp6err">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to try.</em> ω = 15 with raw inputs: the error stays near 1 however long you wait. Fourier features with σ = 30 solve it; σ = 10 is too narrow-band and σ = 60 too wide, both leave errors of tens of per cent, and at ω = 1 the σ = 60 network is worse than the plain one. The bandwidth must match the solution, which is exactly the tuning warning in the expert's guide. Sinusoidal activations do almost as well with no embedding at all, at the price of sensitivity to their own frequency scale. §7 shows the third remedy, which changes not the input but the number of networks.</p>
+</section>
+
+<!-- ================= STATION P7 ================= -->
+<section id="p7">
+  <div class="sec-head"><span class="sec-num">§7</span><h2>Many small networks beat one big one</h2></div>
+  <p class="prose">The FBPINN idea: cut the domain into overlapping windows, give each window its own tiny network that sees only its window rescaled to [−1, 1], and sum them with smooth window functions. Inside its window every subnetwork faces a low-frequency problem, so spectral bias never bites, and the sum is smooth by construction, so no interface loss is needed. In the paper, thirty 2×16 subnetworks solved the ω = 15 problem that a single 5×128 network with 66 000 parameters barely could. Same problem here, ω = 15.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;max-width:none;"><label>Model</label>
+        <div class="seg" id="seg-pp7m" role="group" aria-label="Model">
+          <button aria-pressed="true" data-v="s16">single 2×16</button>
+          <button aria-pressed="false" data-v="s32">single 3×32</button>
+          <button aria-pressed="false" data-v="fb6">FBPINN · 6 × (2×8)</button>
+          <button aria-pressed="false" data-v="fb10">FBPINN · 10 × (2×8)</button>
+          <button aria-pressed="false" data-v="fb15">FBPINN · 15 × (2×8)</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp7train">▶ Train</button>
+        <button class="btn" id="btn-pp7reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp7a">
+        <p class="chart-title">Network vs exact at ω = 15</p>
+        <p class="chart-sub">200 points · dashed: sin(15x)/15</p>
+        <svg id="pp7a" viewBox="0 0 460 380" aria-label="Solution versus exact"></svg>
+        <div class="tip" id="tip-pp7a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp7b">
+        <p class="chart-title">Window functions and the error history</p>
+        <p class="chart-sub">Top: the windows w_i(x) · bottom: loss (blue) and relative L² error (rust), log₁₀</p>
+        <svg id="pp7b" viewBox="0 0 460 380" aria-label="Windows and history"></svg>
+        <div class="tip" id="tip-pp7b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">step</div><div class="v" id="pp7step">0</div></div>
+      <div class="chip"><div class="k">parameters</div><div class="v" id="pp7np">–</div></div>
+      <div class="chip"><div class="k">loss</div><div class="v" id="pp7loss">–</div></div>
+      <div class="chip"><div class="k">relative L² error</div><div class="v" id="pp7err">–</div></div>
+      <div class="chip"><div class="k">steps per second</div><div class="v" id="pp7sps">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to try.</em> The single networks, small or seven times larger, sit at an error near 1; capacity is not the problem, frequency is. Six subnetworks are still too few, each still sees several cycles. Ten reach a few per cent within a few thousand steps and fifteen get below one per cent, with fewer parameters than the 3×32 single network that fails. Two caveats from the paper worth remembering: an interface placed on a shock hurts, and for second-order problems the subdomains had to be trained outward from the boundary.</p>
+</section>
+
+<!-- ================= STATION P8 ================= -->
+<section id="p8">
+  <div class="sec-head"><span class="sec-num">§8</span><h2>Respect causality</h2></div>
+  <p class="prose">§3's trap has a mechanism: a plain PINN minimises the residual at all times at once, and a solution that is wrong from the start can still be locally consistent later. Two fixes force information to flow forward in time. Causal weighting (Wang, Sankaran, Perdikaris 2022) multiplies the residual at t<sub>i</sub> by <span class="mono">exp(−ε Σ<sub>k&lt;i</sub> r<sub>k</sub>²)</span>, so later points count only once earlier ones are satisfied; the minimum weight doubles as a convergence certificate. Time-marching trains a growing window instead. Same problem as §3 at its hardest, T = 7.5, where nothing else worked.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;max-width:none;"><label>Method</label>
+        <div class="seg" id="seg-pp8m" role="group" aria-label="Method">
+          <button aria-pressed="false" data-v="plain">plain</button>
+          <button aria-pressed="true" data-v="c1">causal · ε = 1</button>
+          <button aria-pressed="false" data-v="c10">causal · ε = 10</button>
+          <button aria-pressed="false" data-v="march">time-marching · 4 windows</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp8seed">seed 1 · next</button>
+        <button class="btn" id="btn-pp8train">▶ Train</button>
+        <button class="btn" id="btn-pp8reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp8a">
+        <p class="chart-title">Network vs exact at T = 7.5</p>
+        <p class="chart-sub">Dashed: exact · the plain PINN parks at the fixed point</p>
+        <svg id="pp8a" viewBox="0 0 460 380" aria-label="Solution versus exact"></svg>
+        <div class="tip" id="tip-pp8a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp8b">
+        <p class="chart-title">Causal weights, or the active window</p>
+        <p class="chart-sub">Bars: the weight each collocation point currently carries · a front that advances from t = 0</p>
+        <svg id="pp8b" viewBox="0 0 460 380" aria-label="Causal weights"></svg>
+        <div class="tip" id="tip-pp8b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">step</div><div class="v" id="pp8step">0</div></div>
+      <div class="chip"><div class="k">loss</div><div class="v" id="pp8loss">–</div></div>
+      <div class="chip"><div class="k">relative L² error</div><div class="v" id="pp8err">–</div></div>
+      <div class="chip"><div class="k">min weight · certificate at 0.99</div><div class="v" id="pp8wmin">–</div></div>
+      <div class="chip" style="display:flex;align-items:center;"><span class="verdict" id="pp8verdict">–</span></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to try.</em> Plain: the weights are all one and the network parks. Causal at ε = 1: watch the weight front crawl from the left; the network cannot cheat at late times until early times are right, and every seed succeeds. ε = 10 is stricter and slower. Time-marching does the same job by hand and occasionally fails on a seed, because each window inherits whatever the previous one learned. The certificate is the honest part: when the minimum weight reaches 0.99 the whole record is being enforced.</p>
+</section>
+
+<!-- ================= STATION P9 ================= -->
+<section id="p9">
+  <div class="sec-head"><span class="sec-num">§9</span><h2>The optimiser</h2></div>
+  <p class="prose">Moseley's tutorial problem, the damped oscillator <span class="mono">u'' + 2δu' + ω₀²u = 0</span>, with the initial state built in. Rathore and colleagues (2024) explain the standard recipe: the loss is ill-conditioned because the differential operator is, Adam escapes saddles but then crawls along the narrow valley, and L-BFGS, a quasi-Newton method, finishes what Adam starts but is drawn to saddles if it starts cold. The x-axis is evaluations of the loss, not steps, so the two methods are compared at equal cost; a line search charges several evaluations per L-BFGS step.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;max-width:none;"><label>Schedule</label>
+        <div class="seg" id="seg-pp9m" role="group" aria-label="Optimiser schedule">
+          <button aria-pressed="true" data-v="adam">Adam only</button>
+          <button aria-pressed="false" data-v="late">Adam 2000 → L-BFGS</button>
+          <button aria-pressed="false" data-v="early">Adam 500 → L-BFGS · too early</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp9train">▶ Train</button>
+        <button class="btn" id="btn-pp9reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp9a">
+        <p class="chart-title">Network vs exact</p>
+        <p class="chart-sub">ω₀ = 10, δ = 1.5 · 2×32 network, 40 points · dashed: exact</p>
+        <svg id="pp9a" viewBox="0 0 460 380" aria-label="Solution versus exact"></svg>
+        <div class="tip" id="tip-pp9a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp9b">
+        <p class="chart-title">Loss and error against loss evaluations</p>
+        <p class="chart-sub">Blue: loss · rust: relative L² error · dotted line: the switch to L-BFGS</p>
+        <svg id="pp9b" viewBox="0 0 460 380" aria-label="Loss versus evaluations"></svg>
+        <div class="tip" id="tip-pp9b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">evaluations</div><div class="v" id="pp9ev">0</div></div>
+      <div class="chip"><div class="k">loss</div><div class="v" id="pp9loss">–</div></div>
+      <div class="chip"><div class="k">relative L² error</div><div class="v" id="pp9err">–</div></div>
+      <div class="chip"><div class="k">phase</div><div class="v" id="pp9phase">–</div></div>
+      <div class="chip"><div class="k">line-search failures</div><div class="v" id="pp9fail">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to try.</em> Adam alone reaches an error of a few per cent after 6000 evaluations. Adam for 2000 then L-BFGS reaches 10⁻³ at 3000 and keeps going, two orders of magnitude further than Adam at the same cost. Switch at 500 and L-BFGS lands in a saddle and stalls at a loss it cannot leave; that is Rathore's warning about starting cold. A line search that returns step zero with the gradient still large is the symptom to watch for.</p>
+</section>
+
+<!-- ================= STATION P10 ================= -->
+<section id="p10">
+  <div class="sec-head"><span class="sec-num">§10</span><h2>A sharper loss: gradient-enhanced PINNs</h2></div>
+  <p class="prose">If the residual vanishes everywhere, so does its derivative. Yu, Lu, Meng and Karniadakis (2022) add that derivative to the loss, weighted by w, which asks more of every collocation point and so needs fewer of them; it also needs a third derivative of the network, which the jets on this page carry. Poisson again, <span class="mono">u'' = −(2π)² sin 2πx</span>, with as few as four points.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Collocation points</label>
+        <div class="seg" id="seg-pp10N" role="group" aria-label="Number of points">
+          <button aria-pressed="true" data-v="4">4</button>
+          <button aria-pressed="false" data-v="5">5</button>
+          <button aria-pressed="false" data-v="6">6</button>
+          <button aria-pressed="false" data-v="10">10</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Gradient term weight w</label>
+        <div class="seg" id="seg-pp10w" role="group" aria-label="gPINN weight">
+          <button aria-pressed="true" data-v="0">0 · plain</button>
+          <button aria-pressed="false" data-v="0.01">0.01</button>
+          <button aria-pressed="false" data-v="0.1">0.1</button>
+          <button aria-pressed="false" data-v="1">1</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp10train">▶ Train</button>
+        <button class="btn" id="btn-pp10reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp10a">
+        <p class="chart-title">Network vs exact between the points</p>
+        <p class="chart-sub">Ticks: collocation points · dashed: exact · the error lives between the ticks</p>
+        <svg id="pp10a" viewBox="0 0 460 380" aria-label="Solution versus exact"></svg>
+        <div class="tip" id="tip-pp10a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp10b">
+        <p class="chart-title">Loss and true error</p>
+        <p class="chart-sub">Blue: loss · rust: relative L² error (log₁₀)</p>
+        <svg id="pp10b" viewBox="0 0 460 380" aria-label="Loss and error history"></svg>
+        <div class="tip" id="tip-pp10b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">step</div><div class="v" id="pp10step">0</div></div>
+      <div class="chip"><div class="k">loss</div><div class="v" id="pp10loss">–</div></div>
+      <div class="chip"><div class="k">relative L² error</div><div class="v" id="pp10err">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>An honest station.</em> With four or five points the gradient term cuts the error by a third to a half; with ten it changes nothing, and on harder forcings it can destabilise training, which is the paper's own caveat about choosing w. The gain is real but modest on a smooth 1-D problem. It matters more where points are expensive, which is the same message as §5 seen from the loss side.</p>
+</section>
+
+<!-- ================= STATION P11 ================= -->
+<section id="p11">
+  <div class="sec-head"><span class="sec-num">§11</span><h2>Capstone: a parametric planet</h2></div>
+  <p class="prose">Hydrostatic equilibrium and mass conservation for a polytrope, written as two coupled first-order equations in the dimensionless radius ξ: <span class="mono">ξ² θ' = −m</span> and <span class="mono">m' = ξ² θⁿ</span>. This is Lane–Emden as a planet-structure code would write it, with the mass as a second unknown, and it is the miniature of what BICEPS integrates for the Egger tab. One network with inputs (ξ, n) and outputs (θ, m) learns the whole family for n from 1 to 3 at once. What you know analytically goes into the architecture: θ = 1 + ξ²N₁ and m = ξ³N₂ hold the centre exactly (θ(0) = 1, θ′(0) = 0, m ∝ ξ³ near the centre), so the singular point never appears in the loss; the two residuals are rescaled to the same size, which the loss balancing of §4 showed is not optional. The radius is where θ reaches zero; the mass is m there.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Polytropic index n to evaluate <output id="o-pp11n">1.50</output></label>
+        <input type="range" id="in-pp11n" min="0.5" max="3.5" step="0.25" value="1.5" aria-label="Polytropic index"></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pp11train">▶ Train the family</button>
+        <button class="btn" id="btn-pp11reset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pp11a">
+        <p class="chart-title">θ(ξ) and m(ξ) at your n</p>
+        <p class="chart-sub">Blue: θ · rust: m/10 · dashed: Runge–Kutta reference · dot: the surface</p>
+        <svg id="pp11a" viewBox="0 0 460 380" aria-label="Structure profiles"></svg>
+        <div class="tip" id="tip-pp11a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pp11b">
+        <p class="chart-title">Radius ξ₁ and mass m₁ across the family</p>
+        <p class="chart-sub">Lines: the network · dashed: Runge–Kutta · band: the n range the network was trained on</p>
+        <svg id="pp11b" viewBox="0 0 460 380" aria-label="Radius and mass versus n"></svg>
+        <div class="tip" id="tip-pp11b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">step</div><div class="v" id="pp11step">0</div></div>
+      <div class="chip"><div class="k">loss</div><div class="v" id="pp11loss">–</div></div>
+      <div class="chip"><div class="k">error in θ at this n</div><div class="v" id="pp11err">–</div></div>
+      <div class="chip"><div class="k">radius ξ₁ · net / RK4</div><div class="v" id="pp11r">–</div></div>
+      <div class="chip"><div class="k">mass m₁ · net / RK4</div><div class="v" id="pp11m">–</div></div>
+      <div class="chip"><div class="k">regime</div><div class="v" id="pp11zone" style="font-size:14px;">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to see.</em> Give it half a minute. The whole family converges at once, the radius and mass curves settle onto the reference inside the band, and the two equations are balanced only because their residuals were rescaled to the same size first, the lesson of §4 again. Then drag n outside 1–3: interpolation is good, extrapolation degrades, exactly as the family network in the Baty tab and the surrogates of the Moseley and Egger tabs. This is the shape of a structure emulator with the physics in the loss instead of in a training set. The report's next stations, a two-input PDE, the Parker wind's sonic point, and an inverse problem recovering n from noisy data, are phase two.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> Everything trains live: tanh, sin or ReLU networks of 2–3 layers with 8–32 units, whose neurons propagate exact first, second and (for §10) third derivatives, with hand-derived backpropagation through all of them; Adam, an L-BFGS with backtracking line search, gradient-norm and neural-tangent-kernel weighting computed from the actual per-point gradients, causal weights, residual-based resampling, self-adaptive point weights, Fourier features, sinusoidal activations, and a finite-basis composite of windowed subnetworks. Every problem is non-dimensionalised to an input range of order one before training, except where §4 deliberately turns that off. References are exact or Runge–Kutta. Every claim in the takeaways was checked in a headless run of this very code before publication; seeds are fixed so you see the same run. Sources: Lagaris, Likas & Fotiadis 1998; Raissi, Perdikaris & Karniadakis 2019; Rohrhofer et al. 2023 (arXiv 2203.13648); Krishnapriyan et al. 2021 (arXiv 2109.01050); Wang, Teng & Perdikaris 2021 (arXiv 2001.04536); Wang, Yu & Perdikaris 2022 (arXiv 2007.14527); Wu et al. 2023 (arXiv 2207.10289); McClenny & Braga-Neto 2023 (arXiv 2009.04544); Rahaman et al. 2019; Tancik et al. 2020; Moseley, Markham & Nissen-Meyer 2023 (arXiv 2107.07871); Wang, Sankaran & Perdikaris 2024 (arXiv 2203.07404); Rathore et al. 2024 (arXiv 2402.01868); Yu, Lu, Meng & Karniadakis 2022 (arXiv 2111.02801); Wang et al. 2023, "An expert's guide to training PINNs" (arXiv 2308.08468); Baty 2023.</p>
+</footer>
+</div><!-- /page-pp -->
 
 <div id="page-mos" role="tabpanel" aria-labelledby="tab-mos" hidden>
 <section class="pagehero">
@@ -4455,8 +4971,757 @@ escSegWire("seg-cf-sr", v => CF.sr = +v, cfDrawAll);
 escSegWire("seg-cf-sm", v => CF.sm = +v, cfDrawAll);
 escSegWire("seg-cf-fam", v => CF.fam = v, cfDrawAll);
 
+/* ================= PINN playground: engine =================
+   A jet-propagating MLP: every activation carries its value and its derivatives
+   d/dx, d²/dx², d³/dx³ with respect to one input variable x (the "jet"), so the
+   PDE residual can use u, u', u'', u''' and the reverse pass is exact through all
+   of them. Extra inputs (a physical parameter such as n) carry zero jets.
+   Prefix pp / PP throughout.                                                   */
+const PP_BIN = [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1]];
+const PP_ACT = {
+  tanh: (z) => { const a = Math.tanh(z), s = 1 - a * a; return [a, s, -2 * a * s, s * (6 * a * a - 2), s * (16 * a - 24 * a * a * a)]; },
+  sin:  (z) => { const s = Math.sin(z), c = Math.cos(z); return [s, c, -s, -c, s]; },
+  relu: (z) => [z > 0 ? z : 0, z > 0 ? 1 : 0, 0, 0, 0],
+};
+// features of the inputs xs = [x, p1, p2, ...]: each feature is a jet [f, f', f'', f'''] in x
+function ppFeatures(o) {
+  const K = o.K;
+  if (o.feat === "fourier") {
+    const B = new Float64Array(o.fdim);
+    for (let i = 0; i < o.fdim; i++) B[i] = o.sigma * o.rng.n();
+    return { dim: 2 * o.fdim + (o.nExtra || 0), eval(xs, F) {
+      const x = xs[0];
+      for (let i = 0; i < o.fdim; i++) { const b = B[i], c = Math.cos(b * x), s = Math.sin(b * x);
+        const jc = [c, -b * s, -b * b * c, b * b * b * s], js = [s, b * c, -b * b * s, -b * b * b * c];
+        for (let k = 0; k <= K; k++) { F[k][2 * i] = jc[k]; F[k][2 * i + 1] = js[k]; } }
+      for (let e = 0; e < (o.nExtra || 0); e++) { F[0][2 * o.fdim + e] = xs[1 + e]; for (let k = 1; k <= K; k++) F[k][2 * o.fdim + e] = 0; }
+    }, B };
+  }
+  return { dim: 1 + (o.nExtra || 0), eval(xs, F) {
+    F[0][0] = xs[0]; F[1][0] = 1; for (let k = 2; k <= K; k++) F[k][0] = 0;
+    for (let e = 0; e < (o.nExtra || 0); e++) { F[0][1 + e] = xs[1 + e]; for (let k = 1; k <= K; k++) F[k][1 + e] = 0; }
+  } };
+}
+function ppRng(seed) {
+  let s = seed >>> 0 || 1;
+  const u = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+  return { u, n() { const a = Math.max(u(), 1e-12), b = u(); return Math.sqrt(-2 * Math.log(a)) * Math.cos(2 * Math.PI * b); } };
+}
+/* o: { layers: [w1, w2, ...], out, act, K (2 or 3), feat, fdim, sigma, nExtra, seed, outScale } */
+function ppMLP(o) {
+  const K = o.K || 2, act = PP_ACT[o.act || "tanh"], rng = ppRng(o.seed || 1);
+  const feat = ppFeatures({ K, feat: o.feat, fdim: o.fdim || 16, sigma: o.sigma || 1, nExtra: o.nExtra || 0, rng });
+  const sizes = [feat.dim].concat(o.layers, [o.out || 1]), L = sizes.length - 1;
+  let np = 0; const off = [];
+  for (let l = 0; l < L; l++) { off.push({ W: np, b: np + sizes[l] * sizes[l + 1] }); np += sizes[l] * sizes[l + 1] + sizes[l + 1]; }
+  const P = new Float64Array(np), G = new Float64Array(np);
+  for (let l = 0; l < L; l++) { const lim = Math.sqrt(6 / (sizes[l] + sizes[l + 1])), first = l === 0 && o.feat === "fourier";
+    for (let i = 0; i < sizes[l] * sizes[l + 1]; i++) P[off[l].W + i] = (rng.u() * 2 - 1) * lim * (first ? 1 : 1); }
+  if (o.act === "sin") { const l = 0; const lim = o.w0 || 6; for (let i = 0; i < sizes[0] * sizes[1]; i++) P[off[0].W + i] = (rng.u() * 2 - 1) * lim / sizes[0]; }
+  // caches
+  const A = [], Z = [], Dz = [];        // A[l][k]: activations (l = 0 features), Z[l][k]: pre-activations, Dz[l]: activation derivative tables
+  for (let l = 0; l <= L; l++) { A.push([]); Z.push([]); for (let k = 0; k <= K; k++) { A[l].push(new Float64Array(sizes[l])); Z[l].push(new Float64Array(sizes[l])); } Dz.push(new Array(sizes[l])); }
+  const scale = o.outScale || 1;
+  function fwd(xs) {
+    feat.eval(xs, A[0]);
+    for (let l = 0; l < L; l++) {
+      const nIn = sizes[l], nOut = sizes[l + 1], oW = off[l].W, ob = off[l].b, last = l === L - 1;
+      for (let i = 0; i < nOut; i++) {
+        const row = oW + i * nIn;
+        for (let k = 0; k <= K; k++) { let z = k === 0 ? P[ob + i] : 0; const a = A[l][k]; for (let j = 0; j < nIn; j++) z += P[row + j] * a[j]; Z[l + 1][k][i] = z; }
+        if (last) { for (let k = 0; k <= K; k++) A[l + 1][k][i] = Z[l + 1][k][i] * scale; }
+        else {
+          const d = act(Z[l + 1][0][i]); Dz[l + 1][i] = d;
+          const z1 = Z[l + 1][1][i], z2 = K >= 2 ? Z[l + 1][2][i] : 0, z3 = K >= 3 ? Z[l + 1][3][i] : 0;
+          A[l + 1][0][i] = d[0]; A[l + 1][1][i] = d[1] * z1; if (K >= 2) A[l + 1][2][i] = d[2] * z1 * z1 + d[1] * z2;
+          if (K >= 3) A[l + 1][3][i] = d[3] * z1 * z1 * z1 + 3 * d[2] * z1 * z2 + d[1] * z3;
+        }
+      }
+    }
+    return A[L];      // array over jet order k of Float64Array(out)
+  }
+  const gz = []; for (let l = 0; l <= L; l++) { gz.push([]); for (let k = 0; k <= K; k++) gz[l].push(new Float64Array(sizes[l])); }
+  function bwd(gOut) {   // gOut[k][o]: dL/d(out_o^{(k)}); accumulates into G
+    for (let k = 0; k <= K; k++) for (let i = 0; i < sizes[L]; i++) gz[L][k][i] = gOut[k][i] * scale;
+    for (let l = L - 1; l >= 0; l--) {
+      const nIn = sizes[l], nOut = sizes[l + 1], oW = off[l].W, ob = off[l].b;
+      for (let k = 0; k <= K; k++) gz[l][k].fill(0);
+      for (let i = 0; i < nOut; i++) {
+        const row = oW + i * nIn;
+        G[ob + i] += gz[l + 1][0][i];
+        for (let k = 0; k <= K; k++) { const g = gz[l + 1][k][i]; if (g === 0) continue; const a = A[l][k], gp = gz[l][k];
+          for (let j = 0; j < nIn; j++) { G[row + j] += g * a[j]; gp[j] += P[row + j] * g; } }
+      }
+      if (l === 0) break;
+      // gz[l] currently holds dL/d(a^{(k)}) of layer l; convert to dL/d(z^{(k)})
+      for (let i = 0; i < nIn; i++) {
+        const d = Dz[l][i], z1 = Z[l][1][i], z2 = K >= 2 ? Z[l][2][i] : 0, z3 = K >= 3 ? Z[l][3][i] : 0;
+        const ga = gz[l][0][i], ga1 = gz[l][1][i], ga2 = K >= 2 ? gz[l][2][i] : 0, ga3 = K >= 3 ? gz[l][3][i] : 0;
+        const g0 = ga * d[1] + ga1 * d[2] * z1 + ga2 * (d[3] * z1 * z1 + d[2] * z2) + ga3 * (d[4] * z1 * z1 * z1 + 3 * d[3] * z1 * z2 + d[2] * z3);
+        const g1 = ga1 * d[1] + ga2 * 2 * d[2] * z1 + ga3 * (3 * d[3] * z1 * z1 + 3 * d[2] * z2);
+        const g2 = ga2 * d[1] + ga3 * 3 * d[2] * z1;
+        gz[l][0][i] = g0; gz[l][1][i] = g1; if (K >= 2) gz[l][2][i] = g2; if (K >= 3) gz[l][3][i] = ga3 * d[1];
+      }
+    }
+  }
+  return { P, G, K, fwd, bwd, nOut: sizes[L], nParams: np, sizes, feat };
+}
+/* Output transform u = A(x) + B(x)·N(x) per output; A and B return jets [v, v', v'', v'''].
+   Optional trainable extras (e.g. the sin ansatz) are handled by ppAnsatz below.        */
+function ppAffineT(Afn, Bfn) {
+  return {
+    fwd(xs, Nj, uj, o, K) { const x = xs[0], Aj = Afn(xs), Bj = Bfn(xs);
+      for (let k = 0; k <= K; k++) { let v = Aj[k]; for (let j = 0; j <= k; j++) v += PP_BIN[k][j] * Bj[j] * Nj[k - j][o]; uj[k] = v; } },
+    bwd(xs, Nj, guj, gNj, o, K) { const Bj = Bfn(xs);
+      for (let m = 0; m <= K; m++) { let g = 0; for (let k = m; k <= K; k++) g += guj[k] * PP_BIN[k][k - m] * Bj[k - m]; gNj[m][o] = g; } },
+  };
+}
+const ppJ = (v, d1 = 0, d2 = 0, d3 = 0) => [v, d1, d2, d3];
+const PP_T = {
+  none: ppAffineT(() => ppJ(0), () => ppJ(1)),
+  ic1: (u0) => ppAffineT(() => ppJ(u0), xs => ppJ(xs[0], 1)),                       // u(0) = u0
+  ic2: (u0, v0) => ppAffineT(xs => ppJ(u0 + v0 * xs[0], v0), xs => ppJ(xs[0] * xs[0], 2 * xs[0], 2)),   // u(0)=u0, u'(0)=v0
+  dir: (u0, u1) => ppAffineT(xs => ppJ(u0 + (u1 - u0) * xs[0], u1 - u0), xs => ppJ(xs[0] * (1 - xs[0]), 1 - 2 * xs[0], -2)),  // u(0)=u0, u(1)=u1
+  tanh0: (w) => ppAffineT(() => ppJ(0), xs => { const t = Math.tanh(w * xs[0]), s = 1 - t * t;                        // u(0) = 0, FBPINN style, scaled 1/w
+      return [t / w, s, -2 * w * t * s, w * w * s * (6 * t * t - 2)]; }),
+  cube: ppAffineT(() => ppJ(0), xs => ppJ(xs[0] ** 3, 3 * xs[0] ** 2, 6 * xs[0], 6)),
+  sq1: ppAffineT(() => ppJ(1), xs => ppJ(xs[0] * xs[0], 2 * xs[0], 2)),
+};
+/* A model = network + per-output transforms; presents u jets and accumulates gradients. */
+function ppModel(net, transforms) {
+  const K = net.K, nOut = net.nOut;
+  const uj = [], gN = [];
+  for (let o = 0; o < nOut; o++) uj.push(new Float64Array(K + 1));
+  for (let k = 0; k <= K; k++) gN.push(new Float64Array(nOut));
+  const T = transforms.length ? transforms : [PP_T.none];
+  let lastN = null;
+  return { net, K, nOut,
+    fwd(xs) { lastN = net.fwd(xs); for (let o = 0; o < nOut; o++) (T[o] || T[0]).fwd(xs, lastN, uj[o], o, K); return uj; },
+    bwd(xs, guj) { for (let o = 0; o < nOut; o++) (T[o] || T[0]).bwd(xs, lastN, guj[o], gN, o, K); net.bwd(gN); },
+    evalAt(xs) { return this.fwd(xs).map(a => Float64Array.from(a)); },
+  };
+}
+/* Sin ansatz û = N(t)·sin(αt+β) with trainable α, β (Moseley's workshop, Task 3). Wraps a model's single output. */
+function ppAnsatz(net, alpha, beta) {
+  const K = net.K, uj = [new Float64Array(K + 1)], gN = []; for (let k = 0; k <= K; k++) gN.push(new Float64Array(1));
+  const ex = { a: alpha, b: beta, ga: 0, gb: 0 };
+  function sj(t) { const p = ex.a * t + ex.b, s = Math.sin(p), c = Math.cos(p), a = ex.a; return [s, a * c, -a * a * s, -a * a * a * c]; }
+  let Nj = null;
+  return { net, K, nOut: 1, ex,
+    fwd(xs) { Nj = net.fwd(xs); const B = sj(xs[0]); for (let k = 0; k <= K; k++) { let v = 0; for (let j = 0; j <= k; j++) v += PP_BIN[k][j] * B[j] * Nj[k - j][0]; uj[0][k] = v; } return uj; },
+    bwd(xs, guj) { const t = xs[0], B = sj(t), g = guj[0];
+      for (let m = 0; m <= K; m++) { let v = 0; for (let k = m; k <= K; k++) v += g[k] * PP_BIN[k][k - m] * B[k - m]; gN[m][0] = v; }
+      // dB^{(j)}/dα and /dβ: B = sin(p), p = αt+β
+      const p = ex.a * t + ex.b, s = Math.sin(p), c = Math.cos(p), a = ex.a;
+      const dBa = [t * c, c - a * t * s, -2 * a * s - a * a * t * c, -3 * a * a * c + a * a * a * t * s];
+      const dBb = [c, -a * s, -a * a * c, a * a * a * s];
+      for (let k = 0; k <= K; k++) for (let j = 0; j <= k; j++) { const w = g[k] * PP_BIN[k][j] * Nj[k - j][0]; ex.ga += w * dBa[j]; ex.gb += w * dBb[j]; }
+      net.bwd(gN); },
+    evalAt(xs) { return this.fwd(xs).map(x => Float64Array.from(x)); },
+  };
+}
+/* FBPINN: u = C[ Σ_i w_i(x) N_i((x − c_i)/h_i) ], sigmoid windows, no interface loss (Moseley, Markham, Nissen-Meyer 2023). */
+function ppFB(o) {   // o: { nsub, x0, x1, overlap (fraction of subdomain width), sub: net options, transform }
+  const K = o.sub.K || 2, n = o.nsub, W = (o.x1 - o.x0) / n, ov = o.overlap * W;
+  const subs = [], cen = [], half = W / 2 + ov / 2;
+  let np = 0;
+  for (let i = 0; i < n; i++) { const s = ppMLP(Object.assign({}, o.sub, { seed: (o.sub.seed || 1) + 7 * i })); subs.push(s); cen.push(o.x0 + (i + 0.5) * W); np += s.nParams; }
+  const sig = (t) => { const s = 1 / (1 + Math.exp(-t)); const s1 = s * (1 - s), s2 = s1 * (1 - 2 * s), s3 = s2 * (1 - 2 * s) - 2 * s1 * s1; return [s, s1, s2, s3]; };
+  const sw = ov > 0 ? ov / 4 : 1e-6;
+  function win(i, x) {    // window jets: σ((x−a)/sw)·σ((b−x)/sw), a,b the overlap midpoints
+    const a = cen[i] - W / 2, b = cen[i] + W / 2;
+    if (n === 1) return [1, 0, 0, 0];
+    const L = i === 0 ? [1, 0, 0, 0] : sig((x - a) / sw).map((v, k) => v / Math.pow(sw, k));
+    const R = i === n - 1 ? [1, 0, 0, 0] : sig((b - x) / sw).map((v, k) => v * Math.pow(-1 / sw, k));
+    const out = [0, 0, 0, 0]; for (let k = 0; k <= 3; k++) for (let j = 0; j <= k; j++) out[k] += PP_BIN[k][j] * L[j] * R[k - j];
+    return out;
+  }
+  const Nj = []; for (let k = 0; k <= K; k++) Nj.push(new Float64Array(1));
+  const uj = [new Float64Array(K + 1)], gsum = [], gN = []; for (let k = 0; k <= K; k++) { gN.push(new Float64Array(1)); gsum.push(new Float64Array(1)); }
+  const T = o.transform || PP_T.none, cache = [];
+  return { K, nOut: 1, subs, np, win, cen, W,
+    get P() { return null; },
+    fwd(xs) {
+      const x = xs[0]; for (let k = 0; k <= K; k++) Nj[k][0] = 0; cache.length = 0;
+      for (let i = 0; i < n; i++) { const w = win(i, x); if (w[0] < 1e-9) { cache.push(null); continue; }
+        const xn = (x - cen[i]) / half, S = subs[i].fwd([xn]), sj = []; for (let k = 0; k <= K; k++) sj.push(S[k][0] / Math.pow(half, k));
+        cache.push({ w, sj });
+        for (let k = 0; k <= K; k++) { let v = 0; for (let j = 0; j <= k; j++) v += PP_BIN[k][j] * w[j] * sj[k - j]; Nj[k][0] += v; } }
+      T.fwd(xs, Nj, uj[0], 0, K); return uj;
+    },
+    bwd(xs, guj) {
+      const x = xs[0]; T.bwd(xs, Nj, guj[0], gsum, 0, K);     // gsum[m][0] = dL/dN^{(m)} of the sum
+      for (let i = 0; i < n; i++) { const c = cache[i]; if (!c) continue;
+        for (let m = 0; m <= K; m++) { let g = 0; for (let k = m; k <= K; k++) g += gsum[k][0] * PP_BIN[k][k - m] * c.w[k - m]; gN[m][0] = g / Math.pow(half, m); }
+        subs[i].bwd(gN); }
+    },
+    evalAt(xs) { return this.fwd(xs).map(a => Float64Array.from(a)); },
+    zeroGrad() { subs.forEach(s => s.G.fill(0)); },
+    params() { return subs.map(s => s.P); }, grads() { return subs.map(s => s.G); },
+  };
+}
+/* Adam over one or several flat parameter arrays. */
+function ppAdam(Ps, Gs, lr) {
+  const m = Ps.map(p => new Float64Array(p.length)), v = Ps.map(p => new Float64Array(p.length)); let t = 0;
+  return { lr, step() { t++; const b1c = 1 - Math.pow(0.9, t), b2c = 1 - Math.pow(0.999, t);
+    for (let q = 0; q < Ps.length; q++) { const P = Ps[q], G = Gs[q], mm = m[q], vv = v[q];
+      for (let i = 0; i < P.length; i++) { mm[i] = 0.9 * mm[i] + 0.1 * G[i]; vv[i] = 0.999 * vv[i] + 0.001 * G[i] * G[i]; P[i] -= this.lr * (mm[i] / b1c) / (Math.sqrt(vv[i] / b2c) + 1e-8); } } }, reset() { t = 0; m.forEach(a => a.fill(0)); v.forEach(a => a.fill(0)); } };
+}
+/* L-BFGS with backtracking (Armijo) line search over one flat parameter array. evalFn(P) must fill G and return the loss. */
+function ppLBFGS(P, G, evalFn, mem = 10) {
+  const S = [], Y = [], n = P.length; let L = evalFn(P), gPrev = Float64Array.from(G), fails = 0;
+  const dot = (a, b) => { let s = 0; for (let i = 0; i < n; i++) s += a[i] * b[i]; return s; };
+  return { get loss() { return L; }, get fails() { return fails; }, evals: 0,
+    step() {
+      const q = Float64Array.from(gPrev), al = [];
+      for (let i = S.length - 1; i >= 0; i--) { const rho = 1 / dot(Y[i], S[i]), a = rho * dot(S[i], q); al[i] = a; for (let j = 0; j < n; j++) q[j] -= a * Y[i][j]; }
+      let gamma = 1; if (S.length) { const i = S.length - 1; gamma = dot(S[i], Y[i]) / dot(Y[i], Y[i]); } else gamma = 1 / Math.max(1e-8, Math.sqrt(dot(q, q)));
+      for (let j = 0; j < n; j++) q[j] *= gamma;
+      for (let i = 0; i < S.length; i++) { const rho = 1 / dot(Y[i], S[i]), b = rho * dot(Y[i], q); for (let j = 0; j < n; j++) q[j] += S[i][j] * (al[i] - b); }
+      const d = q; for (let j = 0; j < n; j++) d[j] = -d[j];
+      const gd = dot(gPrev, d); if (gd >= 0) { S.length = 0; Y.length = 0; for (let j = 0; j < n; j++) d[j] = -gPrev[j] * gamma; }
+      const P0 = Float64Array.from(P); let a = 1, Lnew = L, ok = false;
+      for (let it = 0; it < 25; it++) { for (let j = 0; j < n; j++) P[j] = P0[j] + a * d[j]; Lnew = evalFn(P); this.evals++;
+        if (Lnew <= L + 1e-4 * a * dot(gPrev, d)) { ok = true; break; } a *= 0.5; }
+      if (!ok) { P.set(P0); evalFn(P); fails++; S.length = 0; Y.length = 0; return L; }
+      const s = new Float64Array(n), y = new Float64Array(n); for (let j = 0; j < n; j++) { s[j] = P[j] - P0[j]; y[j] = G[j] - gPrev[j]; }
+      if (dot(s, y) > 1e-12) { S.push(s); Y.push(y); if (S.length > mem) { S.shift(); Y.shift(); } }
+      gPrev = Float64Array.from(G); L = Lnew; return L;
+    } };
+}
+/* Loss over terms. term: { name, pts: [xs...], w: Float64Array|null, lam, res(xs, uj) -> { r, d } } where
+   d[o][k] = ∂r/∂u_o^{(k)}. Accumulates per-term gradients into the model's network(s).                */
+function ppLoss(model, terms) {
+  const K = model.K, nOut = model.nOut;
+  const nets = model.subs ? model.subs : [model.net];
+  const Gs = nets.map(nn => nn.G), Ps = nets.map(nn => nn.P);
+  const tmp = nets.map(nn => new Float64Array(nn.G.length));
+  const gu = []; for (let o = 0; o < nOut; o++) gu.push(new Float64Array(K + 1));
+  function evalTerms(withGrad, perTerm) {
+    Gs.forEach(g => g.fill(0));
+    let total = 0; const out = [];
+    for (const t of terms) {
+      if (!t.pts.length) { out.push({ L: 0, gnorm: 0 }); continue; }
+      if (perTerm) tmp.forEach(g => g.fill(0));
+      const N = t.pts.length; let Lt = 0;
+      for (let i = 0; i < N; i++) { const xs = t.pts[i], wi = t.w ? t.w[i] : 1;
+        const uj = model.fwd(xs), out = t.res(xs, uj), rs = out.rs || [out.r], ds = out.ds || [out.d];
+        for (let o = 0; o < nOut; o++) for (let k = 0; k <= K; k++) gu[o][k] = 0;
+        for (let q = 0; q < rs.length; q++) { const r = rs[q], d = ds[q]; Lt += wi * r * r / N;
+          if (withGrad) { const c = 2 * wi * r / N * t.lam; for (let o = 0; o < nOut; o++) for (let k = 0; k <= K; k++) gu[o][k] += c * (d[o] ? d[o][k] || 0 : 0); } }
+        if (withGrad) {
+          if (perTerm) { Gs.forEach(g => g.fill(0)); model.bwd(xs, gu); for (let q = 0; q < Gs.length; q++) for (let j = 0; j < Gs[q].length; j++) tmp[q][j] += Gs[q][j]; }
+          else model.bwd(xs, gu); } }
+      total += t.lam * Lt;
+      let gn = 0; if (perTerm) { for (let q = 0; q < Gs.length; q++) for (let j = 0; j < Gs[q].length; j++) gn += tmp[q][j] * tmp[q][j]; }
+      out.push({ L: Lt, gnorm: Math.sqrt(gn), g: perTerm ? tmp.map(a => Float64Array.from(a)) : null });
+    }
+    if (perTerm) { Gs.forEach(g => g.fill(0)); for (const o of out) if (o.g) for (let q = 0; q < Gs.length; q++) for (let j = 0; j < Gs[q].length; j++) Gs[q][j] += o.g[q][j]; }
+    return { total, terms: out };
+  }
+  return { Ps, Gs, evalTerms,
+    residuals(t) { return t.pts.map(xs => { const o = t.res(xs, model.fwd(xs)); return o.rs ? Math.sqrt(o.rs.reduce((a, r) => a + r * r, 0)) : o.r; }); },
+    jacobian(t) {      // per-point gradient of the residual (no weights), rows as Float64Array over concatenated params
+      const rows = [];
+      for (const xs of t.pts) { const uj = model.fwd(xs), { d } = t.res(xs, uj); for (let o = 0; o < nOut; o++) for (let k = 0; k <= K; k++) gu[o][k] = d[o] ? d[o][k] || 0 : 0;
+        Gs.forEach(g => g.fill(0)); model.bwd(xs, gu); const row = new Float64Array(Gs.reduce((s, g) => s + g.length, 0)); let off = 0; Gs.forEach(g => { row.set(g, off); off += g.length; }); rows.push(row); }
+      return rows;
+    } };
+}
+/* Symmetric eigenvalues by cyclic Jacobi (small matrices). */
+function ppEig(M) {
+  const n = M.length, A = M.map(r => Float64Array.from(r));
+  for (let sweep = 0; sweep < 60; sweep++) {
+    let off = 0; for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++) off += A[p][q] * A[p][q];
+    if (off < 1e-22) break;
+    for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++) {
+      if (Math.abs(A[p][q]) < 1e-300) continue;
+      const th = (A[q][q] - A[p][p]) / (2 * A[p][q]), t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1)), c = 1 / Math.sqrt(t * t + 1), s = t * c;
+      for (let k = 0; k < n; k++) { const akp = A[k][p], akq = A[k][q]; A[k][p] = c * akp - s * akq; A[k][q] = s * akp + c * akq; }
+      for (let k = 0; k < n; k++) { const apk = A[p][k], aqk = A[q][k]; A[p][k] = c * apk - s * aqk; A[q][k] = s * apk + c * aqk; }
+    }
+  }
+  return Array.from({ length: n }, (_, i) => A[i][i]).sort((a, b) => b - a);
+}
+function ppGram(rows) { const n = rows.length, M = []; for (let i = 0; i < n; i++) { M.push(new Float64Array(n)); for (let j = 0; j <= i; j++) { let s = 0; for (let k = 0; k < rows[i].length; k++) s += rows[i][k] * rows[j][k]; M[i][j] = s; if (j < i) M[j][i] = s; } } return M; }
+const ppLin = (a, b, n) => Array.from({ length: n }, (_, i) => a + (b - a) * (n === 1 ? 0 : i / (n - 1)));
+function ppRelL2(pred, truth) { let s = 0, t = 0; for (let i = 0; i < pred.length; i++) { s += (pred[i] - truth[i]) ** 2; t += truth[i] ** 2; } return Math.sqrt(s / Math.max(t, 1e-30)); }
+/* RK4 for y' = f(t, y) (vector), returns samples at ts */
+function ppRK4(f, y0, ts) {
+  const out = [Float64Array.from(y0)]; let y = Float64Array.from(y0);
+  for (let i = 1; i < ts.length; i++) { const h = (ts[i] - ts[i - 1]) / 8; let t = ts[i - 1];
+    for (let s = 0; s < 8; s++) { const k1 = f(t, y), y2 = y.map((v, j) => v + h / 2 * k1[j]), k2 = f(t + h / 2, y2), y3 = y.map((v, j) => v + h / 2 * k2[j]), k3 = f(t + h / 2, y3), y4 = y.map((v, j) => v + h * k3[j]), k4 = f(t + h, y4);
+      y = y.map((v, j) => v + h / 6 * (k1[j] + 2 * k2[j] + 2 * k3[j] + k4[j])); t += h; }
+    out.push(Float64Array.from(y)); }
+  return out;
+}
+/* Trainer: Adam over the model with optional global loss balancing (gradient-norm or NTK trace),
+   causal weights on the residual term, self-adaptive point weights, and an L-BFGS phase.        */
+function ppTrainer(model, terms, o) {
+  const loss = ppLoss(model, terms), adam = ppAdam(loss.Ps, loss.Gs, o.lr || 1e-3);
+  const st = { step: 0, L: 0, termL: [], gnorm: [], lam: terms.map(t => t.lam), lbfgs: null, evals: 0 };
+  const resTerm = terms.find(t => t.residual) || terms[0];
+  function balance() {
+    if (o.balance === "grad") {
+      const r = loss.evalTerms(true, true); const gn = r.terms.map((t, i) => t.gnorm / Math.max(terms[i].lam, 1e-12)); const tot = gn.reduce((a, b) => a + b, 0);
+      terms.forEach((t, i) => { if (gn[i] > 0) { const lh = tot / gn[i]; t.lam = 0.9 * t.lam + 0.1 * lh; } }); st.gnorm = gn;
+    } else if (o.balance === "ntk") {
+      const tr = terms.map(t => t.pts.length ? loss.jacobian(t).reduce((s, row) => { let q = 0; for (let i = 0; i < row.length; i++) q += row[i] * row[i]; return s + q; }, 0) : 0);
+      const tot = tr.reduce((a, b) => a + b, 0); terms.forEach((t, i) => { if (tr[i] > 0) t.lam = tot / tr[i]; }); st.ntkTr = tr;
+    }
+    st.lam = terms.map(t => t.lam);
+  }
+  return { loss, adam, st, terms, model,
+    step() {
+      if (o.causal && resTerm.pts.length) { const rs = loss.residuals(resTerm); let c = 0; resTerm.w = resTerm.w || new Float64Array(resTerm.pts.length);
+        for (let i = 0; i < rs.length; i++) { resTerm.w[i] = Math.exp(-o.causal.eps * c); c += rs[i] * rs[i]; } st.wmin = resTerm.w[rs.length - 1]; }
+      if (o.balance && o.balance !== "none" && st.step % (o.balanceEvery || 100) === 0) balance();
+      const r = loss.evalTerms(true, !!o.trackNorms);
+      if (o.selfAdapt && resTerm.pts.length) { const rs = loss.residuals(resTerm); resTerm.w = resTerm.w || new Float64Array(rs.length).fill(1); let m = 0;
+        for (let i = 0; i < rs.length; i++) { resTerm.w[i] += o.selfAdapt.rho * rs[i] * rs[i]; m += resTerm.w[i]; } m /= rs.length; for (let i = 0; i < rs.length; i++) resTerm.w[i] /= m; }
+      if (model.ex) { model.ex.a -= (o.lr || 1e-3) * 10 * model.ex.ga; model.ex.b -= (o.lr || 1e-3) * 10 * model.ex.gb; model.ex.ga = 0; model.ex.gb = 0; }
+      adam.step(); st.step++; st.L = r.total; st.termL = r.terms.map(t => t.L); if (o.trackNorms) st.gnorm = r.terms.map((t, i) => t.gnorm / Math.max(terms[i].lam, 1e-12));
+      return r.total;
+    },
+    startLBFGS() { const P = loss.Ps[0], G = loss.Gs[0]; st.lbfgs = ppLBFGS(P, G, () => loss.evalTerms(true, false).total, 12); },
+    stepLBFGS() { const L = st.lbfgs.step(); st.step++; st.L = L; st.evals = st.lbfgs.evals; return L; },
+  };
+}
+/* residual-based adaptive distribution (Wu et al. 2023): sample N points from p ∝ |r|^k / mean + c on a dense grid */
+function ppRAD(model, res, x0, x1, N, k, c, rng, extra) {
+  const M = 400, xs = ppLin(x0, x1, M), p = new Float64Array(M); let mean = 0;
+  for (let i = 0; i < M; i++) { const arg = extra ? [xs[i]].concat(extra) : [xs[i]]; const r = Math.abs(res(arg, model.fwd(arg)).r); p[i] = Math.pow(r, k); mean += p[i] / M; }
+  let tot = 0; for (let i = 0; i < M; i++) { p[i] = p[i] / Math.max(mean, 1e-30) + c; tot += p[i]; }
+  const out = []; for (let n = 0; n < N; n++) { let u = rng.u() * tot, i = 0; while (i < M - 1 && u > p[i]) { u -= p[i]; i++; } out.push(extra ? [xs[i]].concat(extra) : [xs[i]]); }
+  return out.sort((a, b) => a[0] - b[0]);
+}
+
+/* ================= PINN playground: stations =================
+   One live trainer per station; only the active station consumes CPU. Every chart plots
+   the network against an exact or RK4 reference; histories carry loss and true error. */
+const PP = { active: null, running: false, S: {} };
+const PP_LOG = v => Math.log10(Math.max(v, 1e-14));
+const ppK = v => v >= 1000 ? (Number.isInteger(v / 1000) ? v / 1000 : (v / 1000).toFixed(1)) + "k" : String(Math.round(v));
+/* --- generic charts --- */
+function ppSolChart(svgId, s, series, ticks, extra) {
+  const svg = $(svgId); svg.innerHTML = "";
+  axes(svg, s, niceTicks(s.x0, s.x1, 4), niceTicks(s.y0, s.y1, 4), extra && extra.xlab || "x", "", v => fmt(v, Math.abs(s.x1 - s.x0) > 5 ? 0 : 1), v => fmt(v, Math.abs(s.y1 - s.y0) > 5 ? 0 : 1));
+  if (ticks) ticks.forEach(t => el("line", { x1: fmt(s.x(t.x), 1), x2: fmt(s.x(t.x), 1), y1: s.H - s.padB, y2: fmt(s.H - s.padB - 6 - 10 * (t.h || 0), 1), stroke: t.hot ? C.rock : C.muted, "stroke-width": 1.4 }, svg));
+  series.forEach(q => el("path", { d: linePath(q.xs.map((x, i) => [s.x(x), s.y(Math.max(s.y0, Math.min(s.y1, q.ys[i])))])), stroke: q.stroke, "stroke-width": q.width || 2, "stroke-dasharray": q.dash || "none", fill: "none", opacity: q.op || 1 }, svg));
+  if (extra && extra.dots) extra.dots.forEach(d => el("circle", { cx: fmt(s.x(d.x), 1), cy: fmt(s.y(d.y), 1), r: 4.5, fill: d.fill || C.rock, stroke: "#0C111E", "stroke-width": 1.5 }, svg));
+  if (extra && extra.rects) extra.rects.forEach(r => el("rect", { x: fmt(s.x(r.x0), 1), y: s.padT, width: fmt(s.x(r.x1) - s.x(r.x0), 1), height: s.H - s.padT - s.padB, fill: r.fill }, svg));
+  if (extra && extra.labels) extra.labels.forEach(l => el("text", { x: fmt(s.x(l.x), 1), y: fmt(s.y(l.y), 1), class: "serieslabel", fill: l.fill, "text-anchor": l.anchor || "start" }, svg).textContent = l.text);
+  dCharts[svgId] = { scale: s, series };
+}
+function ppHistChart(svgId, hist, xkey, xlab, marks) {
+  const svg = $(svgId); svg.innerHTML = "";
+  if (hist.length < 2) { dCharts[svgId] = null; return; }
+  const xs = hist.map(h => h[xkey]), lo = Math.min(...hist.map(h => Math.min(h.l, h.e))) - 0.3, hi = Math.max(...hist.map(h => Math.max(h.l, h.e))) + 0.3;
+  const s = makeScales(0, xs[xs.length - 1], lo, hi, 460, 380, 46, 12, 22, 40);
+  axes(svg, s, niceTicks(0, xs[xs.length - 1], 4), niceTicks(lo, hi, 4), xlab, "log₁₀", v => ppK(v), v => fmt(v, Number.isInteger(v) ? 0 : 1));
+  if (marks) marks.forEach(m => { if (m.x > 0 && m.x < xs[xs.length - 1]) el("line", { x1: fmt(s.x(m.x), 1), x2: fmt(s.x(m.x), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.ink, "stroke-dasharray": "3 4", "stroke-width": 1 }, svg); });
+  el("path", { d: linePath(hist.map(h => [s.x(h[xkey]), s.y(h.l)])), stroke: C.ice, "stroke-width": 2, fill: "none" }, svg);
+  el("path", { d: linePath(hist.map(h => [s.x(h[xkey]), s.y(h.e)])), stroke: C.rock, "stroke-width": 2, fill: "none" }, svg);
+  el("text", { x: s.W - s.padR - 4, y: s.padT + 12, "text-anchor": "end", class: "serieslabel", fill: C.rock }, svg).textContent = "error";
+  el("text", { x: s.W - s.padR - 4, y: s.padT + 26, "text-anchor": "end", class: "serieslabel", fill: C.ice }, svg).textContent = "loss";
+  dCharts[svgId] = { scale: s, hist, xkey };
+}
+function ppHoverSol(boxId, svgId, tipId, fmtX) {
+  attachHover($(boxId), $(svgId), { get padL() { return dCharts[svgId] ? dCharts[svgId].scale.padL : 46; }, padR: 12, W: 460, H: 380 },
+    (px, py, cx, cy) => { const c = dCharts[svgId]; if (!c) return; const x = c.scale.inv(px);
+      const parts = c.series.filter(q => q.name).map(q => { let bi = 0; q.xs.forEach((v, i) => { if (Math.abs(v - x) < Math.abs(q.xs[bi] - x)) bi = i; }); return q.name + " " + fmt(q.ys[bi], 3); });
+      setTip($(tipId), cx, cy, "<b>" + (fmtX ? fmtX(x) : "x = " + fmt(x, 2)) + "</b><br><span class='mono'>" + parts.join(" · ") + "</span>", $(boxId).clientWidth); },
+    () => $(tipId).hidden = true);
+}
+function ppHoverHist(boxId, svgId, tipId, xname) {
+  attachHover($(boxId), $(svgId), { padL: 46, padR: 12, W: 460, H: 380 },
+    (px, py, cx, cy) => { const c = dCharts[svgId]; if (!c) { $(tipId).hidden = true; return; } const x = c.scale.inv(px);
+      let b = c.hist[0]; c.hist.forEach(h => { if (Math.abs(h[c.xkey] - x) < Math.abs(b[c.xkey] - x)) b = h; });
+      setTip($(tipId), cx, cy, "<b>" + xname + " " + b[c.xkey] + "</b><br><span class='mono'>loss 10^" + fmt(b.l, 2) + " · error 10^" + fmt(b.e, 2) + "</span>", $(boxId).clientWidth); },
+    () => $(tipId).hidden = true);
+}
+function ppVerdict(id, txt, cls) { const v = $(id); v.textContent = txt; v.className = "verdict " + cls; }
+/* --- runner --- */
+function ppTick() {
+  const s = PP.active;
+  if (!s || !s.playing) { PP.running = false; return; }
+  const t0 = performance.now(); let n = 0;
+  while (performance.now() - t0 < 26 && s.playing && n < (s.perFrame || 120)) { s.step(); n++; if (s.maxSteps && s.st.step >= s.maxSteps) { s.playing = false; $(s.btn).textContent = "▶ Train"; } }
+  s.sps = n / Math.max(1, performance.now() - t0) * 1000;
+  s.record(); s.draw();
+  if (s.playing) requestAnimationFrame(ppTick); else { PP.running = false; if (s.onStop) s.onStop(); }
+}
+function ppToggle(s) {
+  if (s.playing) { s.playing = false; $(s.btn).textContent = "▶ Train"; return; }
+  if (PP.active && PP.active !== s && PP.active.playing) { PP.active.playing = false; $(PP.active.btn).textContent = "▶ Train"; }
+  PP.active = s; s.playing = true; $(s.btn).textContent = "⏸ Pause";
+  if (!PP.running) { PP.running = true; requestAnimationFrame(ppTick); }
+}
+function ppWire(s, trainBtn, resetBtn, trainLabel) {
+  s.btn = trainBtn; s.trainLabel = trainLabel || "▶ Train";
+  $(trainBtn).addEventListener("click", () => ppToggle(s));
+  $(resetBtn).addEventListener("click", () => { s.playing = false; $(trainBtn).textContent = s.trainLabel; s.reset(); s.draw(); });
+}
+function ppSeg(id, apply, s) { escSegWire(id, v => { apply(v); s.playing = false; $(s.btn).textContent = s.trainLabel || "▶ Train"; s.reset(); }, () => s.draw()); }
+function ppHistPush(s, extra) { s.hist.push(Object.assign({ s: s.st.step, l: PP_LOG(s.st.L), e: PP_LOG(s.err()) }, extra || {})); if (s.hist.length > 500) s.hist = s.hist.filter((_, i) => i % 2 === 0); }
+
+/* ================= §1 decay ================= */
+const PP1 = { k: 1, ic: "1", T: 5, hist: [], st: null, playing: false, maxSteps: 6000 };
+PP1.xs = ppLin(0, 1, 101);
+PP1.reset = function () {
+  const kT = PP1.k * PP1.T, hard = PP1.ic === "hard";
+  PP1.model = ppModel(ppMLP({ layers: [16, 16], K: 2, seed: 1 }), hard ? [PP_T.ic1(1)] : []);
+  const terms = [{ residual: true, pts: ppLin(0, 1, 32).map(x => [x]), lam: 1, res: (xs, uj) => ({ r: uj[0][1] / kT + uj[0][0], d: [[1, 1 / kT, 0, 0]] }) }];
+  if (!hard && +PP1.ic > 0) terms.push({ pts: [[0]], lam: +PP1.ic, res: (xs, uj) => ({ r: uj[0][0] - 1, d: [[1, 0, 0, 0]] }) });
+  PP1.tr = ppTrainer(PP1.model, terms, { lr: 3e-3 }); PP1.st = PP1.tr.st; PP1.hist = [];
+};
+PP1.step = () => PP1.tr.step();
+PP1.truth = () => PP1.xs.map(s => Math.exp(-PP1.k * PP1.T * s));
+PP1.err = () => ppRelL2(PP1.xs.map(s => PP1.model.evalAt([s])[0][0]), PP1.truth());
+PP1.record = () => ppHistPush(PP1);
+PP1.draw = function () {
+  $("o-pp1k").textContent = fmt(PP1.k, 2);
+  const pred = PP1.xs.map(s => PP1.model.evalAt([s])[0][0]), truth = PP1.truth(), t = PP1.xs.map(s => s * PP1.T);
+  ppSolChart("pp1a", makeScales(0, PP1.T, -0.2, 1.2, 460, 380, 46, 12, 22, 40), [{ xs: t, ys: truth, stroke: C.muted, dash: "5 4", name: "exact" }, { xs: t, ys: pred, stroke: C.ice, name: "network" }],
+    ppLin(0, 1, 32).map(x => ({ x: x * PP1.T })), { xlab: "t" });
+  ppHistChart("pp1b", PP1.hist, "s", "step");
+  const e = PP1.err(), y0 = PP1.model.evalAt([0])[0][0];
+  $("pp1step").textContent = PP1.st.step; $("pp1loss").textContent = PP1.st.step ? PP1.st.L.toExponential(1) : "–"; $("pp1err").textContent = e.toExponential(2); $("pp1y0").textContent = fmt(y0, 3);
+  if (!PP1.st.step) ppVerdict("pp1verdict", "untrained", "mid");
+  else if (e > 0.5 && PP1.st.L < 1e-3) ppVerdict("pp1verdict", "small loss, wrong answer: the trivial solution y ≡ 0", "no");
+  else if (e < 0.02) ppVerdict("pp1verdict", "solved to " + (e * 100).toFixed(1) + " %", "yes"); else ppVerdict("pp1verdict", "training", "mid");
+};
+
+/* ================= §2 derivatives and activations ================= */
+const PP2 = { act: "tanh", hist: [], st: null, playing: false, maxSteps: 4000 };
+PP2.xs = ppLin(0, 1, 101);
+PP2.reset = function () {
+  PP2.model = ppModel(ppMLP({ layers: [16, 16], K: 2, act: PP2.act, seed: 2 }), [PP_T.dir(0, 0)]);
+  PP2.tr = ppTrainer(PP2.model, [{ residual: true, pts: ppLin(0, 1, 32).map(x => [x]), lam: 1, res: (xs, uj) => ({ r: uj[0][2] / (Math.PI * Math.PI) + Math.sin(Math.PI * xs[0]), d: [[0, 0, 1 / (Math.PI * Math.PI), 0]] }) }], { lr: 3e-3 });
+  PP2.st = PP2.tr.st; PP2.hist = [];
+};
+PP2.step = () => PP2.tr.step();
+PP2.err = () => ppRelL2(PP2.xs.map(x => PP2.model.evalAt([x])[0][0]), PP2.xs.map(x => Math.sin(Math.PI * x)));
+PP2.err2 = () => ppRelL2(PP2.xs.map(x => PP2.model.evalAt([x])[0][2]), PP2.xs.map(x => -Math.PI * Math.PI * Math.sin(Math.PI * x)));
+PP2.record = () => ppHistPush(PP2);
+PP2.draw = function () {
+  const ev = PP2.xs.map(x => PP2.model.evalAt([x])[0]);
+  ppSolChart("pp2a", makeScales(0, 1, -1.3, 1.3, 460, 380, 46, 12, 22, 40), [
+    { xs: PP2.xs, ys: PP2.xs.map(x => Math.sin(Math.PI * x)), stroke: C.muted, dash: "5 4", name: "u exact" },
+    { xs: PP2.xs, ys: PP2.xs.map(x => -Math.sin(Math.PI * x)), stroke: C.muted, dash: "2 3", name: "u''/π² exact" },
+    { xs: PP2.xs, ys: ev.map(u => u[0]), stroke: C.ice, name: "û" },
+    { xs: PP2.xs, ys: ev.map(u => u[2] / (Math.PI * Math.PI)), stroke: C.rock, name: "û''/π²" }], null, { xlab: "x" });
+  ppHistChart("pp2b", PP2.hist, "s", "step");
+  $("pp2step").textContent = PP2.st.step; $("pp2loss").textContent = PP2.st.step ? PP2.st.L.toExponential(1) : "–"; $("pp2err").textContent = PP2.err().toExponential(2);
+  $("pp2err2").innerHTML = PP2.act === "relu" ? "1.0<small> · û'' ≡ 0 for ReLU</small>" : PP2.err2().toExponential(2);
+};
+
+/* ================= §3 fixed-point trap ================= */
+const PP3 = { T: 5, fix: "none", seed: 1, hist: [], st: null, playing: false, maxSteps: 5000, y0: 0.05, stage: 0 };
+PP3.xs = ppLin(0, 1, 101);
+PP3.exact = (t) => PP3.y0 / Math.sqrt(PP3.y0 * PP3.y0 + (1 - PP3.y0 * PP3.y0) * Math.exp(-2 * t));
+function pp3Res(T) { return (xs, uj) => { const y = uj[0][0]; return { r: uj[0][1] - T * y * (1 - y * y), d: [[-T * (1 - 3 * y * y), 1, 0, 0]] }; }; }
+PP3.reset = function () {
+  PP3.model = ppModel(ppMLP({ layers: [20, 20], K: 2, seed: PP3.seed }), [PP_T.ic1(PP3.y0)]);
+  PP3.stages = PP3.fix === "curr" ? [2.5, (2.5 + PP3.T) / 2, PP3.T] : [PP3.T]; PP3.stage = 0;
+  PP3.term = { residual: true, pts: ppLin(0, 1, 64).map(x => [x]), lam: 1, res: pp3Res(PP3.stages[0]) };
+  PP3.tr = ppTrainer(PP3.model, [PP3.term], { lr: 3e-3 }); PP3.st = PP3.tr.st; PP3.hist = [];
+};
+PP3.step = function () { PP3.tr.step(); if (PP3.fix === "curr") { const k = Math.min(2, Math.floor(PP3.st.step / 1400)); if (k !== PP3.stage) { PP3.stage = k; PP3.term.res = pp3Res(PP3.stages[k]); } } };
+PP3.errFor = (T) => ppRelL2(PP3.xs.map(s => PP3.model.evalAt([s])[0][0]), PP3.xs.map(s => PP3.exact(s * T)));
+PP3.err = () => PP3.errFor(PP3.T);
+PP3.record = () => ppHistPush(PP3);
+PP3.draw = function () {
+  const Tc = PP3.stages[PP3.stage], pred = PP3.xs.map(s => PP3.model.evalAt([s])[0][0]);
+  ppSolChart("pp3a", makeScales(0, PP3.T, -0.1, 1.15, 460, 380, 46, 12, 22, 40), [{ xs: PP3.xs.map(s => s * PP3.T), ys: PP3.xs.map(s => PP3.exact(s * PP3.T)), stroke: C.muted, dash: "5 4", name: "exact" },
+    { xs: PP3.xs.map(s => s * Tc), ys: pred, stroke: C.ice, name: "network" }], null, { xlab: "t", labels: PP3.fix === "curr" && Tc < PP3.T ? [{ x: Tc, y: 1.08, text: "trained to t = " + Tc, fill: C.muted, anchor: "end" }] : [] });
+  ppHistChart("pp3b", PP3.hist, "s", "step");
+  const e = PP3.err();
+  $("pp3step").textContent = PP3.st.step; $("pp3loss").textContent = PP3.st.step ? PP3.st.L.toExponential(1) : "–"; $("pp3err").textContent = e.toExponential(2);
+  $("pp3stage").innerHTML = PP3.fix === "curr" ? (PP3.stage + 1) + "<small> of 3 · T = " + Tc + "</small>" : "–"; $("btn-pp3seed").textContent = "seed " + PP3.seed + " · next";
+  if (!PP3.st.step) ppVerdict("pp3verdict", "untrained", "mid"); else if (PP3.fix === "curr" && Tc < PP3.T) ppVerdict("pp3verdict", "curriculum in progress", "mid");
+  else if (e < 0.05) ppVerdict("pp3verdict", "success · error " + (e * 100).toFixed(1) + " %", "yes"); else if (PP3.st.step >= 2000 && e > 0.5) ppVerdict("pp3verdict", "parked on the fixed point: the loss keeps falling, the answer is wrong", "no"); else ppVerdict("pp3verdict", "training", "mid");
+};
+
+/* ================= §4 unbalanced gradients ================= */
+const PP4 = { sc: "raw", w: "1", opt: "adam", hist: [], st: null, playing: false, maxSteps: 6000, a: 2, eig: null };
+PP4.xs = ppLin(0, 1, 101);
+PP4.reset = function () {
+  const a = PP4.a, c = (a * Math.PI) ** 2, div = PP4.sc === "scaled" ? c : 1, hard = PP4.w === "hard";
+  PP4.model = ppModel(ppMLP({ layers: [20, 20], K: 2, seed: 3 }), hard ? [PP_T.dir(0, 0)] : []);
+  PP4.terms = [{ residual: true, pts: ppLin(0, 1, 64).map(x => [x]), lam: 1, res: (xs, uj) => ({ r: (uj[0][2] + c * Math.sin(a * Math.PI * xs[0])) / div, d: [[0, 0, 1 / div, 0]] }) }];
+  if (!hard) PP4.terms.push({ pts: [[0], [1]], lam: PP4.w === "100" ? 100 : 1, res: (xs, uj) => ({ r: uj[0][0], d: [[1, 0, 0, 0]] }) });
+  PP4.tr = ppTrainer(PP4.model, PP4.terms, { lr: PP4.opt === "adam" ? 1e-3 : 1e-4, balance: (PP4.w === "grad" || PP4.w === "ntk") ? PP4.w : "none", balanceEvery: 100, trackNorms: true });
+  PP4.st = PP4.tr.st; PP4.hist = []; PP4.eig = null; PP4.ntk();
+};
+PP4.step = function () {
+  if (PP4.opt === "adam") PP4.tr.step();
+  else { if (PP4.st.step % 100 === 0 && (PP4.w === "grad" || PP4.w === "ntk")) PP4.tr.balance(); const r = PP4.tr.loss.evalTerms(true, true); const P = PP4.tr.loss.Ps[0], G = PP4.tr.loss.Gs[0];
+    for (let i = 0; i < P.length; i++) P[i] -= 1e-4 * G[i]; PP4.st.step++; PP4.st.L = r.total; PP4.st.gnorm = r.terms.map((t, i) => t.gnorm / Math.max(PP4.terms[i].lam, 1e-12)); PP4.st.lam = PP4.terms.map(t => t.lam); }
+  if (PP4.st.step % 50 === 0) PP4.ntk();
+};
+PP4.ntk = function () {
+  const Jr = PP4.tr.loss.jacobian(PP4.terms[0]), Krr = ppEig(ppGram(Jr)).filter(v => v > 0); let out = { rr: Krr.slice(0, 12), trr: Krr.reduce((s, v) => s + v, 0), uu: [], tru: 0 };
+  if (PP4.terms[1]) { const Ju = PP4.tr.loss.jacobian(PP4.terms[1]); out.uu = ppEig(ppGram(Ju)).filter(v => v > 0); out.tru = out.uu.reduce((s, v) => s + v, 0); }
+  PP4.eig = out;
+};
+PP4.err = () => ppRelL2(PP4.xs.map(x => PP4.model.evalAt([x])[0][0]), PP4.xs.map(x => Math.sin(PP4.a * Math.PI * x)));
+PP4.record = () => ppHistPush(PP4);
+PP4.draw = function () {
+  const pred = PP4.xs.map(x => PP4.model.evalAt([x])[0][0]);
+  ppSolChart("pp4a", makeScales(0, 1, -1.5, 1.5, 460, 380, 46, 12, 22, 40), [{ xs: PP4.xs, ys: PP4.xs.map(x => Math.sin(PP4.a * Math.PI * x)), stroke: C.muted, dash: "5 4", name: "exact" }, { xs: PP4.xs, ys: pred, stroke: C.ice, name: "network" }],
+    null, { xlab: "x", dots: [{ x: 0, y: pred[0] }, { x: 1, y: pred[100] }] });
+  // NTK spectra
+  const svg = $("pp4b"); svg.innerHTML = ""; const e = PP4.eig;
+  if (e) { const vals = e.rr.concat(e.uu).map(PP_LOG), lo = Math.floor(Math.min(...vals)) - 1, hi = Math.ceil(Math.max(...vals)) + 1;
+    const s = makeScales(0, 15, lo, hi, 460, 380, 46, 12, 22, 40);
+    axes(svg, s, [], niceTicks(lo, hi, 5), "eigenvalue rank", "log₁₀ λ", v => "", v => fmt(v, 0));
+    e.rr.forEach((v, i) => el("rect", { x: fmt(s.x(i + 0.2), 1), y: fmt(s.y(PP_LOG(v)), 1), width: fmt(s.x(0.8) - s.x(0), 1), height: fmt(s.y(lo) - s.y(PP_LOG(v)), 1), fill: C.ice, opacity: 0.85 }, svg));
+    e.uu.forEach((v, i) => el("rect", { x: fmt(s.x(13 + i + 0.2), 1), y: fmt(s.y(PP_LOG(v)), 1), width: fmt(s.x(0.8) - s.x(0), 1), height: fmt(s.y(lo) - s.y(PP_LOG(v)), 1), fill: C.rock, opacity: 0.9 }, svg));
+    el("text", { x: fmt(s.x(0.2), 1), y: s.padT + 12, class: "serieslabel", fill: C.ice }, svg).textContent = "K_rr · residual at 64 points";
+    el("text", { x: fmt(s.x(14.8), 1), y: s.padT + 12, "text-anchor": "end", class: "serieslabel", fill: C.rock }, svg).textContent = e.uu.length ? "K_uu · boundary" : "hard BC: no boundary kernel";
+    dCharts["pp4b"] = { scale: s, eig: e }; }
+  const err = PP4.err(), bc = Math.abs(pred[0]) + Math.abs(pred[100]);
+  $("pp4step").textContent = PP4.st.step; $("pp4err").textContent = err.toExponential(2); $("pp4bc").textContent = PP4.w === "hard" ? "0 by construction" : bc.toExponential(1);
+  $("pp4lam").textContent = PP4.terms[1] ? fmt(PP4.terms[1].lam, 1) : "–"; $("pp4tr").textContent = e && e.tru > 0 ? (e.trr / e.tru).toExponential(1) : "–";
+  $("pp4gn").textContent = PP4.st.gnorm && PP4.st.gnorm.length > 1 && PP4.st.gnorm[1] > 0 ? (PP4.st.gnorm[0] / PP4.st.gnorm[1]).toExponential(1) : "–";
+};
+
+/* ================= §5 sampling ================= */
+const PP5 = { N: 32, mode: "grid", hist: [], st: null, playing: false, maxSteps: 4000, s: 40 };
+PP5.xs = ppLin(0, 1, 201);
+PP5.f = x => { const u = Math.tanh(PP5.s * (x - 0.5)); return -2 * PP5.s * PP5.s * u * (1 - u * u); };
+PP5.res = (xs, uj) => ({ r: (uj[0][2] - PP5.f(xs[0])) / (PP5.s * PP5.s), d: [[0, 0, 1 / (PP5.s * PP5.s), 0]] });
+PP5.reset = function () {
+  PP5.rng = ppRng(5); PP5.model = ppModel(ppMLP({ layers: [20, 20], K: 2, seed: 4 }), [PP_T.dir(Math.tanh(-PP5.s / 2), Math.tanh(PP5.s / 2))]);
+  PP5.term = { residual: true, pts: ppLin(0.01, 0.99, PP5.N).map(x => [x]), lam: 1, res: PP5.res, w: null };
+  PP5.tr = ppTrainer(PP5.model, [PP5.term], { lr: 3e-3, selfAdapt: PP5.mode === "sa" ? { rho: 0.002 } : null }); PP5.st = PP5.tr.st; PP5.hist = [];
+};
+PP5.step = function () {
+  const i = PP5.st.step;
+  if (PP5.mode === "rand" && i % 50 === 0) PP5.term.pts = Array.from({ length: PP5.N }, () => [0.01 + 0.98 * PP5.rng.u()]).sort((a, b) => a[0] - b[0]);
+  if (PP5.mode === "rad" && i % 100 === 0 && i > 0) PP5.term.pts = ppRAD(PP5.model, PP5.res, 0.01, 0.99, PP5.N, 1, 1, PP5.rng);
+  PP5.tr.step();
+};
+PP5.err = () => ppRelL2(PP5.xs.map(x => PP5.model.evalAt([x])[0][0]), PP5.xs.map(x => Math.tanh(PP5.s * (x - 0.5))));
+PP5.record = () => ppHistPush(PP5);
+PP5.draw = function () {
+  const pred = PP5.xs.map(x => PP5.model.evalAt([x])[0][0]), w = PP5.term.w;
+  ppSolChart("pp5a", makeScales(0, 1, -1.3, 1.3, 460, 380, 46, 12, 22, 40), [{ xs: PP5.xs, ys: PP5.xs.map(x => Math.tanh(PP5.s * (x - 0.5))), stroke: C.muted, dash: "5 4", name: "exact" }, { xs: PP5.xs, ys: pred, stroke: C.ice, name: "network" }],
+    PP5.term.pts.map((p, i) => ({ x: p[0], h: w ? Math.min(2, w[i]) : 0.6, hot: Math.abs(p[0] - 0.5) < 0.05 })), { xlab: "x" });
+  const rs = PP5.xs.map(x => Math.abs(PP5.res([x], PP5.model.evalAt([x])).r)), lr = rs.map(PP_LOG);
+  const lo = Math.floor(Math.min(...lr)) - 0.5, hi = Math.ceil(Math.max(...lr)) + 0.5;
+  ppSolChart("pp5b", makeScales(0, 1, lo, hi, 460, 380, 46, 12, 22, 40), [{ xs: PP5.xs, ys: lr, stroke: C.rock, name: "log|r|" }], PP5.term.pts.map(p => ({ x: p[0], h: 0.6 })), { xlab: "x" });
+  $("pp5step").textContent = PP5.st.step; $("pp5loss").textContent = PP5.st.step ? PP5.st.L.toExponential(1) : "–"; $("pp5err").textContent = PP5.err().toExponential(2);
+  $("pp5near").innerHTML = PP5.term.pts.filter(p => Math.abs(p[0] - 0.5) < 0.05).length + "<small> of " + PP5.N + "</small>";
+};
+
+/* ================= §6 spectral bias ================= */
+const PP6 = { w: 15, f: "raw", hist: [], st: null, playing: false, maxSteps: 6000 };
+PP6.xs = ppLin(-1, 1, 401);
+function pp6Transform(w) { const q = w * 2 * Math.PI; return ppAffineT(() => ppJ(0), s => { const t = Math.tanh(q * s[0]), c = 1 - t * t; return [t / w, q * c / w, -2 * q * q * t * c / w, q * q * q * c * (6 * t * t - 2) / w]; }); }
+function pp6Res(w) { const q = w * 2 * Math.PI; return (xs, uj) => ({ r: uj[0][1] / (2 * Math.PI) - Math.cos(q * xs[0]), d: [[0, 1 / (2 * Math.PI), 0, 0]] }); }
+PP6.netOpts = function () { const f = PP6.f; if (f === "sin") return { layers: [16, 16], act: "sin", w0: 30 }; if (f[0] === "f") return { layers: [16, 16], feat: "fourier", fdim: 16, sigma: +f.slice(1) }; return { layers: [16, 16] }; };
+PP6.reset = function () {
+  PP6.model = ppModel(ppMLP(Object.assign({ K: 2, seed: 6 }, PP6.netOpts())), [pp6Transform(PP6.w)]);
+  PP6.tr = ppTrainer(PP6.model, [{ residual: true, pts: ppLin(-1, 1, 200).map(x => [x]), lam: 1, res: pp6Res(PP6.w) }], { lr: 3e-3 }); PP6.st = PP6.tr.st; PP6.hist = [];
+};
+PP6.step = () => PP6.tr.step();
+PP6.truth = () => PP6.xs.map(s => Math.sin(PP6.w * 2 * Math.PI * s) / PP6.w);
+PP6.err = () => ppRelL2(PP6.xs.map(s => PP6.model.evalAt([s])[0][0]), PP6.truth());
+PP6.record = () => ppHistPush(PP6);
+PP6.draw = function () {
+  const pred = PP6.xs.map(s => PP6.model.evalAt([s])[0][0]), x = PP6.xs.map(s => s * 2 * Math.PI), A = 1.3 / PP6.w;
+  ppSolChart("pp6a", makeScales(-2 * Math.PI, 2 * Math.PI, -A, A, 460, 380, 46, 12, 22, 40), [{ xs: x, ys: PP6.truth(), stroke: C.muted, dash: "5 4", name: "exact" }, { xs: x, ys: pred, stroke: C.ice, width: 1.6, name: "network" }], null, { xlab: "x" });
+  ppHistChart("pp6b", PP6.hist, "s", "step");
+  $("pp6step").textContent = PP6.st.step; $("pp6np").textContent = PP6.model.net.nParams; $("pp6loss").textContent = PP6.st.step ? PP6.st.L.toExponential(1) : "–"; $("pp6err").textContent = PP6.err().toExponential(2);
+};
+
+/* ================= §7 FBPINN ================= */
+const PP7 = { m: "s16", hist: [], st: null, playing: false, maxSteps: 6000, w: 15, sps: 0 };
+PP7.xs = ppLin(-1, 1, 401);
+PP7.reset = function () {
+  const T = pp6Transform(PP7.w), m = PP7.m;
+  if (m[0] === "s") PP7.model = ppModel(ppMLP({ layers: m === "s16" ? [16, 16] : [32, 32, 32], K: 2, seed: 7 }), [T]);
+  else PP7.model = ppFB({ nsub: +m.slice(2), x0: -1, x1: 1, overlap: 0.4, sub: { layers: [8, 8], K: 2, seed: 7 }, transform: T });
+  PP7.tr = ppTrainer(PP7.model, [{ residual: true, pts: ppLin(-1, 1, 200).map(x => [x]), lam: 1, res: pp6Res(PP7.w) }], { lr: 3e-3 }); PP7.st = PP7.tr.st; PP7.hist = [];
+};
+PP7.step = () => PP7.tr.step();
+PP7.truth = () => PP7.xs.map(s => Math.sin(PP7.w * 2 * Math.PI * s) / PP7.w);
+PP7.err = () => ppRelL2(PP7.xs.map(s => PP7.model.evalAt([s])[0][0]), PP7.truth());
+PP7.record = () => ppHistPush(PP7);
+PP7.draw = function () {
+  const pred = PP7.xs.map(s => PP7.model.evalAt([s])[0][0]), x = PP7.xs.map(s => s * 2 * Math.PI), A = 1.3 / PP7.w;
+  ppSolChart("pp7a", makeScales(-2 * Math.PI, 2 * Math.PI, -A, A, 460, 380, 46, 12, 22, 40), [{ xs: x, ys: PP7.truth(), stroke: C.muted, dash: "5 4", name: "exact" }, { xs: x, ys: pred, stroke: C.ice, width: 1.6, name: "network" }], null, { xlab: "x" });
+  // windows (top) + history (bottom)
+  const svg = $("pp7b"); svg.innerHTML = "";
+  const sw = makeScales(-2 * Math.PI, 2 * Math.PI, 0, 1.15, 460, 130, 46, 12, 18, 6);
+  if (PP7.model.subs) { PP7.model.subs.forEach((_, i) => el("path", { d: linePath(PP7.xs.map(s => [sw.x(s * 2 * Math.PI), sw.y(PP7.model.win(i, s)[0])])), stroke: i % 2 ? C.ice : C.rock, "stroke-width": 1.3, fill: "none", opacity: 0.8 }, svg));
+    el("text", { x: sw.padL + 4, y: 14, class: "serieslabel", fill: C.muted }, svg).textContent = PP7.model.subs.length + " windows w_i(x), each subnetwork sees its own window rescaled to [−1, 1]"; }
+  else el("text", { x: sw.padL + 4, y: 14, class: "serieslabel", fill: C.muted }, svg).textContent = "single network: one window over the whole domain";
+  const H = PP7.hist; if (H.length > 1) { const lo = Math.min(...H.map(h => Math.min(h.l, h.e))) - 0.3, hi = Math.max(...H.map(h => Math.max(h.l, h.e))) + 0.3;
+    const sh = makeScales(0, H[H.length - 1].s, lo, hi, 460, 380, 46, 12, 150, 40); const g = el("g", { class: "axis" }, svg);
+    niceTicks(lo, hi, 3).forEach(v => { el("line", { x1: sh.padL, x2: sh.W - sh.padR, y1: fmt(sh.y(v), 1), y2: fmt(sh.y(v), 1), class: "gridline" }, g); el("text", { x: sh.padL - 9, y: fmt(sh.y(v) + 4, 1), "text-anchor": "end" }, g).textContent = fmt(v, 0); });
+    niceTicks(0, H[H.length - 1].s, 4).forEach(v => el("text", { x: fmt(sh.x(v), 1), y: sh.H - sh.padB + 20, "text-anchor": "middle" }, g).textContent = ppK(v));
+    el("line", { x1: sh.padL, x2: sh.W - sh.padR, y1: sh.H - sh.padB, y2: sh.H - sh.padB, class: "zero" }, g); el("text", { x: sh.W - sh.padR, y: sh.H - 6, "text-anchor": "end", fill: C.muted }, g).textContent = "step";
+    el("path", { d: linePath(H.map(h => [sh.x(h.s), sh.y(h.l)])), stroke: C.ice, "stroke-width": 2, fill: "none" }, svg); el("path", { d: linePath(H.map(h => [sh.x(h.s), sh.y(h.e)])), stroke: C.rock, "stroke-width": 2, fill: "none" }, svg);
+    dCharts["pp7b"] = { scale: sh, hist: H, xkey: "s" }; } else dCharts["pp7b"] = null;
+  $("pp7step").textContent = PP7.st.step; $("pp7np").textContent = PP7.model.subs ? PP7.model.np : PP7.model.net.nParams; $("pp7loss").textContent = PP7.st.step ? PP7.st.L.toExponential(1) : "–"; $("pp7err").textContent = PP7.err().toExponential(2);
+  $("pp7sps").textContent = PP7.sps ? Math.round(PP7.sps) : "–";
+};
+
+/* ================= §8 causality ================= */
+const PP8 = { m: "c1", seed: 1, hist: [], st: null, playing: false, maxSteps: 6000, T: 7.5, y0: 0.05 };
+PP8.xs = ppLin(0, 1, 101);
+PP8.reset = function () {
+  PP8.model = ppModel(ppMLP({ layers: [20, 20], K: 2, seed: PP8.seed }), [PP_T.ic1(PP8.y0)]);
+  PP8.all = ppLin(0, 1, 64).map(x => [x]);
+  PP8.term = { residual: true, pts: PP8.m === "march" ? PP8.all.filter(p => p[0] <= 0.25 + 1e-9) : PP8.all.slice(), lam: 1, res: pp3Res(PP8.T), w: null };
+  PP8.tr = ppTrainer(PP8.model, [PP8.term], { lr: 3e-3, causal: PP8.m === "c1" ? { eps: 1 } : PP8.m === "c10" ? { eps: 10 } : null }); PP8.st = PP8.tr.st; PP8.hist = []; PP8.win = 1;
+};
+PP8.step = function () { PP8.tr.step(); if (PP8.m === "march") { const w = Math.min(4, 1 + Math.floor(PP8.st.step / 1000)); if (w !== PP8.win) { PP8.win = w; PP8.term.pts = PP8.all.filter(p => p[0] <= w / 4 + 1e-9); } } };
+PP8.err = () => ppRelL2(PP8.xs.map(s => PP8.model.evalAt([s])[0][0]), PP8.xs.map(s => PP3.exact(s * PP8.T)));
+PP8.record = () => ppHistPush(PP8);
+PP8.draw = function () {
+  const pred = PP8.xs.map(s => PP8.model.evalAt([s])[0][0]);
+  ppSolChart("pp8a", makeScales(0, PP8.T, -0.1, 1.15, 460, 380, 46, 12, 22, 40), [{ xs: PP8.xs.map(s => s * PP8.T), ys: PP8.xs.map(s => PP3.exact(s * PP8.T)), stroke: C.muted, dash: "5 4", name: "exact" }, { xs: PP8.xs.map(s => s * PP8.T), ys: pred, stroke: C.ice, name: "network" }], null, { xlab: "t" });
+  const svg = $("pp8b"); svg.innerHTML = ""; const s = makeScales(0, PP8.T, 0, 1.1, 460, 380, 46, 12, 22, 40);
+  axes(svg, s, niceTicks(0, PP8.T, 4), [0, 0.5, 1], "t", "weight", v => fmt(v, 1), v => fmt(v, 1));
+  const bw = s.x(PP8.T / 64) - s.x(0);
+  PP8.all.forEach((p, i) => { let w = 1; if (PP8.m === "march") w = p[0] <= PP8.win / 4 + 1e-9 ? 1 : 0; else if (PP8.term.w) w = PP8.term.w[i];
+    el("rect", { x: fmt(s.x(p[0] * PP8.T) - bw / 2, 1), y: fmt(s.y(w), 1), width: fmt(Math.max(bw - 1, 1), 1), height: fmt(s.y(0) - s.y(w), 1), fill: C.rock, opacity: 0.8 }, svg); });
+  dCharts["pp8b"] = null;
+  const e = PP8.err(), wmin = PP8.term.w ? Math.min(...PP8.term.w) : 1;
+  $("pp8step").textContent = PP8.st.step; $("pp8loss").textContent = PP8.st.step ? PP8.st.L.toExponential(1) : "–"; $("pp8err").textContent = e.toExponential(2);
+  $("pp8wmin").innerHTML = PP8.m[0] === "c" ? fmt(wmin, 3) + (wmin > 0.99 ? "<small> · certified</small>" : "") : PP8.m === "march" ? "window " + PP8.win + "<small> of 4</small>" : "1<small> · all points always on</small>"; $("btn-pp8seed").textContent = "seed " + PP8.seed + " · next";
+  if (!PP8.st.step) ppVerdict("pp8verdict", "untrained", "mid"); else if (e < 0.05) ppVerdict("pp8verdict", "success · error " + (e * 100).toFixed(1) + " %", "yes"); else if (PP8.st.step >= 2000 && e > 0.5) ppVerdict("pp8verdict", "parked on the fixed point", "no"); else ppVerdict("pp8verdict", "training", "mid");
+};
+
+/* ================= §9 optimiser ================= */
+const PP9 = { m: "adam", hist: [], st: null, playing: false, d: 1.5, w0: 10, evMax: 8000, phase: "adam" };
+PP9.xs = ppLin(0, 1, 201);
+PP9.truth = () => { const d = PP9.d, w = Math.sqrt(PP9.w0 * PP9.w0 - d * d); return PP9.xs.map(t => Math.exp(-d * t) * (Math.cos(w * t) + d / w * Math.sin(w * t))); };
+PP9.reset = function () {
+  const d = PP9.d, w0 = PP9.w0;
+  PP9.model = ppModel(ppMLP({ layers: [32, 32], K: 2, seed: 9 }), [PP_T.ic2(1, 0)]);
+  PP9.tr = ppTrainer(PP9.model, [{ residual: true, pts: ppLin(0, 1, 40).map(x => [x]), lam: 1, res: (xs, uj) => ({ r: (uj[0][2] + 2 * d * uj[0][1] + w0 * w0 * uj[0][0]) / (w0 * w0), d: [[1, 2 * d / (w0 * w0), 1 / (w0 * w0), 0]] }) }], { lr: 3e-3 });
+  PP9.st = PP9.tr.st; PP9.hist = []; PP9.phase = "adam"; PP9.switchAt = PP9.m === "late" ? 2000 : PP9.m === "early" ? 500 : Infinity; PP9.adamSteps = 0;
+};
+PP9.evals = () => PP9.adamSteps + (PP9.st.lbfgs ? PP9.st.evals : 0);
+PP9.step = function () {
+  if (PP9.phase === "adam") { PP9.tr.step(); PP9.adamSteps++; if (PP9.adamSteps >= PP9.switchAt) { PP9.tr.startLBFGS(); PP9.phase = "lbfgs"; } }
+  else PP9.tr.stepLBFGS();
+  if (PP9.evals() >= PP9.evMax) { PP9.playing = false; $(PP9.btn).textContent = "▶ Train"; }
+};
+PP9.err = () => ppRelL2(PP9.xs.map(t => PP9.model.evalAt([t])[0][0]), PP9.truth());
+PP9.record = () => { PP9.hist.push({ s: PP9.st.step, ev: PP9.evals(), l: PP_LOG(PP9.st.L), e: PP_LOG(PP9.err()) }); if (PP9.hist.length > 500) PP9.hist = PP9.hist.filter((_, i) => i % 2 === 0); };
+PP9.draw = function () {
+  const pred = PP9.xs.map(t => PP9.model.evalAt([t])[0][0]);
+  ppSolChart("pp9a", makeScales(0, 1, -1.2, 1.2, 460, 380, 46, 12, 22, 40), [{ xs: PP9.xs, ys: PP9.truth(), stroke: C.muted, dash: "5 4", name: "exact" }, { xs: PP9.xs, ys: pred, stroke: C.ice, name: "network" }], null, { xlab: "t" });
+  ppHistChart("pp9b", PP9.hist, "ev", "loss evaluations", PP9.switchAt < Infinity ? [{ x: PP9.switchAt }] : null);
+  $("pp9ev").textContent = PP9.evals(); $("pp9loss").textContent = PP9.st.step ? PP9.st.L.toExponential(1) : "–"; $("pp9err").textContent = PP9.err().toExponential(2);
+  $("pp9phase").textContent = PP9.phase === "adam" ? "Adam" : "L-BFGS"; $("pp9fail").textContent = PP9.st.lbfgs ? PP9.st.lbfgs.fails : "–";
+};
+
+/* ================= §10 gPINN ================= */
+const PP10 = { N: 4, wg: 0, hist: [], st: null, playing: false, maxSteps: 4000, a: 2 };
+PP10.xs = ppLin(0, 1, 101);
+PP10.reset = function () {
+  const a = PP10.a, c = (a * Math.PI) ** 2, c3 = c * a * Math.PI;
+  PP10.pts = ppLin(0, 1, PP10.N + 2).slice(1, PP10.N + 1).map(x => [x]);
+  PP10.model = ppModel(ppMLP({ layers: [20, 20], K: 3, seed: 10 }), [PP_T.dir(0, 0)]);
+  const terms = [{ residual: true, pts: PP10.pts, lam: 1, res: (xs, uj) => ({ r: uj[0][2] / c + Math.sin(a * Math.PI * xs[0]), d: [[0, 0, 1 / c, 0]] }) }];
+  if (PP10.wg > 0) terms.push({ pts: PP10.pts, lam: PP10.wg, res: (xs, uj) => ({ r: uj[0][3] / c3 + Math.cos(a * Math.PI * xs[0]), d: [[0, 0, 0, 1 / c3]] }) });
+  PP10.tr = ppTrainer(PP10.model, terms, { lr: 3e-3 }); PP10.st = PP10.tr.st; PP10.hist = [];
+};
+PP10.step = () => PP10.tr.step();
+PP10.err = () => ppRelL2(PP10.xs.map(x => PP10.model.evalAt([x])[0][0]), PP10.xs.map(x => Math.sin(PP10.a * Math.PI * x)));
+PP10.record = () => ppHistPush(PP10);
+PP10.draw = function () {
+  const pred = PP10.xs.map(x => PP10.model.evalAt([x])[0][0]);
+  ppSolChart("pp10a", makeScales(0, 1, -1.3, 1.3, 460, 380, 46, 12, 22, 40), [{ xs: PP10.xs, ys: PP10.xs.map(x => Math.sin(PP10.a * Math.PI * x)), stroke: C.muted, dash: "5 4", name: "exact" }, { xs: PP10.xs, ys: pred, stroke: C.ice, name: "network" }], PP10.pts.map(p => ({ x: p[0], h: 0.8 })), { xlab: "x" });
+  ppHistChart("pp10b", PP10.hist, "s", "step");
+  $("pp10step").textContent = PP10.st.step; $("pp10loss").textContent = PP10.st.step ? PP10.st.L.toExponential(1) : "–"; $("pp10err").textContent = PP10.err().toExponential(2);
+};
+
+/* ================= §11 parametric planet ================= */
+const PP11 = { n: 1.5, hist: [], st: null, playing: false, maxSteps: 16000, XM: 7, refs: {}, frame: 0, curve: null };
+PP11.ss = ppLin(0.002, 1, 300);
+PP11.ref = function (n) { const XM = PP11.XM; if (!PP11.refs[n]) { const sol = ppRK4((s, y) => { const xi = XM * s; return [-y[1] / (xi * xi) * XM, XM * xi * xi * Math.pow(Math.max(y[0], 0), n)]; }, [1 - (XM * 0.002) ** 2 / 6, (XM * 0.002) ** 3 / 3], PP11.ss);
+    let iz = -1; for (let i = 1; i < PP11.ss.length; i++) if (sol[i][0] <= 0) { iz = i; break; } PP11.refs[n] = { th: sol.map(r => r[0]), m: sol.map(r => r[1]), iz, xi1: iz > 0 ? XM * PP11.ss[iz] : NaN, m1: iz > 0 ? sol[iz][1] : NaN }; } return PP11.refs[n]; };
+PP11.reset = function () {
+  const XM = PP11.XM;
+  PP11.model = ppModel(ppMLP({ layers: [24, 24], K: 1, out: 2, nExtra: 1, seed: 11 }), [PP_T.sq1, PP_T.cube]);
+  const res = (xs, uj) => { const s = xs[0], n = 2 + xs[1], th = uj[0][0], tp = Math.max(th, 0), dth = th > 0 ? n * Math.pow(tp, n - 1) : 0;
+    return { rs: [(s * s * uj[0][1] + uj[1][0] / XM) / 0.4, (uj[1][1] / XM - XM * XM * s * s * Math.pow(tp, n)) / 2], ds: [[[0, s * s / 0.4], [1 / XM / 0.4, 0]], [[-XM * XM * s * s * dth / 2, 0], [0, 1 / XM / 2]]] }; };
+  const pts = []; for (let i = 0; i < 28; i++) for (const n of [1, 1.5, 2, 2.5, 3]) pts.push([(i + 0.5) / 28, n - 2]);
+  PP11.tr = ppTrainer(PP11.model, [{ residual: true, pts, lam: 1, res }], { lr: 3e-3 }); PP11.st = PP11.tr.st; PP11.hist = []; PP11.curve = null; PP11.frame = 0;
+};
+PP11.step = function () { PP11.tr.step(); if (PP11.st.step % 2000 === 0) PP11.tr.adam.lr = 3e-3 * Math.pow(0.75, PP11.st.step / 2000); };
+PP11.evalN = function (n) { const th = PP11.ss.map(s => PP11.model.evalAt([s, n - 2])[0][0]), m = PP11.ss.map(s => PP11.model.evalAt([s, n - 2])[1][0]);
+  let iz = -1; for (let i = 1; i < PP11.ss.length; i++) if (th[i] <= 0) { iz = i; break; } return { th, m, iz, xi1: iz > 0 ? PP11.XM * PP11.ss[iz] : NaN, m1: iz > 0 ? m[iz] : NaN }; };
+PP11.err = function () { const r = PP11.ref(PP11.n), e = PP11.evalN(PP11.n); const inside = (_, i) => r.iz < 0 || i <= r.iz; return ppRelL2(e.th.filter(inside), r.th.filter(inside)); };
+PP11.record = () => ppHistPush(PP11);
+PP11.curveCalc = function () { const ns = []; for (let n = 0.5; n <= 3.501; n += 0.25) ns.push(+n.toFixed(2)); PP11.curve = ns.map(n => { const r = PP11.ref(n), e = PP11.evalN(n); return { n, xi1: r.xi1, m1: r.m1, xn: e.xi1, mn: e.m1 }; }); };
+PP11.draw = function () {
+  $("o-pp11n").textContent = fmt(PP11.n, 2);
+  const XM = PP11.XM, r = PP11.ref(PP11.n), e = PP11.evalN(PP11.n), xi = PP11.ss.map(s => s * XM);
+  ppSolChart("pp11a", makeScales(0, XM, -0.5, 1.1, 460, 380, 46, 12, 22, 40), [
+    { xs: xi, ys: r.th, stroke: C.muted, dash: "5 4", name: "θ RK4" }, { xs: xi, ys: r.m.map(v => v / 10), stroke: C.muted, dash: "2 3", name: "m/10 RK4" },
+    { xs: xi, ys: e.th, stroke: C.ice, name: "θ net" }, { xs: xi, ys: e.m.map(v => v / 10), stroke: C.rock, name: "m/10 net" }], null,
+    { xlab: "ξ", dots: (isFinite(e.xi1) ? [{ x: e.xi1, y: 0, fill: C.ice }] : []).concat(isFinite(r.xi1) ? [{ x: r.xi1, y: 0, fill: C.muted }] : []) });
+  PP11.frame++; if (!PP11.curve || PP11.frame % 20 === 0 || !PP11.playing) PP11.curveCalc();
+  const cv = PP11.curve, ok = q => cv.filter(c => isFinite(c[q]));
+  ppSolChart("pp11b", makeScales(0.5, 3.5, 0, 8, 460, 380, 46, 12, 22, 40), [
+    { xs: ok("xi1").map(c => c.n), ys: ok("xi1").map(c => c.xi1), stroke: C.muted, dash: "5 4", name: "ξ₁ RK4" }, { xs: ok("m1").map(c => c.n), ys: ok("m1").map(c => c.m1), stroke: C.muted, dash: "2 3", name: "m₁ RK4" },
+    { xs: ok("xn").map(c => c.n), ys: ok("xn").map(c => c.xn), stroke: C.ice, name: "ξ₁ net" }, { xs: ok("mn").map(c => c.n), ys: ok("mn").map(c => c.mn), stroke: C.rock, name: "m₁ net" }], null,
+    { xlab: "n", rects: [{ x0: 1, x1: 3, fill: "rgba(61,155,217,.08)" }], labels: [{ x: 2, y: 7.6, text: "trained on n ∈ [1, 3]", fill: C.muted, anchor: "middle" }] });
+  $("pp11step").textContent = PP11.st.step; $("pp11loss").textContent = PP11.st.step ? PP11.st.L.toExponential(1) : "–"; $("pp11err").textContent = PP11.err().toExponential(2);
+  $("pp11r").innerHTML = (isFinite(e.xi1) ? fmt(e.xi1, 2) : "none") + "<small> / " + (isFinite(r.xi1) ? fmt(r.xi1, 2) : "∞") + "</small>"; $("pp11m").innerHTML = (isFinite(e.m1) ? fmt(e.m1, 2) : "–") + "<small> / " + (isFinite(r.m1) ? fmt(r.m1, 2) : "–") + "</small>";
+  const z = $("pp11zone"); if (PP11.n >= 1 && PP11.n <= 3) { z.textContent = [1, 1.5, 2, 2.5, 3].includes(PP11.n) ? "trained" : "interpolation"; z.style.color = "#7FC2EA"; } else { z.textContent = "extrapolation"; z.style.color = "#E88A8A"; }
+};
+
+/* ================= wiring ================= */
+function ppInit() {
+  const all = [PP1, PP2, PP3, PP4, PP5, PP6, PP7, PP8, PP9, PP10, PP11];
+  all.forEach(s => s.reset());
+  ppWire(PP1, "btn-pp1train", "btn-pp1reset"); ppWire(PP2, "btn-pp2train", "btn-pp2reset"); ppWire(PP3, "btn-pp3train", "btn-pp3reset"); ppWire(PP4, "btn-pp4train", "btn-pp4reset");
+  ppWire(PP5, "btn-pp5train", "btn-pp5reset"); ppWire(PP6, "btn-pp6train", "btn-pp6reset"); ppWire(PP7, "btn-pp7train", "btn-pp7reset"); ppWire(PP8, "btn-pp8train", "btn-pp8reset");
+  ppWire(PP9, "btn-pp9train", "btn-pp9reset"); ppWire(PP10, "btn-pp10train", "btn-pp10reset"); ppWire(PP11, "btn-pp11train", "btn-pp11reset", "▶ Train the family");
+  $("in-pp1k").addEventListener("input", () => { PP1.k = +$("in-pp1k").value; PP1.playing = false; $(PP1.btn).textContent = "▶ Train"; PP1.reset(); PP1.draw(); });
+  ppSeg("seg-pp1ic", v => PP1.ic = v, PP1);
+  ppSeg("seg-pp2act", v => PP2.act = v, PP2);
+  ppSeg("seg-pp3T", v => PP3.T = +v, PP3); ppSeg("seg-pp3fix", v => PP3.fix = v, PP3);
+  $("btn-pp3seed").addEventListener("click", () => { PP3.seed = PP3.seed % 5 + 1; PP3.playing = false; $(PP3.btn).textContent = "▶ Train"; PP3.reset(); PP3.draw(); });
+  ppSeg("seg-pp4sc", v => PP4.sc = v, PP4); ppSeg("seg-pp4w", v => PP4.w = v, PP4); ppSeg("seg-pp4opt", v => PP4.opt = v, PP4);
+  ppSeg("seg-pp5N", v => PP5.N = +v, PP5); ppSeg("seg-pp5s", v => PP5.mode = v, PP5);
+  ppSeg("seg-pp6w", v => PP6.w = +v, PP6); ppSeg("seg-pp6f", v => PP6.f = v, PP6);
+  ppSeg("seg-pp7m", v => PP7.m = v, PP7);
+  ppSeg("seg-pp8m", v => PP8.m = v, PP8);
+  $("btn-pp8seed").addEventListener("click", () => { PP8.seed = PP8.seed % 5 + 1; PP8.playing = false; $(PP8.btn).textContent = "▶ Train"; PP8.reset(); PP8.draw(); });
+  ppSeg("seg-pp9m", v => PP9.m = v, PP9);
+  ppSeg("seg-pp10N", v => PP10.N = +v, PP10); ppSeg("seg-pp10w", v => PP10.wg = +v, PP10);
+  $("in-pp11n").addEventListener("input", () => { PP11.n = +$("in-pp11n").value; PP11.draw(); });
+  // hovers
+  ppHoverSol("cb-pp1a", "pp1a", "tip-pp1a", x => "t = " + fmt(x, 2)); ppHoverHist("cb-pp1b", "pp1b", "tip-pp1b", "step");
+  ppHoverSol("cb-pp2a", "pp2a", "tip-pp2a"); ppHoverHist("cb-pp2b", "pp2b", "tip-pp2b", "step");
+  ppHoverSol("cb-pp3a", "pp3a", "tip-pp3a", x => "t = " + fmt(x, 2)); ppHoverHist("cb-pp3b", "pp3b", "tip-pp3b", "step");
+  ppHoverSol("cb-pp4a", "pp4a", "tip-pp4a");
+  attachHover($("cb-pp4b"), $("pp4b"), { padL: 46, padR: 12, W: 460, H: 380 }, (px, py, cx, cy) => { const c = dCharts["pp4b"]; if (!c) return; const i = Math.floor(c.scale.inv(px));
+    const v = i < 12 ? c.eig.rr[i] : c.eig.uu[i - 13]; if (v === undefined) { $("tip-pp4b").hidden = true; return; }
+    setTip($("tip-pp4b"), cx, cy, "<b>" + (i < 12 ? "K_rr eigenvalue " + (i + 1) : "K_uu eigenvalue " + (i - 12)) + "</b><br><span class='mono'>" + v.toExponential(2) + "</span>", $("cb-pp4b").clientWidth); }, () => $("tip-pp4b").hidden = true);
+  ppHoverSol("cb-pp5a", "pp5a", "tip-pp5a"); ppHoverSol("cb-pp5b", "pp5b", "tip-pp5b");
+  ppHoverSol("cb-pp6a", "pp6a", "tip-pp6a"); ppHoverHist("cb-pp6b", "pp6b", "tip-pp6b", "step");
+  ppHoverSol("cb-pp7a", "pp7a", "tip-pp7a"); ppHoverHist("cb-pp7b", "pp7b", "tip-pp7b", "step");
+  ppHoverSol("cb-pp8a", "pp8a", "tip-pp8a", x => "t = " + fmt(x, 2));
+  ppHoverSol("cb-pp9a", "pp9a", "tip-pp9a", x => "t = " + fmt(x, 2)); ppHoverHist("cb-pp9b", "pp9b", "tip-pp9b", "evaluation");
+  ppHoverSol("cb-pp10a", "pp10a", "tip-pp10a"); ppHoverHist("cb-pp10b", "pp10b", "tip-pp10b", "step");
+  ppHoverSol("cb-pp11a", "pp11a", "tip-pp11a", x => "ξ = " + fmt(x, 2)); ppHoverSol("cb-pp11b", "pp11b", "tip-pp11b", x => "n = " + fmt(x, 2));
+  all.forEach(s => s.draw());
+}
+
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "val"];
+const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "val", "pp"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -4476,5 +5741,5 @@ cfDrawAll();
 egDrawAll();
 rvDrawAll();
 drawB1(); b2Reset(); b3Reset();
-mInitData(); m1SetVel(); m1Render(); m2Reset(); mnInit(); showTab(tab0);
+mInitData(); m1SetVel(); m1Render(); m2Reset(); mnInit(); ppInit(); showTab(tab0);
 </script>
