@@ -759,7 +759,7 @@
       <span><i style="border-color:var(--ink)"></i>exoplanet</span>
     </div>
   </div>
-  <p class="takeaway"><em>What the line says:</em> to hold an atmosphere at a given insolation you need escape speed ∝ I<sup>1/4</sup>. Mars sits right on it — hence its thin remnant; Titan sits comfortably inside despite its tiny gravity because it is so cold. Most known sub-Neptunes sit far to the right of the line — they are not marginal, they are safe — which is exactly why the radius gap must come from the <em>early</em>, XUV-bright, puffy phase (§3, §5) and not from today's conditions. And the hot rocky planets at the top (55 Cnc e, TRAPPIST-1 b) sit on the wrong side: the shoreline predicts they are bare, and JWST largely agrees.</p>
+  <p class="takeaway"><em>What the line says:</em> to hold an atmosphere at a given insolation you need escape speed ∝ I<sup>1/4</sup>. Mars sits right on it — hence its thin remnant; Titan sits comfortably inside despite its tiny gravity because it is so cold. Most known sub-Neptunes sit far to the right of the line — they are not marginal, they are safe — which is exactly why the radius gap must come from the <em>early</em>, XUV-bright, puffy phase (§3, §5) and not from today's conditions. The two hot rocky planets at the top are the instructive exceptions. 55 Cnc e sits on the bare side, yet JWST sees a volatile atmosphere — a <em>secondary</em> one, outgassed from a magma ocean; the line is a statement about primordial envelopes, and a replenished atmosphere can beat it. TRAPPIST-1 b sits on the <em>atmosphere</em> side, yet JWST finds it bare — the bolometric line under-counts the XUV that an M dwarf pours onto its planets, which is why Zahnle &amp; Catling also draw a second shoreline against XUV insolation. And Kepler-51 b holds an enormous envelope from the bare side: super-puffs remain a genuine puzzle.</p>
 </section>
 
 <!-- ================= STATION E5 ================= -->
@@ -2166,7 +2166,7 @@ attachHover($("cb-b3"), $("bch3"), { padL: 64, padR: 18, W: 920, H: 400 },
 /* ---- 2D FD wavefield (station M1) ---- */
 const MW = 140, MH = 120;
 const M1 = { v: [1.8, 2.4, 3.0], playing: false, t: 0, msAcc: 0 };
-const m1p = new Float32Array(MW*MH), m1pp = new Float32Array(MW*MH);
+let m1p = new Float32Array(MW*MH), m1pp = new Float32Array(MW*MH), m1pn = new Float32Array(MW*MH);
 const m1c2 = new Float32Array(MH), m1damp = new Float32Array(MW*MH);
 (function () {
   for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
@@ -2182,15 +2182,19 @@ function m1SetVel() {
 }
 const mRicker = (t, t0, f) => { const a = Math.PI*f*(t-t0); return (1-2*a*a)*Math.exp(-a*a); };
 function m1Step() {
+  // leapfrog: the Laplacian must read the *old* field everywhere, so write into a
+  // third buffer and rotate (an in-place update mixes new and old neighbours and is
+  // unstable at long wavelengths no matter how small the Courant number).
+  const p = m1p, pp = m1pp, pn = m1pn;
   for (let y = 1; y < MH-1; y++) {
     const c2 = m1c2[y], off = y*MW;
     for (let x = 1; x < MW-1; x++) {
       const i = off+x;
-      const lap = m1p[i-1]+m1p[i+1]+m1p[i-MW]+m1p[i+MW]-4*m1p[i];
-      const pn = (2*m1p[i]-m1pp[i]+c2*lap)*m1damp[i];
-      m1pp[i] = m1p[i]; m1p[i] = pn;
+      const lap = p[i-1]+p[i+1]+p[i-MW]+p[i+MW]-4*p[i];
+      pn[i] = (2*p[i]-pp[i]+c2*lap)*m1damp[i];
     }
   }
+  m1pn = pp; m1pp = p; m1p = pn;
   m1p[4*MW+70] += mRicker(M1.t, 40, 0.06)*2;
   M1.t++;
 }
@@ -2214,20 +2218,19 @@ function m1Render() {
   m1ctx.putImageData(m1img, 0, 0);
 }
 function m1Fire() {
-  m1p.fill(0); m1pp.fill(0); M1.t = 0; M1.msAcc = 0;
+  m1p.fill(0); m1pp.fill(0); m1pn.fill(0); M1.t = 0; M1.msAcc = 0;
   m1SetVel(); M1.playing = true; mWake();
 }
 
 /* ---- 1D FD simulator (dataset generator for M2/M3) ---- */
 function sim1D(v1, v2, v3) {
   const n = 220, steps = 600, out = new Float64Array(150);
-  const p = new Float64Array(n), pp = new Float64Array(n), c2 = new Float64Array(n);
+  let p = new Float64Array(n), pp = new Float64Array(n), pn = new Float64Array(n);
+  const c2 = new Float64Array(n);
   for (let i = 0; i < n; i++) c2[i] = Math.pow((i < 73 ? v1 : i < 146 ? v2 : v3)*0.25, 2);
   for (let t = 0; t < steps; t++) {
-    for (let i = 1; i < n-1; i++) {
-      const pn = 2*p[i]-pp[i]+c2[i]*(p[i+1]-2*p[i]+p[i-1]);
-      pp[i] = p[i]; p[i] = pn;
-    }
+    for (let i = 1; i < n-1; i++) pn[i] = 2*p[i]-pp[i]+c2[i]*(p[i+1]-2*p[i]+p[i-1]);
+    const tmp = pp; pp = p; p = pn; pn = tmp;      // rotate buffers (see m1Step)
     for (let i = n-31; i < n; i++) { const f = 1-0.08*Math.pow((i-(n-31))/30, 2); p[i] *= f; pp[i] *= f; }
     p[5] += mRicker(t, 50, 0.05);
     if (t % 4 === 0 && t/4 < 150) out[t/4] = p[8];
@@ -2697,15 +2700,15 @@ const ESC_BODIES = [
   ["Neptune", 0.0011, 23.5, "ss", "yes", -8, 4, "end", "H/He/ices"],
   ["Triton", 0.0011, 1.45, "ss", "thin", 8, 4, "start", "14 μbar N₂"],
   ["Pluto", 0.00064, 1.21, "ss", "thin", 8, 4, "start", "10 μbar N₂"],
-  ["55 Cnc e", 2440, 23.1, "exo", "yes", 8, 4, "start", "JWST: secondary atmosphere fed by a magma ocean (Hu+2024)"],
+  ["55 Cnc e", 2440, 23.1, "exo", "yes", 8, 4, "start", "bare side of the line, yet JWST sees a secondary atmosphere outgassed from a magma ocean (Hu+2024)"],
   ["TOI-849 b", 1740, 37.7, "exo", "thin", 8, 4, "start", "39 M⊕ remnant core, ≤ 4 % H/He"],
   ["HD 209458 b", 733, 42.3, "exo", "yes", 8, 4, "start", "hot Jupiter, escaping H seen in Lyα"],
   ["π Men c", 290, 16.6, "exo", "unk", 8, 4, "start", "sub-Neptune; no Lyα H detected"],
   ["WASP-107 b", 50, 19.2, "exo", "yes", -8, 4, "end", "super-puff; He escape detected"],
   ["GJ 436 b", 36.7, 25.6, "exo", "yes", 8, 4, "start", "warm Neptune with a giant H cloud"],
   ["GJ 1214 b", 21, 19.4, "exo", "yes", -8, 4, "end", "hazy, likely water-rich"],
-  ["Kepler-51 b", 13, 8.2, "exo", "yes", 0, 17, "middle", "super-puff, 3.7 M⊕ at 6.9 R⊕"],
-  ["TRAPPIST-1 b", 4.25, 12.4, "exo", "no", 8, 4, "start", "JWST: no thick atmosphere"],
+  ["Kepler-51 b", 13, 8.2, "exo", "yes", 0, 17, "middle", "super-puff, 3.7 M⊕ at 6.9 R⊕ — holds a huge envelope from the bare side"],
+  ["TRAPPIST-1 b", 4.25, 12.4, "exo", "no", 8, 4, "start", "atmosphere side of the line, yet JWST finds no thick atmosphere — M-dwarf XUV is the missing axis"],
   ["K2-18 b", 1, 20.4, "exo", "yes", 8, 4, "start", "H₂-rich; CH₄, CO₂ detected"],
   ["TRAPPIST-1 e", 0.65, 9.7, "exo", "unk", 0, 17, "middle", "temperate; unknown"],
   ["LHS 1140 b", 0.43, 20.1, "exo", "unk", 8, 14, "start", "temperate super-Earth; unknown"],
