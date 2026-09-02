@@ -1592,7 +1592,7 @@
 <!-- ================= STATION V3 ================= -->
 <section id="v3">
   <div class="sec-head"><span class="sec-num">§3</span><h2>Make it</h2></div>
-  <p class="prose">A synthetic population of 1500 planets: core masses log-normal around 4 M⊕, periods log-uniform from 1 to 100 days, initial envelopes log-uniform from 0.3 to 30 per cent, a random rotation history for each star. Evolve them with the same escape physics as §2, with the Kubyshkina tab's saturated-then-decaying XUV history, and watch the histogram. Then switch the energy source: the planet-powered variant removes gas whenever the envelope is too loosely bound for its own temperature, with no XUV at all, the boil-off of the Gas escape tab applied over the planet's contraction.</p>
+  <p class="prose">A synthetic population of 2000 planets: core masses log-normal around 4 M⊕ with a spread of 0.3 dex, periods log-uniform from 1 to 100 days, initial envelopes log-uniform from 3 to 30 per cent as in Owen &amp; Wu's fiducial model, a random rotation history for each star. Evolve them with the same escape physics as §2, with the Kubyshkina tab's saturated-then-decaying XUV history, and watch the histogram. Then switch the energy source: the planet-powered variant removes gas whenever the envelope is too loosely bound for its own temperature, with no XUV at all, the boil-off of the Gas escape tab applied over the planet's contraction.</p>
   <div class="panel">
     <div class="controls">
       <div class="ctl" style="flex:none;"><label>Age</label>
@@ -1627,22 +1627,27 @@
     <div class="readouts">
       <div class="chip"><div class="k">stripped bare</div><div class="v" id="rv3strip">–</div></div>
       <div class="chip answer"><div class="k">valley</div><div class="v" id="rv3val">–</div></div>
-      <div class="chip"><div class="k">valley at P &lt; 10 d</div><div class="v" id="rv3lo">–</div></div>
-      <div class="chip"><div class="k">valley at P &gt; 10 d</div><div class="v" id="rv3hi">–</div></div>
+      <div class="chip"><div class="k">lower peak</div><div class="v" id="rv3lo">–</div></div>
+      <div class="chip"><div class="k">upper peak</div><div class="v" id="rv3hi">–</div></div>
       <div class="chip"><div class="k">valley depth</div><div class="v" id="rv3dep">–<small> of the peaks' mean</small></div></div>
     </div>
   </div>
-  <p class="takeaway"><em>Watch the ages.</em> At 10 Myr the population is one broad hump of puffy planets. By 100 Myr the thin envelopes are gone and the lower peak has formed; by 1 Gyr the gap has cleared and it barely moves afterwards, because the star's XUV has faded. The synthetic valley also slopes the right way, to smaller radii at longer period, since far-out planets receive less flux and lighter envelopes survive there. The planet-powered version carves a shallower gap in this toy, and in the literature both mechanisms reproduce the observed valley well enough that current data cannot tell them apart.</p>
+  <p class="takeaway"><em>Watch the ages.</em> At 10 Myr the population is one broad hump of puffy planets. By 100 Myr the thin envelopes are gone and the lower peak has formed; over the next few Gyr the gap clears as the survivors contract, and it then barely moves, because the star's XUV has faded. The toy's gap sits near 2.2 R⊕ rather than the observed 1.8, because its surviving envelopes are a few per cent and puffy; Owen &amp; Wu tune the core-mass distribution to place it correctly, which this tab deliberately does not do. In the full models the valley also slopes to smaller radii at longer period, since far-out planets receive less flux and lighter envelopes survive there; this toy's twenty-bin histogram is too coarse to measure that slope honestly, so it is not reported. The planet-powered version carves a shallower gap in this toy, and in the literature both mechanisms reproduce the observed valley well enough that current data cannot tell them apart.</p>
 </section>
 
 <!-- ================= STATION V4 ================= -->
 <section id="v4">
   <div class="sec-head"><span class="sec-num">§4</span><h2>Or two compositions</h2></div>
-  <p class="prose">Now remove escape entirely. Take the same cores and give a fraction of them 50 % water by mass, planets born beyond the iceline as in case A of the Egger tab, and leave the rest dry. No gas anywhere. The histogram splits into two peaks by itself, because a water world of a given mass is about 25 % larger than a rocky one. Formation-and-evolution models that let planets migrate from beyond the iceline produce a valley this way, with the upper peak made of ocean worlds rather than gas-wrapped rocks.</p>
+  <p class="prose">Now remove escape entirely. Draw dry rocky planets, and a second population born beyond the iceline with 50 % water by mass, as in case A of the Egger tab. No gas anywhere. A water world is only about 25 % larger than a rocky planet of the same mass, so with equal masses the two populations blur into one hump. Formation models rescue the picture: planets that form beyond the iceline grow larger before migrating in, so the water worlds are also the heavier ones, and two peaks appear. Venturini et al. (2020) and Burn et al. (2024) reproduce the observed valley this way, with the upper peak made of ocean worlds rather than gas-wrapped rocks.</p>
   <div class="panel">
     <div class="controls">
       <div class="ctl"><label>Share of planets born beyond the iceline <output id="o-rv4w">50 %</output></label>
         <input type="range" id="in-rv4w" min="0" max="1" step="0.05" value="0.5" aria-label="Water world fraction"></div>
+      <div class="ctl" style="flex:none;max-width:none;"><label>Mass of the water worlds</label>
+        <div class="seg" id="seg-rv4m" role="group" aria-label="Water world mass ratio">
+          <button aria-pressed="true" data-v="2.6">2.6 × the rocky ones · formation models</button>
+          <button aria-pressed="false" data-v="1">same as the rocky ones</button>
+        </div></div>
     </div>
     <div class="rv-grid">
       <div class="chart-box" id="cb-rv4a">
@@ -1668,7 +1673,7 @@
 </section>
 
 <footer>
-  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> §1 is the NASA Exoplanet Archive composite planet table, queried on 2 September 2026, embedded in this page: transiting planets with R &lt; 5 R⊕ and P &lt; 100 d, with the radius error, host mass and discovery facility the archive lists; the precision cut uses the larger of the two quoted radius errors. The valley line is Van Eylen et al. (2018). §2 and §3 use the same forward model as the Egger tab, a Zeng et al. (2016) Earth-like core plus the Lopez &amp; Fortney (2014) H/He envelope with its age term standing in for contraction, and energy-limited escape with ε = 0.1 under the Gas escape tab's XUV history (10³ erg cm⁻² s⁻¹ at 1 AU while saturated, then t<sup>−1.5</sup>). The planet-powered engine is a relaxation to a Jeans parameter of 20 at each step of the planet's contraction, a caricature of core-powered mass loss rather than the Ginzburg et al. (2018) model. §4 uses the Zeng relation with this site's condensed-water factor. Synthetic distributions of core mass, period and initial envelope are choices, not fits, and the detection bias of a transit survey is not applied to the synthetic populations.</p>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> §1 is the NASA Exoplanet Archive composite planet table, queried on 2 September 2026, embedded in this page: transiting planets with R &lt; 5 R⊕ and P &lt; 100 d, with the radius error, host mass and discovery facility the archive lists; the precision cut uses the larger of the two quoted radius errors. The valley line is Van Eylen et al. (2018). §2 and §3 use the same forward model as the Egger tab, a Zeng et al. (2016) Earth-like core plus the Lopez &amp; Fortney (2014) H/He envelope with its age term standing in for contraction, and energy-limited escape with ε = 0.1 under the Gas escape tab's XUV history (10³ erg cm⁻² s⁻¹ at 1 AU while saturated, then t<sup>−1.5</sup>). The planet-powered engine is a relaxation to a Jeans parameter of 20 at each step of the planet's contraction, a caricature of core-powered mass loss rather than the Ginzburg et al. (2018) model. §4 uses the Zeng relation with this site's condensed-water factor, and gives the water worlds a mass distribution 2.6 times that of the rocky planets by default, a stand-in for the larger masses that planets reach when they form beyond the iceline in the Bern model. Synthetic distributions of core mass, period and initial envelope are choices, not fits, and the detection bias of a transit survey is not applied to the synthetic populations.</p>
   <p>Fulton et al. (2017), AJ 154, 109 · Van Eylen et al. (2018), MNRAS 479, 4786 · Owen &amp; Wu (2017), ApJ 847, 29 · Ginzburg, Schlichting &amp; Sari (2018), MNRAS 476, 759 · Venturini et al. (2020), A&amp;A 643, L1 · Lopez &amp; Fortney (2014), ApJ 792, 1 · Zeng et al. (2016), ApJ 819, 127</p>
 </footer>
 </div><!-- /page-val -->
@@ -4011,7 +4016,7 @@ const RV_DATA = [[10.92,3.44,0.02,0.99,0],[3.471,4.51,0.1,0.57,1],[16.0,2.23,4.0
    Real catalogue in §1 (RV_DATA above). §2-§3: Zeng+2016 core + Lopez & Fortney 2014 envelope
    (from the Egger tab) with energy-limited XUV escape, or a Jeans-parameter relaxation as a
    caricature of core-powered loss. §4: two compositions, no escape. Prefix rv/RV.          */
-const RV = { err: 0.10, fac: "all", ms: "all", m2: 5, P2: 10, age3: 5, eng: "xuv", w4: 0.5 };
+const RV = { err: 0.10, fac: "all", ms: "all", m2: 5, P2: 10, age3: 5, eng: "xuv", w4: 0.5, mw4: 2.6 };
 const RV_BINS = (() => { const b = []; for (let i = 0; i <= 20; i++) b.push(Math.pow(4, i / 20)); return b; })();
 function rvHistCounts(R) { const c = new Array(20).fill(0); R.forEach(r => { const k = Math.floor(Math.log(r) / Math.log(4) * 20); if (k >= 0 && k < 20) c[k]++; }); return c; }
 function rvValley(c) {                 // find the two peaks, then the emptiest bin between them
@@ -4020,8 +4025,13 @@ function rvValley(c) {                 // find the two peaks, then the emptiest 
   let lo = -1, hi = -1;
   for (let i = 0; i < 20; i++) { const x = centre(i); if (x < 1.75 && (lo < 0 || sm[i] > sm[lo])) lo = i; if (x > 1.9 && x < 3.2 && (hi < 0 || sm[i] > sm[hi])) hi = i; }
   if (lo < 0 || hi < 0 || hi <= lo + 1) return null;
+  // both peaks must be genuine local maxima of the smoothed histogram, and the gap must be
+  // at least 15 % below each of them; otherwise a one-humped population has no valley
+  const isMax = i => sm[i] >= sm[Math.max(i - 1, 0)] && sm[i] >= sm[Math.min(i + 1, 19)] && i > 0 && i < 19;
   let v = lo + 1; for (let i = lo + 1; i < hi; i++) if (sm[i] < sm[v]) v = i;
-  return { lo, hi, v, depth: sm[v] / ((sm[lo] + sm[hi]) / 2), centre };
+  let vr = lo + 1; for (let i = lo + 1; i < hi; i++) if (c[i] < c[vr]) vr = i;      // emptiest raw bin between the peaks
+  if (!isMax(lo) || !isMax(hi) || c[vr] > 0.85 * Math.min(c[lo], c[hi])) return null;
+  return { lo, hi, v: vr, depth: c[vr] / ((c[lo] + c[hi]) / 2), centre };
 }
 const rvBinLab = i => fmt(RV_BINS[i], 2) + "–" + fmt(RV_BINS[i + 1], 2);
 function rvDrawHist(svgId, counts, valley, overlay, hoverKey) {
@@ -4113,10 +4123,10 @@ function rvEvolve(mc, f0, a, rot, mode) {
   return { R, f };
 }
 function rvMakePop() {
-  const N = 1500, pop = [];
+  const N = 2000, pop = [];
   for (let i = 0; i < N; i++) {
-    const mc = Math.min(25, Math.max(0.7, Math.pow(10, Math.log10(4) + 0.35 * randn()))), P = Math.pow(10, rand() * 2);
-    pop.push({ mc, P, a: rvPtoA(P), f0: Math.pow(10, -2.5 + rand() * 2), rot: ["slow", "mod", "fast"][Math.floor(rand() * 3)], xuv: null, boil: null });
+    const mc = Math.min(25, Math.max(0.7, Math.pow(10, Math.log10(4) + 0.3 * randn()))), P = Math.pow(10, rand() * 2);
+    pop.push({ mc, P, a: rvPtoA(P), f0: Math.pow(10, Math.log10(0.03) + rand() * Math.log10(10)), rot: ["slow", "mod", "fast"][Math.floor(rand() * 3)], z4: randn(), xuv: null, boil: null });
   }
   pop.forEach(p => p.xuv = rvEvolve(p.mc, p.f0, p.a, p.rot, "xuv"));
   return pop;
@@ -4130,17 +4140,18 @@ function rvDraw3() {
   const scale = rvDataHist ? rvPop.length / Math.max(rvDataHist.reduce((a, b) => a + b, 0), 1) : 0;
   rvDrawScatter("rvch3a", rows.map(r => [r.P, r.R, r]), r => r[2].bare ? C.iron : C.ice, "rvch3a");
   rvDrawHist("rvch3b", counts, v, rvDataHist ? rvDataHist.map(c => c * scale) : null, "rvch3b");
-  const vAt = sub => { const vv = rvValley(rvHistCounts(sub.map(r => r.R))); return vv ? vv.centre(vv.v).toFixed(2) + "<small> R⊕</small>" : "–"; };
   $("rv3strip").innerHTML = Math.round(rows.filter(r => r.bare).length / rows.length * 100) + " %";
-  $("rv3val").innerHTML = v ? rvBinLab(v.v) + "<small> R⊕</small>" : "none found";
-  $("rv3lo").innerHTML = vAt(rows.filter(r => r.P < 10)); $("rv3hi").innerHTML = vAt(rows.filter(r => r.P >= 10));
+  $("rv3val").innerHTML = v ? rvBinLab(v.v) + "<small> R⊕ · " + counts[v.v] + "</small>" : "none found";
+  $("rv3lo").innerHTML = v ? rvBinLab(v.lo) + "<small> R⊕ · " + counts[v.lo] + "</small>" : "–";
+  $("rv3hi").innerHTML = v ? rvBinLab(v.hi) + "<small> R⊕ · " + counts[v.hi] + "</small>" : "–";
   $("rv3dep").innerHTML = v ? Math.round(v.depth * 100) + " %<small> of the peaks' mean</small>" : "–";
 }
 /* §4 two compositions */
 function rvDraw4() {
   if (!rvPop) rvPop = rvMakePop();
   $("o-rv4w").textContent = Math.round(RV.w4 * 100) + " %";
-  const rows = rvPop.map((p, i) => { const wet = (i / rvPop.length) < RV.w4; return { P: p.P, R: egRsolid(p.mc, 0.325, wet ? 0.5 : 0), wet }; });
+  // dry planets: log-normal around 3.5 M⊕ (σ 0.25 dex); water worlds: the same shape shifted up by the chosen ratio
+  const rows = rvPop.map((p, i) => { const wet = (i / rvPop.length) < RV.w4; const mc = Math.min(20, Math.max(0.7, 3.5 * (wet ? RV.mw4 : 1) * Math.pow(10, 0.25 * p.z4))); return { P: p.P, R: egRsolid(mc, 0.325, wet ? 0.5 : 0), wet, mc }; });
   const counts = rvHistCounts(rows.map(r => r.R)), v = rvValley(counts);
   const scale = rvDataHist ? rvPop.length / Math.max(rvDataHist.reduce((a, b) => a + b, 0), 1) : 0;
   rvDrawScatter("rvch4a", rows.map(r => [r.P, r.R, r]), r => r[2].wet ? C.ice : C.rock, "rvch4a");
@@ -4170,7 +4181,7 @@ function rvScatterHover(boxId, svgId, tipId, label) {
 rvHistHover("cb-rv1b", "rvch1b", "tip-rv1b"); rvHistHover("cb-rv3b", "rvch3b", "tip-rv3b"); rvHistHover("cb-rv4b", "rvch4b", "tip-rv4b");
 rvScatterHover("cb-rv1a", "rvch1a", "tip-rv1a", p => "<b>P = " + p[0] + " d · R = " + p[1] + " R⊕</b><br><span class='mono'>radius error " + Math.round(p[2][2] * 100) + " % · host " + (p[2][3] ? p[2][3] + " M☉" : "?") + " · " + ["Kepler", "K2", "TESS", "other"][p[2][4]] + "</span>");
 rvScatterHover("cb-rv3a", "rvch3a", "tip-rv3a", p => "<b>P = " + fmt(p[0], 1) + " d · R = " + fmt(p[1], 2) + " R⊕</b><br><span class='mono'>core " + fmt(p[2].p.mc, 1) + " M⊕ · initial envelope " + fmt(p[2].p.f0 * 100, 1) + " % · " + p[2].p.rot + " rotator</span><br>" + (p[2].bare ? "stripped bare" : "envelope kept: " + fmt(p[2].p[RV.eng].f * 100, 2) + " %"));
-rvScatterHover("cb-rv4a", "rvch4a", "tip-rv4a", p => "<b>P = " + fmt(p[0], 1) + " d · R = " + fmt(p[1], 2) + " R⊕</b><br>" + (p[2].wet ? "50 % water world" : "dry rocky planet"));
+rvScatterHover("cb-rv4a", "rvch4a", "tip-rv4a", p => "<b>P = " + fmt(p[0], 1) + " d · R = " + fmt(p[1], 2) + " R⊕</b><br><span class='mono'>" + fmt(p[2].mc, 1) + " M⊕ · " + (p[2].wet ? "50 % water world" : "dry rocky planet") + "</span>");
 ["rvch2a", "rvch2b"].forEach((id, j) => attachHover($("cb-" + id), $(id), { padL: 46, padR: 14, W: 460, H: 340 },
   (px, py, cx, cy) => {
     const c = egCharts[id]; if (!c) return;
@@ -4187,6 +4198,7 @@ escSegWire("seg-rv3t", v => RV.age3 = +v, rvDraw3);
 escSegWire("seg-rv3e", v => RV.eng = v, rvDraw3);
 $("btn-rv3").addEventListener("click", () => { rvPop = null; rvDraw3(); rvDraw4(); });
 $("in-rv4w").addEventListener("input", () => { RV.w4 = +$("in-rv4w").value; rvDraw4(); });
+escSegWire("seg-rv4m", v => RV.mw4 = +v, rvDraw4);
 
 /* ================= Photobombing -> interiors (concept tab) =================
    Transcribes the target-confusion (Sect. 2.2.3) and cancellation (2.2.4) criteria of

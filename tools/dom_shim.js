@@ -7,7 +7,7 @@ function mkNode(id) {
     attrs: {}, children: [],
     // innerHTML serialises the appended children (tag, attributes, text) so a headless
     // sweep can scan the rendered output for NaN / Infinity / undefined
-    get innerHTML() { return this.children.map(function (c) { return "<" + (c.tag || "node") + " " +
+    get innerHTML() { return (this._raw || "") + this.children.map(function (c) { return "<" + (c.tag || "node") + " " +
       Object.keys(c.attrs).map(function (k) { return k + "=\"" + c.attrs[k] + "\""; }).join(" ") + ">" + c.textContent + c.innerHTML + "</" + (c.tag || "node") + ">"; }).join(""); },
     set innerHTML(v) { this.children = []; this._raw = v; },
     setAttribute: function (k, v) { this.attrs[k] = v; },
