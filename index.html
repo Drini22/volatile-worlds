@@ -79,6 +79,28 @@
   .cf-keys i.dash{height:0;width:16px;border-top:2px dashed var(--muted);border-radius:0;}
   .verdict.mid{background:rgba(174,182,196,.14);color:#C8CFDA;}
 
+  /* ---------- egger tab ---------- */
+  .eg-hist{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px;}
+  @media (max-width:900px){.eg-hist{grid-template-columns:repeat(2,1fr);}}
+  .eg-twins{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:760px){.eg-twins{grid-template-columns:1fr;}}
+  .eg-case{background:var(--surface2);border:1px solid var(--line-soft);border-radius:12px;padding:16px 16px 12px;}
+  .eg-case h3{font-family:var(--sans);font-size:15px;font-weight:600;margin-bottom:4px;}
+  .eg-case p.sub{font-size:12.5px;color:var(--muted);margin-bottom:10px;}
+  .eg-case .pps{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .eg-case .pps svg{width:110px;height:110px;background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;}
+  .eg-case .cap{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:center;margin-top:4px;}
+  .eg-ledger{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;}
+  @media (max-width:760px){.eg-ledger{grid-template-columns:1fr;}}
+  .eg-ledger .card{background:var(--surface2);border:1px solid var(--line-soft);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--ink2);display:flex;flex-direction:column;gap:6px;}
+  .eg-ledger .card h3{font-family:var(--sans);font-size:14.5px;font-weight:600;color:var(--ink);}
+  .eg-ledger .card .mono{color:var(--ink);font-size:12px;}
+  .eg-kub{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px;}
+  .eg-kub th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);}
+  .eg-kub td{padding:7px 10px;border-bottom:1px solid var(--line-soft);font-family:var(--mono);font-size:12px;color:var(--ink2);}
+  .eg-kub td:first-child{font-family:var(--sans);color:var(--ink);font-size:13px;}
+  .eg-kub td.keep{color:#7FC2EA;} .eg-kub td.strip{color:#E5A468;}
+
   /* ---------- dorn tab ---------- */
   .hist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:6px;}
   @media (max-width:760px){.hist-grid{grid-template-columns:1fr;}}
@@ -209,6 +231,7 @@
         <button class="tabbtn" id="tab-kub" role="tab" aria-selected="false">Kubyshkina 2022 <small>evolve the population</small></button>
         <button class="tabbtn" id="tab-baty" role="tab" aria-selected="false">Baty 2023 <small>learn the equation</small></button>
         <button class="tabbtn" id="tab-mos" role="tab" aria-selected="false">Moseley 2020 <small>emulate the simulator</small></button>
+        <button class="tabbtn" id="tab-egg" role="tab" aria-selected="false">Egger 2024 <small>infer the system</small></button>
       </div>
     </div>
     <div class="tabgroup">
@@ -1120,7 +1143,7 @@
 <!-- ================= STATION M1 ================= -->
 <section id="m1">
   <div class="sec-head"><span class="sec-num">§1</span><h2>The expensive forward problem</h2></div>
-  <p class="prose">Seismic simulation means solving the acoustic wave equation on a fine grid, timestep by timestep — billions of degrees of freedom in production runs. One global simulation at 1 Hz costs ~40 <em>million</em> CPU hours; industrial imaging needs hundreds of thousands of runs per survey. Here is that forward problem in miniature: a 2-D finite-difference wavefield in a three-layer medium. Fire a shot and watch the reflections that carry all the information about the layers.</p>
+  <p class="prose">Seismic simulation means solving the acoustic wave equation on a fine grid, timestep by timestep — billions of degrees of freedom in production runs. One global simulation at 1 Hz costs ~40 <em>million</em> CPU hours; industrial imaging needs hundreds of thousands of runs for every single shot in a survey. Here is that forward problem in miniature: a 2-D finite-difference wavefield in a three-layer medium. Fire a shot and watch the reflections that carry all the information about the layers.</p>
   <div class="panel">
     <div class="controls">
       <div class="ctl"><label>Layer 1 velocity <output id="o-mv1">1.8</output></label>
@@ -1209,7 +1232,7 @@
       </div>
     </div>
   </div>
-  <p class="takeaway"><em>The paper's honest bookkeeping, worth internalizing:</em> speed-ups of 19–22× on CPU and 406–549× on GPU — but 0.5–4 days of training plus 50 000–300 000 simulations to build the dataset. Amortization only pays when <em>many</em> similar simulations are needed (inversion, hazard analysis); it's pointless for one-off runs. And generality is bounded: on Marmousi velocity models unlike the training set, the autoencoder failed, with a nearest-training-neighbour check as the paper's practical warning light. Swap “velocity model” for “planet population” and this is precisely the contract plaNETic signs.</p>
+  <p class="takeaway"><em>The paper's honest bookkeeping, worth internalizing:</em> speed-ups of 19–22× on CPU and 406–549× on GPU — but 0.5–4 days of training plus 50 000–300 000 simulations to build the dataset. Amortization only pays when <em>many</em> similar simulations are needed (inversion, hazard analysis); it's pointless for one-off runs. And generality is bounded: on Marmousi velocity models unlike the training set, the autoencoder failed wherever the dips and faulting were stronger than anything it had been trained on, with a nearest-training-neighbour check as the paper's practical warning light. Swap “velocity model” for “planet population” and this is precisely the contract plaNETic signs.</p>
 </section>
 
 <footer>
@@ -1217,6 +1240,165 @@
   <p>B. Moseley, T. Nissen-Meyer &amp; A. Markham (2020), “Deep learning for fast simulation of seismic waves in complex media”, Solid Earth 11, 1527–1549 · <a href="https://doi.org/10.5194/se-11-1527-2020">doi:10.5194/se-11-1527-2020</a></p>
 </footer>
 </div><!-- /page-mos -->
+
+<div id="page-egg" role="tabpanel" aria-labelledby="tab-egg" hidden>
+<section class="pagehero">
+  <p class="eyebrow">J. A. Egger, H. P. Osborn, D. Kubyshkina, C. Mordasini, Y. Alibert et al. (2024) · A&amp;A, accepted · arXiv:2406.18653</p>
+  <p class="standfirst">Everything on this site so far comes together on one star. HIP 29442 hosts two super-Earths below the radius valley and a sub-Neptune above it. Egger and collaborators measure their radii with CHEOPS, hand all three to <em>plaNETic</em>, a Bayesian interior framework whose forward model is a neural network trained on the BICEPS structure code, state Alibert's water question and Dorn's abundance constraint as explicit prior choices, run Kubyshkina's escape models on the answers, and ask the Bern formation model where such a system comes from. This tab runs a miniature of that pipeline, live.</p>
+</section>
+
+<!-- ================= STATION G1 ================= -->
+<section id="g1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>Three planets across the valley</h2></div>
+  <p class="prose">The system was found by TESS and ESPRESSO, but the two inner transits were so shallow that the radii were uncertain. CHEOPS observed 20 transits in 17 visits. Switch between the radii the discovery paper had and the CHEOPS radii: planet d moves by 3.4σ, from a Mercury-like density to an Earth-like one. Composition lines are computed with this tab's forward model at the system's age.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Radii</label>
+        <div class="seg" id="seg-eg-src" role="group" aria-label="Radius source">
+          <button aria-pressed="true" data-v="cheops">CHEOPS 2024 (this paper)</button>
+          <button aria-pressed="false" data-v="tess">TESS only (Damasso 2023)</button>
+        </div></div>
+    </div>
+    <div class="chart-box" id="cb-eg1">
+      <p class="chart-title">Mass–radius diagram of HIP 29442 b, c and d with composition lines</p>
+      <p class="chart-sub">Solid: bare cores · dashed blue: Earth-like core plus condensed water · dotted rust: Earth-like core plus H/He at 150 F⊕ and 11 Gyr · grey band: the radius valley at these periods (Ho &amp; Van Eylen 2023) · hover any planet</p>
+      <svg id="egch1" viewBox="0 0 920 420" aria-label="Mass radius diagram of the HIP 29442 planets"></svg>
+      <div class="tip" id="tip-eg1" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">b · density vs Earth-like</div><div class="v" id="eg1b">–</div></div>
+      <div class="chip"><div class="k">c · density vs Earth-like</div><div class="v" id="eg1c">–</div></div>
+      <div class="chip"><div class="k">d · density vs Earth-like</div><div class="v" id="eg1d">–</div></div>
+      <div class="chip"><div class="k">d · shift TESS → CHEOPS</div><div class="v" id="eg1shift">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Why the radii matter this much:</em> at 5 M⊕ the difference between a Mercury-like and an Earth-like core is 0.1 R⊕, the same size as the TESS error bar. The paper's first conclusion is a warning about multi-year TESS photometry of small planets with low per-transit signal. Its second is the placement: c and d sit on the bare Earth-like line, b sits above the 50 % water line and must carry an envelope. Everything after this is about what that envelope, and the two bare-looking planets, are made of.</p>
+</section>
+
+<!-- ================= STATION G2 ================= -->
+<section id="g2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>The full grid, live</h2></div>
+  <p class="prose">plaNETic does not run a Markov chain. It draws a hundred million planets per system from the priors, computes each transit radius with the network, and keeps a planet with probability equal to its likelihood. The priors are the physics: <strong>case A</strong>, the planet formed outside the iceline and accreted water as solids, so core, mantle and water fractions are uniform on a simplex with water capped at 50 %; <strong>case B</strong>, it formed inside the iceline and any water came with the gas at a solar 0.5 %. The Si/Mg/Fe option fixes the mantle chemistry from the star, adds iron the way Adibekyan's rocky planets do, or leaves it free. Below, the same algorithm on 60 000 planets with this tab's forward model.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Planet</label>
+        <div class="seg" id="seg-eg-pl" role="group" aria-label="Planet">
+          <button aria-pressed="true" data-v="b">b · 9.1 M⊕, 3.41 R⊕</button>
+          <button aria-pressed="false" data-v="c">c · 4.5 M⊕, 1.55 R⊕</button>
+          <button aria-pressed="false" data-v="d">d · 5.1 M⊕, 1.54 R⊕</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Water prior</label>
+        <div class="seg" id="seg-eg-w" role="group" aria-label="Water prior">
+          <button aria-pressed="true" data-v="A">A · formed outside the iceline</button>
+          <button aria-pressed="false" data-v="B">B · formed inside</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Si/Mg/Fe prior</label>
+        <div class="seg" id="seg-eg-s" role="group" aria-label="Si/Mg/Fe prior">
+          <button aria-pressed="true" data-v="1">1 · stellar</button>
+          <button aria-pressed="false" data-v="2">2 · iron-enriched</button>
+          <button aria-pressed="false" data-v="3">3 · free</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;">
+        <button class="btn" id="btn-eg-run">↻ Draw a new grid</button></div>
+    </div>
+    <div class="eg-hist">
+      <div class="chart-box" id="cb-egh0"><p class="chart-title">Core <span style="color:var(--muted);font-weight:400">· w<sub>core</sub></span></p><svg id="egh0" viewBox="0 0 300 225" aria-label="Posterior of core mass fraction"></svg><div class="tip" id="tip-egh0" hidden></div></div>
+      <div class="chart-box" id="cb-egh1"><p class="chart-title">Mantle <span style="color:var(--muted);font-weight:400">· w<sub>mantle</sub></span></p><svg id="egh1" viewBox="0 0 300 225" aria-label="Posterior of mantle mass fraction"></svg><div class="tip" id="tip-egh1" hidden></div></div>
+      <div class="chart-box" id="cb-egh2"><p class="chart-title">Envelope <span style="color:var(--muted);font-weight:400" id="egh2lab">· w<sub>envelope</sub></span></p><svg id="egh2" viewBox="0 0 300 225" aria-label="Posterior of envelope mass fraction"></svg><div class="tip" id="tip-egh2" hidden></div></div>
+      <div class="chart-box" id="cb-egh3"><p class="chart-title">Water in envelope <span style="color:var(--muted);font-weight:400">· Z<sub>envelope</sub></span></p><svg id="egh3" viewBox="0 0 300 225" aria-label="Posterior of envelope water fraction"></svg><div class="tip" id="tip-egh3" hidden></div></div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--ice)"></i>posterior</span>
+      <span><i style="border-color:var(--muted);border-top-style:dashed"></i>prior</span>
+      <span><i style="border-color:var(--rock)"></i>median</span>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">w<sub>core</sub> · median, 68 %</div><div class="v" id="eg2c">–</div></div>
+      <div class="chip"><div class="k">w<sub>mantle</sub></div><div class="v" id="eg2m">–</div></div>
+      <div class="chip answer"><div class="k">w<sub>envelope</sub></div><div class="v" id="eg2e">–</div></div>
+      <div class="chip"><div class="k">Z<sub>envelope</sub></div><div class="v" id="eg2z">–</div></div>
+      <div class="chip"><div class="k">paper · BICEPS + DNN, same priors</div><div class="v" id="eg2paper" style="font-size:14px;line-height:1.5">–</div></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">accepted</div><div class="v" id="eg2acc">–</div></div>
+      <div class="chip"><div class="k">this grid took</div><div class="v" id="eg2ms">–</div></div>
+      <div class="chip"><div class="k">same grid through BICEPS at 13.6 s per planet</div><div class="v" id="eg2biceps">–</div></div>
+      <div class="chip"><div class="k">the paper's grid, 10⁸ planets, through BICEPS</div><div class="v">43<small> years · the DNN does it in 9 h</small></div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What the priors do, in the paper's own numbers:</em> for planet b, case A allows an envelope anywhere from 0 to 60 % of the mass, mostly water; case B pins it at 6 % H/He. For c and d, case A gives a few per cent of almost pure water; case B gives 10⁻⁶ of H/He, which such planets would have lost long ago. Changing the Si/Mg/Fe prior moves the core and mantle posteriors, because it changes how much iron the mantle may hold, but barely touches the envelope. The question "how much water" therefore has an answer only once "where did it form" is assumed, which is exactly why the paper goes to the formation model in §5.</p>
+</section>
+
+<!-- ================= STATION G3 ================= -->
+<section id="g3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Born outside or born inside</h2></div>
+  <p class="prose">Six interiors drawn at random from the posteriors of §2 for the selected planet, three per birthplace. Both columns fit the same mass and radius to within the errors. The Alibert twins of the first tab are back, now with the star's chemistry and a stated formation scenario deciding which twin you get.</p>
+  <div class="panel">
+    <div class="eg-twins">
+      <div class="eg-case"><h3>Case A · formed outside the iceline</h3><p class="sub">water accreted as solids, envelope water-rich</p>
+        <div class="pps"><div><svg id="egpA0" viewBox="0 0 300 300"></svg><p class="cap" id="egpA0c"></p></div><div><svg id="egpA1" viewBox="0 0 300 300"></svg><p class="cap" id="egpA1c"></p></div><div><svg id="egpA2" viewBox="0 0 300 300"></svg><p class="cap" id="egpA2c"></p></div></div></div>
+      <div class="eg-case"><h3>Case B · formed inside the iceline</h3><p class="sub">water only from the accreted gas, envelope H/He</p>
+        <div class="pps"><div><svg id="egpB0" viewBox="0 0 300 300"></svg><p class="cap" id="egpB0c"></p></div><div><svg id="egpB1" viewBox="0 0 300 300"></svg><p class="cap" id="egpB1c"></p></div><div><svg id="egpB2" viewBox="0 0 300 300"></svg><p class="cap" id="egpB2c"></p></div></div></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">envelope · case A</div><div class="v" id="eg3A">–</div></div>
+      <div class="chip"><div class="k">envelope · case B</div><div class="v" id="eg3B">–</div></div>
+      <div class="chip"><div class="k">interiors that fit under both</div><div class="v" id="eg3both" style="font-size:14px;line-height:1.5">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>The honest limit:</em> the paper's water fraction is water in the envelope, not water dissolved in a magma ocean or locked in the mantle, which the structure model does not track. And the two cases are not tested against each other by the data: mass and radius accept both. What decides between them is physics from elsewhere, escape in §4 and formation in §5.</p>
+</section>
+
+<!-- ================= STATION G4 ================= -->
+<section id="g4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>Water in the wind</h2></div>
+  <p class="prose">The paper then runs the CHAIN hydrodynamic code of Kubyshkina et al. on each planet's upper atmosphere, once for a pure H/He composition and once for the water-rich composition of case A. Water raises the mean molecular weight, so the atmosphere is more compact, and its photodissociation products cool the gas through oxygen lines. The mass-loss rate drops by a factor of 2 to 7 and the particle escape rate by 5 to 35. These are the paper's Table 5 rates; the stripping times use the envelope medians from §2.</p>
+  <div class="panel">
+    <div class="chart-box" id="cb-eg4">
+      <p class="chart-title">Present-day mass-loss rates from CHAIN, per planet and atmosphere</p>
+      <p class="chart-sub">XUV flux at the planet from the Mors track of an 11 Gyr K0 star · rust: pure H/He · blue: water-rich · hover any bar</p>
+      <svg id="egch4" viewBox="0 0 920 340" aria-label="Mass loss rates for the three planets and two compositions"></svg>
+      <div class="tip" id="tip-eg4" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">selected planet · F<sub>XUV</sub></div><div class="v" id="eg4f">–</div></div>
+      <div class="chip"><div class="k">Ṁ · H/He</div><div class="v" id="eg4h">–</div></div>
+      <div class="chip"><div class="k">Ṁ · water-rich</div><div class="v" id="eg4w">–</div></div>
+      <div class="chip answer"><div class="k">case-B H/He envelope would last</div><div class="v" id="eg4tB">–</div></div>
+      <div class="chip"><div class="k">case-A water envelope would last</div><div class="v" id="eg4tA">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Read it with the Gas escape tab open:</em> today's rates are the tail of the story; in the first gigayear they were 10 to 30 times higher. Even so, the case-B envelopes of c and d, at one part in a million, are gone in a geological instant, which is the paper's argument that if c and d have any atmosphere it must be heavy. Planet b's 6 % H/He envelope of case B lasts about 20 Gyr at the present rate, a few Gyr at the early one, and its water-rich envelope of case A would survive for hundreds. Water does not just sit in the interior; it changes whether the envelope is still there to be measured.</p>
+</section>
+
+<!-- ================= STATION G5 ================= -->
+<section id="g5">
+  <div class="sec-head"><span class="sec-num">§5</span><h2>Where they came from, and what they can keep</h2></div>
+  <p class="prose">Two checks close the paper. First, the Kubyshkina &amp; Fossati evolution grid from the third tab, with initial H/He fractions from Mordasini's formation fit (basic, in situ) and from a migrated scenario with massive envelopes: can each planet keep an envelope for 10 Gyr? Below, this site's toy version of that engine, for the actual masses and orbits. Second, the Bern population synthesis: among a thousand synthetic systems, eight contain analogues of all three planets at once, and their formation tracks agree on where each planet was born.</p>
+  <div class="panel">
+    <p class="chart-title">Toy Kubyshkina engine · H/He kept after 10 Gyr, per initial envelope and stellar rotation history</p>
+    <p class="chart-sub">Initial fractions as in the paper's Fig. 16: basic setup / migrated scenario · the paper's verdict from the real grid is in the last column</p>
+    <table class="eg-kub" id="eg-kubtab"><tr><th>planet</th><th>initial H/He</th><th>slow rotator</th><th>moderate</th><th>fast</th><th>paper</th></tr></table>
+    <p class="chart-title" style="margin-top:22px;">Bern-model analogues · where each planet formed and where it is now</p>
+    <p class="chart-sub">Formation range of the synthetic analogues (from the paper's §6) · light band: the water iceline in those disks · dot: today's orbit · arrow: migration during the disk phase</p>
+    <div class="chart-box" id="cb-eg5">
+      <svg id="egch5" viewBox="0 0 920 230" aria-label="Formation locations versus present orbits"></svg>
+      <div class="tip" id="tip-eg5" hidden></div>
+    </div>
+    <div class="eg-ledger">
+      <div class="card"><h3>HIP 29442 b · 200 analogues</h3><p>Formed <span class="mono">3 – 6 AU</span>, beyond the iceline, from planetesimals. Grew to <span class="mono">5 – 10 M⊕</span>, then migrated inward at constant mass without ever reaching the critical core mass for runaway gas accretion.</p><p>Analogues: water <span class="mono">10 – 45 %</span>, H/He mostly below 1 %. Their radii fall short of 3.4 R⊕, which the paper reads as too much H/He lost in the model, or water stored in the interior.</p></div>
+      <div class="card"><h3>HIP 29442 c · 227 analogues</h3><p>Formed <span class="mono">0.4 – 2 AU</span>, inside the iceline, by planetesimal accretion up to the isolation mass, then pushed inward in resonant chains by the more massive outer planets.</p><p>Analogues: essentially no water, all H/He lost through photoevaporation. Consistent with the case-A posterior of a few per cent water or the case-B one of nothing.</p></div>
+      <div class="card"><h3>HIP 29442 d · 238 analogues</h3><p>Same story as c, formed <span class="mono">0.4 – 2 AU</span>, with a minority of analogues born just outside the iceline at <span class="mono">3 – 4 AU</span>.</p><p>Analogues: mostly dry with a tail of water-rich outliers at larger radius. The disks of all eight systems had <span class="mono">100 – 300 M⊕</span> of solids and above-average lifetimes; none of the systems sits near a three-body resonance, so the chain, if there was one, broke.</p></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>The paper's last word is a draw, deliberately.</em> A pure H/He photoevaporation story explains the system: c loses everything at any initial condition, d sits at the fork where the rotation history decides, b keeps 10 to 20 % initial gas. A water-rich sub-Neptune story explains it too: b born beyond the iceline as an ocean world, c and d born dry inside it. Mass, radius and formation models cannot separate the two, and the escape rates say the water version survives comfortably. The discriminant is the envelope's composition, and that is a JWST transmission spectrum, which is the request the paper ends on.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The observed system, the priors and the inference algorithm are the paper's: masses, radii, periods, insolations and equilibrium temperatures from its Table 3, stellar abundances from Table 1, the acceptance-rejection step, the simplex sampling, the log-uniform H/He prior from 10⁻⁶ to 0.5, the water cap at 0.5 in case A, the N(0.5 %, 0.25 %) envelope water of case B, the three Si/Mg/Fe options including the iron-enriched relation of Adibekyan et al. (2021) and the analytic mantle-composition rejection, all transcribed from the public plaNETic code. The forward model is not: the paper's DNN emulates BICEPS with a uniformly mixed water and H/He envelope, and it is not available here. This tab uses the structure the paper calls its previous version, a condensed water layer and a separately modelled H/He envelope, built from the Zeng et al. (2016) rocky mass–radius relation with core-mass-fraction dependence, this site's condensed-water factor, and the Lopez &amp; Fortney (2014) envelope fit with its insolation and age terms, the age playing the role of the paper's luminosity-from-age relation. The system's mass and radius correlations through the shared star are not modelled; each planet is inferred alone. Expect the posteriors to agree with the paper on shape and on which prior does what, and to differ in the exact numbers; in particular planet c comes out with a few per cent more water under case A than the paper's 0.6 %, because the rocky relation used here at 1123 K sits 1σ below the observed radius while the BICEPS Earth-like curve at that temperature passes through it. §4's rates are the paper's Table 5. §5's evolution table is this site's toy energy-limited engine, not the MESA-based grid of Kubyshkina &amp; Fossati; its verdicts are shown next to the paper's.</p>
+  <p>J. A. Egger et al. (2024), “Unveiling the internal structure and formation history of the three planets transiting HIP 29442 (TOI-469) with CHEOPS”, A&amp;A · <a href="https://arxiv.org/abs/2406.18653">arXiv:2406.18653</a> · code: <a href="https://github.com/joannegger/plaNETic">github.com/joannegger/plaNETic</a> · Haldemann et al. (2024), A&amp;A 681, A96 (BICEPS) · Lopez &amp; Fortney (2014), ApJ 792, 1 · Zeng et al. (2016), ApJ 819, 127</p>
+</footer>
+</div><!-- /page-egg -->
 
 </div>
 
@@ -2393,15 +2575,20 @@ function m1Fire() {
 
 /* ---- 1D FD simulator (dataset generator for M2/M3) ---- */
 function sim1D(v1, v2, v3) {
-  const n = 220, steps = 600, out = new Float64Array(150);
+  // Free surface at i = 0, source at i = 5, receiver at i = 8, 150 samples every 4 steps.
+  // Interfaces at 30 and 65 cells: with c = 0.25 v (>= 0.3 cells/step over the training
+  // range) both interface reflections and the first free-surface multiples return inside
+  // the 600-step window, so all three velocities are observable in the trace. A long,
+  // weak sponge (100 cells, 5 %) absorbs the far end without reflecting at its onset.
+  const n = 200, steps = 600, out = new Float64Array(150);
   let p = new Float64Array(n), pp = new Float64Array(n), pn = new Float64Array(n);
   const c2 = new Float64Array(n);
-  for (let i = 0; i < n; i++) c2[i] = Math.pow((i < 73 ? v1 : i < 146 ? v2 : v3)*0.25, 2);
+  for (let i = 0; i < n; i++) c2[i] = Math.pow((i < 30 ? v1 : i < 65 ? v2 : v3)*0.25, 2);
   for (let t = 0; t < steps; t++) {
     for (let i = 1; i < n-1; i++) pn[i] = 2*p[i]-pp[i]+c2[i]*(p[i+1]-2*p[i]+p[i-1]);
     const tmp = pp; pp = p; p = pn; pn = tmp;      // rotate buffers (see m1Step)
-    for (let i = n-31; i < n; i++) { const f = 1-0.08*Math.pow((i-(n-31))/30, 2); p[i] *= f; pp[i] *= f; }
-    p[5] += mRicker(t, 50, 0.05);
+    for (let i = n-101; i < n; i++) { const f = 1-0.05*Math.pow((i-(n-101))/100, 2); p[i] *= f; pp[i] *= f; }
+    p[5] += mRicker(t, 60, 0.035);
     if (t % 4 === 0 && t/4 < 150) out[t/4] = p[8];
   }
   return out;
@@ -2512,7 +2699,7 @@ function drawM2() {
     const Hh = M2.hist, lo = Math.min(...Hh.map(h => Math.min(h.l, h.v)))-0.3, hi = Math.max(...Hh.map(h => Math.max(h.l, h.v)))+0.3;
     const s2 = makeScales(0, Hh[Hh.length-1].s, lo, hi, 460, 380, 46, 12, 22, 40);
     axes(svg, s2, niceTicks(0, Hh[Hh.length-1].s, 4), niceTicks(lo, hi, 4), "step", "log₁₀",
-         v => v >= 1000 ? Math.round(v/1000)+"k" : Math.round(v), v => fmt(v,0));
+         v => v >= 1000 ? Math.round(v/1000)+"k" : Math.round(v), v => fmt(v, Number.isInteger(v) ? 0 : 1));
     el("path", { d: linePath(Hh.map(h => [s2.x(h.s), s2.y(h.l)])), stroke: C.ice, "stroke-width": 2, fill: "none" }, svg);
     el("path", { d: linePath(Hh.map(h => [s2.x(h.s), s2.y(h.v)])), stroke: C.rock, "stroke-width": 2, fill: "none" }, svg);
     dCharts["mch2b"] = { scale: s2, hist: Hh };
@@ -3047,6 +3234,297 @@ $("tog-e5").querySelectorAll("button").forEach(b => b.addEventListener("click", 
   b.setAttribute("aria-pressed", on); ESC5[b.dataset.v] = on; drawE5();
 }));
 
+/* ================= Egger 2024: HIP 29442 with plaNETic =================
+   The inference is the paper's full-grid acceptance-rejection with its priors, transcribed
+   from the public plaNETic code (define_priors, sample_simplex_coordinates, sample_gas_fraction,
+   sample_SiMgFe_ratios, mantle_composition_analytical, compute_radius). The forward model is a
+   stand-in for the BICEPS DNN: Zeng+2016 rock with CMF dependence x this site's condensed-water
+   factor + Lopez & Fortney 2014 H/He envelope (insolation and age terms). Prefix eg/EG.       */
+const EG_SUN = { SiFe: Math.pow(10, 7.51 - 7.50), MgFe: Math.pow(10, 7.60 - 7.50) };   // Asplund 2009
+const EG_STAR = { FeH: [0.24, 0.05], SiH: [0.21, 0.04], MgH: [0.26, 0.04], age: [11.2, 3.4] };
+const EG_PL = {
+  b: { name: "HIP 29442 b", P: 13.63, a: 0.1110, R: 3.410, sR: 0.046, M: 9.10, sM: 0.80, Teq: 716, F: 74.7 / 1.361,
+       tess: { R: 3.48, sR: 0.07, M: 9.6, sM: 0.8 }, xuv: 703.6, mdot: { hhe: 4.80e9, h2o: 2.01e9 }, esc: { hhe: 2.21e33, h2o: 0.43e33 },
+       kub: [0.10, 0.26], verdict: "keeps an envelope with 10–20 % initial H/He; within the expected spread",
+       paper: { A: "w_env 28 (+18/−18) % · Z_env 65 %", B: "w_env 5.9 ± 0.3 % · Z_env 0.5 %" }, form: [3, 6], formMinor: null },
+  c: { name: "HIP 29442 c", P: 3.538, a: 0.04518, R: 1.551, sR: 0.045, M: 4.50, sM: 0.32, Teq: 1123, F: 451 / 1.361,
+       tess: { R: 1.58, sR: 0.10, M: 4.5, sM: 0.3 }, xuv: 4250, mdot: { hhe: 30.27e9, h2o: 4.66e9 }, esc: { hhe: 13.95e33, h2o: 0.40e33 },
+       kub: [0.03, 0.15], verdict: "loses any H/He envelope by 5 Gyr, whatever the initial mass or rotation history",
+       paper: { A: "w_env 0.6 (+1.2/−0.4) % · Z_env 99.8 %", B: "w_env 1.3 × 10⁻⁴ %" }, form: [0.4, 2], formMinor: null },
+  d: { name: "HIP 29442 d", P: 6.430, a: 0.0673, R: 1.538, sR: 0.049, M: 5.14, sM: 0.41, Teq: 920, F: 203 / 1.361,
+       tess: { R: 1.37, sR: 0.11, M: 5.1, sM: 0.4 }, xuv: 1917, mdot: { hhe: 1.43e9, h2o: 0.27e9 }, esc: { hhe: 0.66e33, h2o: 0.023e33 },
+       kub: [0.05, 0.17], verdict: "at the fork: would need 6–7 M⊕ to keep H/He even around a slow rotator",
+       paper: { A: "w_env 0.5 (+0.9/−0.3) % · Z_env 99.8 %", B: "w_env 1.2 × 10⁻⁴ %" }, form: [0.4, 2], formMinor: [3, 4] },
+};
+const EG = { pl: "b", water: "A", simg: "1", src: "cheops", N: 60000 };
+const EG_TBICEPS = 13.6;   // s per structure, from the paper's Table B.2
+/* forward model */
+const egRsolid = (Ms, cmf, fice) => (1.07 - 0.21 * cmf) * Math.pow(Ms, 1 / 3.7) * (1 + 0.36 * Math.pow(fice, 0.7));
+const egRenv = (M, f, F, age) => f <= 0 ? 0 : 2.06 * Math.pow(M, -0.21) * Math.pow(f / 0.05, 0.59) * Math.pow(F, 0.044) * Math.pow(Math.max(age, 0.1) / 5, -0.18);
+function egMantle(wc, wm, xFeCore, SiFe, MgFe) {      // plaNETic mantle_composition_analytical
+  const muSiO2 = 60.0838, muMgO = 40.3044, muFe = 55.845, muFeO = 71.8444, muS = 32.065;
+  const muCore = muFe * xFeCore + muS * (1 - xFeCore);
+  const lam = MgFe / SiFe, beta = -(1 + lam), r = (wc / wm) * (xFeCore / muCore);
+  const a1 = beta + r * (muSiO2 + beta * muFeO + lam * muMgO), a2 = 1 + r * muFeO;
+  const si = a2 * SiFe / (1 - a1 * SiFe), mg = lam * si;
+  return { si, mg, fe: 1 - si - mg };
+}
+function egRun(plKey, water, simg, N) {
+  const pl = EG_PL[plKey], t0 = performance.now();
+  const core = new Float64Array(N), mantle = new Float64Array(N), env = new Float64Array(N), z = new Float64Array(N);
+  const fv = new Float64Array(N), fg = new Float64Array(N), cmf = new Float64Array(N), Rt = new Float64Array(N), Mt = new Float64Array(N), Rs = new Float64Array(N);
+  const acc = [];
+  let n = 0, tried = 0;
+  while (n < N && tried < 20 * N) {
+    tried++;
+    // star: abundances and age, per sample
+    const FeH = EG_STAR.FeH[0] + EG_STAR.FeH[1] * randn(), SiH = EG_STAR.SiH[0] + EG_STAR.SiH[1] * randn(), MgH = EG_STAR.MgH[0] + EG_STAR.MgH[1] * randn();
+    let SiFe = EG_SUN.SiFe * Math.pow(10, SiH - FeH), MgFe = EG_SUN.MgFe * Math.pow(10, MgH - FeH);
+    const age = Math.min(13, Math.max(0.5, EG_STAR.age[0] + EG_STAR.age[1] * randn()));
+    // planet mass from the observed distribution
+    const M = pl.M + pl.sM * randn(); if (M <= 0.5) continue;
+    // solid composition on the simplex (case A) or core/mantle only (case B)
+    let wsc, wsm, wsw;
+    if (water === "A") { const u = rand(), v = rand(), lo = Math.min(u, v), hi = Math.max(u, v); wsc = lo; wsm = hi - lo; wsw = 1 - hi; if (wsw > 0.5) continue; }
+    else { wsc = rand(); wsm = 1 - wsc; wsw = 0; }
+    if (wsm < 1e-6) continue;
+    const xFeCore = 0.81 + 0.19 * rand();
+    // Si/Mg/Fe option -> mantle composition; reject unphysical mantles (that is the core prior)
+    if (simg === "2") { const a = 4.84 + 0.92 * randn(), b = -1.35 + 0.36 * randn(); const spm = 1 / (b + a / (SiFe + MgFe)); const sm = SiFe / MgFe; MgFe = spm / (1 + sm); SiFe = spm - MgFe; if (!(SiFe > 0 && MgFe > 0)) continue; }
+    if (simg !== "3") { const mc = egMantle(wsc, wsm, xFeCore, SiFe, MgFe); if (!(mc.si > 0 && mc.mg > 0 && mc.fe >= 0)) continue; }
+    else { const u = rand(), v = rand(), lo = Math.min(u, v), hi = Math.max(u, v); if (1 - hi > 0.75) continue; }   // free: Fe in mantle <= 0.75
+    // H/He: log-uniform 1e-6 .. 0.5 ; case B moves 0.5 +- 0.25 % of it into water
+    let wg = Math.pow(10, -6 + rand() * (Math.log10(0.5) + 6)), ww;
+    if (water === "A") { ww = wsw * (1 - wg); }
+    else { let Z = 0.005 + 0.0025 * randn(); if (Z <= 0) continue; ww = wg * Z; wg = wg * (1 - Z); }
+    const wc = wsc * (1 - (water === "A" ? wg : wg + ww)), wm = wsm * (1 - (water === "A" ? wg : wg + ww));
+    const Ms = M * (1 - wg), fice = water === "A" ? wsw : ww / (1 - wg), c = wsc / (wsc + wsm);
+    const Rsol = egRsolid(Ms, c, fice), R = Rsol + egRenv(M, wg, pl.F, age);
+    core[n] = wc; mantle[n] = wm; env[n] = ww + wg; z[n] = ww / (ww + wg); fv[n] = fice; fg[n] = wg; cmf[n] = c; Rt[n] = R; Mt[n] = M; Rs[n] = Rsol;
+    // acceptance-rejection against the observed radius (plaNETic compute_radius)
+    const like = Math.exp(-0.5 * Math.pow((R - pl.R) / pl.sR, 2));
+    if (like > rand()) acc.push(n);
+    n++;
+  }
+  return { n, acc, core, mantle, env, z, fv, fg, cmf, Rt, Mt, Rs, ms: performance.now() - t0 };
+}
+function egQ(vals, idx, q) { const a = idx.map(i => vals[i]).sort((x, y) => x - y); return a.length ? a[Math.min(a.length - 1, Math.floor(q * a.length))] : NaN; }
+const egPctF = v => v * 100 < 0.01 ? (v * 100).toExponential(1) : v * 100 < 1 ? (v * 100).toPrecision(2) : v * 100 < 10 ? (v * 100).toFixed(1) : Math.round(v * 100);
+function egStat(vals, idx) { const m = egQ(vals, idx, 0.5), lo = egQ(vals, idx, 0.16), hi = egQ(vals, idx, 0.84); return { m, lo, hi, txt: egPctF(m) + " <small>(+" + egPctF(hi - m) + " / −" + egPctF(m - lo) + ") %</small>" }; }
+let egRes = { A: null, B: null }, egCharts = {};
+function egHist(svgId, vals, n, acc, x0, x1, log, ticks, tfmt) {
+  const svg = $(svgId); svg.innerHTML = "";
+  const nb = 30, bw = (x1 - x0) / nb, pri = new Array(nb).fill(0), post = new Array(nb).fill(0);
+  const tr = v => log ? Math.log10(Math.max(v, 1e-12)) : v;
+  for (let i = 0; i < n; i++) { const k = Math.floor((tr(vals[i]) - x0) / bw); if (k >= 0 && k < nb) pri[k]++; }
+  acc.forEach(i => { const k = Math.floor((tr(vals[i]) - x0) / bw); if (k >= 0 && k < nb) post[k]++; });
+  const pn = pri.map(v => v / Math.max(n, 1)), qn = post.map(v => v / Math.max(acc.length, 1));
+  const yMax = Math.max(Math.max(...pn), Math.max(...qn), 1e-6) * 1.15;
+  const s = makeScales(x0, x1, 0, yMax, 300, 225, 36, 8, 14, 30);
+  axes(svg, s, ticks, [], "", "", tfmt, v => "");
+  const steps = f => { const pts = [[s.x(x0), s.y(0)]]; f.forEach((v, k) => { pts.push([s.x(x0 + k * bw), s.y(v)]); pts.push([s.x(x0 + (k + 1) * bw), s.y(v)]); }); pts.push([s.x(x1), s.y(0)]); return pts; };
+  el("path", { d: linePath(steps(qn)) + "Z", fill: "rgba(61,155,217,.22)" }, svg);
+  el("path", { d: linePath(steps(qn)), fill: "none", stroke: C.ice, "stroke-width": 2 }, svg);
+  el("path", { d: linePath(steps(pn)), fill: "none", stroke: C.muted, "stroke-width": 1.3, "stroke-dasharray": "4 3" }, svg);
+  const med = tr(egQ(vals, acc, 0.5));
+  if (isFinite(med)) el("line", { x1: fmt(s.x(med), 1), x2: fmt(s.x(med), 1), y1: s.padT, y2: 225 - s.padB, stroke: C.rock, "stroke-width": 1.5 }, svg);
+  egCharts[svgId] = { scale: s, x0, bw, nb, pn, qn, log };
+}
+function egDrawPlanet(svg, cmf, fv, Rsol, Rtot) {
+  svg.innerHTML = "";
+  const cx = 150, cy = 150, sc = 130 / Math.max(Rtot, 1.2);          // fit the biggest planet
+  const vIron = cmf * (1 - fv) / 3.2, vRock = (1 - cmf) * (1 - fv) / 1.6, vIce = fv / 0.8, vTot = vIron + vRock + vIce;
+  const rs = Rsol * sc, rIron = rs * Math.cbrt(vIron / vTot), rRock = rs * Math.cbrt((vIron + vRock) / vTot), rOut = Rtot * sc;
+  const defs = el("defs", {}, svg), gid = "egenv" + svg.id, gr = el("radialGradient", { id: gid }, defs);
+  el("stop", { offset: (rs / rOut * 100) + "%", "stop-color": "rgba(61,155,217,0.38)" }, gr);
+  el("stop", { offset: "88%", "stop-color": "rgba(61,155,217,0.12)" }, gr);
+  el("stop", { offset: "100%", "stop-color": "rgba(61,155,217,0)" }, gr);
+  if (rOut > rs + 0.5) el("circle", { cx, cy, r: fmt(rOut, 1), fill: "url(#" + gid + ")" }, svg);
+  if (fv > 0.004) el("circle", { cx, cy, r: fmt(rs, 1), fill: C.icefill }, svg);
+  el("circle", { cx, cy, r: fmt(fv > 0.004 ? rRock : rs, 1), fill: C.rock }, svg);
+  el("circle", { cx, cy, r: fmt(rIron, 1), fill: C.iron }, svg);
+}
+function egDraw2() {
+  const pl = EG_PL[EG.pl];
+  ["A", "B"].forEach(w => { if (!egRes[w] || egRes[w].pl !== EG.pl || egRes[w].simg !== EG.simg) { egRes[w] = egRun(EG.pl, w, EG.simg, EG.N); egRes[w].pl = EG.pl; egRes[w].simg = EG.simg; } });
+  const r = egRes[EG.water], acc = r.acc;
+  egHist("egh0", r.core, r.n, acc, 0, 1, false, [0, 0.5, 1], v => Math.round(v * 100) + "%");
+  egHist("egh1", r.mantle, r.n, acc, 0, 1, false, [0, 0.5, 1], v => Math.round(v * 100) + "%");
+  const logEnv = EG.pl !== "b";
+  $("egh2lab").innerHTML = logEnv ? "· w<sub>envelope</sub> (log)" : "· w<sub>envelope</sub>";
+  if (logEnv) egHist("egh2", r.env, r.n, acc, -6, Math.log10(0.6), true, [-6, -4, -2], v => "1e" + v);
+  else egHist("egh2", r.env, r.n, acc, 0, 0.6, false, [0, 0.3, 0.6], v => Math.round(v * 100) + "%");
+  if (EG.water === "A") egHist("egh3", r.z, r.n, acc, 0, 1, false, [0, 0.5, 1], v => Math.round(v * 100) + "%");
+  else egHist("egh3", r.z, r.n, acc, 0, 0.02, false, [0, 0.01, 0.02], v => (v * 100).toFixed(1) + "%");
+  $("eg2c").innerHTML = egStat(r.core, acc).txt; $("eg2m").innerHTML = egStat(r.mantle, acc).txt;
+  $("eg2e").innerHTML = egStat(r.env, acc).txt; $("eg2z").innerHTML = egStat(r.z, acc).txt;
+  $("eg2paper").innerHTML = pl.paper[EG.water] + (EG.simg !== "1" ? "<small> (paper values for the stellar option)</small>" : "");
+  $("eg2acc").innerHTML = acc.length.toLocaleString("en-US") + "<small> of " + r.n.toLocaleString("en-US") + " · " + (acc.length / r.n * 100).toFixed(1) + " %</small>";
+  $("eg2ms").innerHTML = Math.round(r.ms) + "<small> ms</small>";
+  $("eg2biceps").innerHTML = fmt(r.n * EG_TBICEPS / 3600 / 24, 1) + "<small> days</small>";
+  // §3 interiors
+  ["A", "B"].forEach(w => {
+    const q = egRes[w], pick = [];
+    for (let k = 0; k < 3; k++) pick.push(q.acc.length ? q.acc[Math.floor(rand() * q.acc.length)] : null);
+    pick.forEach((i, k) => {
+      const svg = $("egp" + w + k), cap = $("egp" + w + k + "c");
+      if (i === null) { svg.innerHTML = ""; cap.textContent = "no accepted planet"; return; }
+      egDrawPlanet(svg, q.cmf[i], q.fv[i], q.Rs[i], q.Rt[i]);
+      cap.innerHTML = "core " + Math.round(q.core[i] * 100) + "% · env " + egPctF(q.env[i]) + "%<br>Z " + egPctF(q.z[i]) + "% · R " + fmt(q.Rt[i], 2);
+    });
+    $("eg3" + w).innerHTML = egStat(q.env, q.acc).txt;
+  });
+  $("eg3both").innerHTML = "A: " + egRes.A.acc.length.toLocaleString("en-US") + " · B: " + egRes.B.acc.length.toLocaleString("en-US") + "<small> accepted of " + EG.N.toLocaleString("en-US") + " each</small>";
+  egDraw4();
+}
+function egDraw1() {
+  const svg = $("egch1"); svg.innerHTML = "";
+  const s = makeScales(Math.log10(1), Math.log10(20), Math.log10(0.9), Math.log10(4.5), 920, 420, 64, 150, 26, 42);
+  axes(svg, s, [1, 2, 3, 5, 10, 20].map(Math.log10), [1, 1.5, 2, 3, 4].map(Math.log10), "mass, M⊕ (log)", "radius, R⊕ (log)",
+       v => Math.round(Math.pow(10, v)), v => fmt(Math.pow(10, v), 1));
+  // radius valley band at these periods (Ho & Van Eylen 2023: R = 2.34 P^-0.09 -> 1.85..2.09)
+  el("rect", { x: s.padL, y: fmt(s.y(Math.log10(2.09)), 1), width: s.W - s.padL - s.padR, height: fmt(s.y(Math.log10(1.85)) - s.y(Math.log10(2.09)), 1), fill: "rgba(233,237,246,.06)" }, svg);
+  el("text", { x: s.W - s.padR - 6, y: fmt(s.y(Math.log10(1.97)) + 4, 1), "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = "radius valley, P = 3.5–13.6 d";
+  const ms = []; for (let lg = 0; lg <= Math.log10(20) + 1e-9; lg += 0.02) ms.push(Math.pow(10, lg));
+  const labels = [];
+  const line = (f, stroke, dash, w, lab) => {           // clip to the plot; label at the last visible point
+    const pts = ms.map(m => [m, f(m)]).filter(p => p[1] <= 4.5 && p[1] >= 0.9);
+    if (pts.length < 2) return;
+    el("path", { d: linePath(pts.map(p => [s.x(Math.log10(p[0])), s.y(Math.log10(p[1]))])), stroke, "stroke-width": w, fill: "none", "stroke-dasharray": dash }, svg);
+    const last = pts[pts.length - 1];
+    labels.push({ x: last[0] >= 19.9 ? s.W - s.padR + 6 : s.x(Math.log10(last[0])) + 6, y: s.y(Math.log10(last[1])), lab, stroke, anchor: "start" });
+  };
+  const F = 150, age = 11.2;
+  line(m => egRsolid(m, 0.7, 0), C.iron, "", 1.5, "Mercury-like core");
+  line(m => egRsolid(m, 0.325, 0), C.rock, "", 2, "Earth-like core");
+  line(m => egRsolid(m, 0, 0), "#E5A468", "", 1.2, "pure silicate");
+  [0.1, 0.3, 0.5].forEach(f => line(m => egRsolid(m, 0.325, f), C.ice, "6 4", 1.4, Math.round(f * 100) + " % water"));
+  [0.001, 0.01, 0.03, 0.05].forEach(f => line(m => egRsolid(m * (1 - f), 0.325, 0) + egRenv(m, f, F, age), C.rock, "2 4", 1.2, (f * 100 < 1 ? (f * 100).toFixed(1) : f * 100) + " % H/He"));
+  // stagger labels that share the right edge so none overlap (12 px minimum spacing, pushed upward)
+  const edge = labels.filter(l => l.x > s.W - s.padR).sort((a, b) => b.y - a.y);
+  for (let i = 1; i < edge.length; i++) if (edge[i].y > edge[i - 1].y - 12) edge[i].y = edge[i - 1].y - 12;
+  labels.forEach(l => el("text", { x: fmt(l.x, 1), y: fmt(l.y + 4, 1), class: "serieslabel", fill: l.stroke, style: "font-size:11px" }, svg).textContent = l.lab);
+  // planets
+  const pts = [];
+  ["b", "c", "d"].forEach(k => {
+    const pl = EG_PL[k], o = EG.src === "tess" ? pl.tess : pl;
+    const px = s.x(Math.log10(o.M)), py = s.y(Math.log10(o.R));
+    el("line", { x1: fmt(s.x(Math.log10(o.M - o.sM)), 1), x2: fmt(s.x(Math.log10(o.M + o.sM)), 1), y1: fmt(py, 1), y2: fmt(py, 1), stroke: C.ink, "stroke-width": 1.5 }, svg);
+    el("line", { x1: fmt(px, 1), x2: fmt(px, 1), y1: fmt(s.y(Math.log10(o.R - o.sR)), 1), y2: fmt(s.y(Math.log10(o.R + o.sR)), 1), stroke: C.ink, "stroke-width": 1.5 }, svg);
+    el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6.5, fill: C.ink, stroke: "#0C111E", "stroke-width": 2 }, svg);
+    el("text", { x: fmt(px + 10, 1), y: fmt(py - 8, 1), class: "serieslabel", fill: C.ink }, svg).textContent = k;
+    pts.push([px, py, k, o]);
+    const rEarth = egRsolid(o.M, 0.325, 0), dens = Math.pow(rEarth / o.R, 3);
+    $("eg1" + k).innerHTML = fmt(dens, 2) + "<small> × · " + (o.R > rEarth + o.sR ? "needs volatiles" : o.R < rEarth - o.sR ? "denser than Earth-like" : "Earth-like within 1σ") + "</small>";
+  });
+  const d = EG_PL.d, shift = (d.R - d.tess.R) / Math.sqrt(d.sR * d.sR + d.tess.sR * d.tess.sR);
+  $("eg1shift").innerHTML = "+" + fmt(d.R - d.tess.R, 2) + " R⊕<small> · " + fmt(Math.abs(d.R - d.tess.R) / d.sR, 1) + "σ of the CHEOPS error, " + fmt(Math.abs(d.R - d.tess.R) / d.tess.sR, 1) + "σ of the TESS error</small>";
+  egCharts["egch1"] = { scale: s, pts };
+}
+function egDraw4() {
+  const svg = $("egch4"); svg.innerHTML = "";
+  const s = makeScales(0, 3, 8, 11, 920, 340, 64, 40, 26, 42);
+  axes(svg, s, [], [8, 9, 10, 11], "", "mass-loss rate, g/s (log)", v => "", escPow);
+  const bars = [];
+  ["b", "c", "d"].forEach((k, i) => {
+    const pl = EG_PL[k], x0 = s.x(i + 0.2), bwid = (s.x(1) - s.x(0)) * 0.28;
+    [["hhe", C.rock, "H/He"], ["h2o", C.ice, "water-rich"]].forEach(([key, col, lab], j) => {
+      const v = Math.log10(pl.mdot[key]), x = x0 + j * (bwid + 6);
+      el("rect", { x: fmt(x, 1), y: fmt(s.y(v), 1), width: fmt(bwid, 1), height: fmt(s.y(8) - s.y(v), 1), fill: col, opacity: 0.85, rx: 3 }, svg);
+      el("text", { x: fmt(x + bwid / 2, 1), y: fmt(s.y(v) - 6, 1), "text-anchor": "middle", fill: C.ink2, style: "font-family:var(--mono);font-size:11px" }, svg).textContent = escSci(pl.mdot[key], 1).replace(/<[^>]+>/g, "").replace("×10", "e");
+      bars.push([x, x + bwid, k, key, lab]);
+    });
+    el("text", { x: fmt(x0 + bwid + 3, 1), y: s.H - s.padB + 20, "text-anchor": "middle", fill: C.muted, style: "font-family:var(--mono);font-size:11px" }, svg).textContent = pl.name + " · " + pl.xuv + " erg cm⁻² s⁻¹";
+    if (k === EG.pl) el("rect", { x: fmt(x0 - 8, 1), y: s.padT, width: fmt(2 * bwid + 22, 1), height: s.H - s.padT - s.padB, fill: "none", stroke: C.line, "stroke-dasharray": "4 4" }, svg);
+  });
+  egCharts["egch4"] = { scale: s, bars };
+  const pl = EG_PL[EG.pl];
+  $("eg4f").innerHTML = pl.xuv + "<small> erg cm⁻² s⁻¹</small>";
+  $("eg4h").innerHTML = escSci(pl.mdot.hhe, 2) + "<small> g/s</small>";
+  $("eg4w").innerHTML = escSci(pl.mdot.h2o, 2) + "<small> g/s · ÷" + fmt(pl.mdot.hhe / pl.mdot.h2o, 1) + "</small>";
+  const life = (wenv, rate) => { const g = wenv * pl.M * ESCC.ME; return escTime(g / rate) + "<small> now · " + escTime(g / rate / 20) + " at 20× early rates</small>"; };
+  const eB = egQ(egRes.B.env, egRes.B.acc, 0.5), eA = egQ(egRes.A.env, egRes.A.acc, 0.5);
+  $("eg4tB").innerHTML = isFinite(eB) ? life(eB, pl.mdot.hhe) : "–";
+  $("eg4tA").innerHTML = isFinite(eA) ? life(eA, pl.mdot.h2o) : "–";
+}
+function egDraw5() {
+  // toy Kubyshkina engine for the three planets
+  const tab = $("eg-kubtab");
+  tab.querySelectorAll("tr.eg-row").forEach(r => r.remove());
+  ["b", "c", "d"].forEach(k => {
+    const pl = EG_PL[k];
+    pl.kub.forEach((f0, j) => {
+      const tr = document.createElement("tr"); tr.className = "eg-row";
+      let html = "<td>" + (j === 0 ? pl.name : "") + "</td><td>" + Math.round(f0 * 100) + " % · " + (j === 0 ? "basic" : "migrated") + "</td>";
+      ["slow", "mod", "fast"].forEach(rot => {
+        const tr2 = kEvolve(pl.M * (1 - f0), f0, pl.a, rot), fin = tr2.F[tr2.F.length - 1];
+        if (fin <= 0) { const k0 = tr2.F.findIndex(x => x <= 0); html += "<td class='strip'>stripped at " + escAge(kSteps[Math.max(k0, 0)]) + "</td>"; }
+        else html += "<td class='keep'>keeps " + Math.round(fin / f0 * 100) + " %</td>";
+      });
+      html += "<td style='font-family:var(--sans);font-size:12.5px'>" + (j === 0 ? pl.verdict : "") + "</td>";
+      tr.innerHTML = html; tab.appendChild(tr);
+    });
+  });
+  // formation schematic
+  const svg = $("egch5"); svg.innerHTML = "";
+  const s = makeScales(Math.log10(0.03), 1, 0, 3, 920, 230, 110, 30, 22, 40);
+  axes(svg, s, [0.03, 0.1, 0.3, 1, 3, 10].map(Math.log10), [], "semi-major axis, AU (log)", "", v => { const a = Math.pow(10, v); return a < 1 ? fmt(a, a < 0.1 ? 2 : 1) : Math.round(a); }, v => "");
+  el("rect", { x: fmt(s.x(Math.log10(2)), 1), y: s.padT, width: fmt(s.x(Math.log10(3)) - s.x(Math.log10(2)), 1), height: s.H - s.padT - s.padB, fill: "rgba(168,216,240,.10)" }, svg);
+  el("text", { x: fmt(s.x(Math.log10(2.45)), 1), y: s.padT + 12, "text-anchor": "middle", class: "serieslabel", fill: C.icefill, style: "font-size:11px" }, svg).textContent = "water iceline";
+  const pts = [];
+  ["b", "c", "d"].forEach((k, i) => {
+    const pl = EG_PL[k], y = s.y(2.5 - i);
+    el("text", { x: s.padL - 10, y: fmt(y + 4, 1), "text-anchor": "end", class: "serieslabel", fill: C.ink }, svg).textContent = pl.name;
+    const rng = (r, col, op) => el("rect", { x: fmt(s.x(Math.log10(r[0])), 1), y: fmt(y - 9, 1), width: fmt(s.x(Math.log10(r[1])) - s.x(Math.log10(r[0])), 1), height: 18, rx: 4, fill: col, opacity: op }, svg);
+    rng(pl.form, C.ice, 0.45);
+    if (pl.formMinor) rng(pl.formMinor, C.ice, 0.2);
+    const xNow = s.x(Math.log10(pl.a)), xFrom = s.x(Math.log10(Math.sqrt(pl.form[0] * pl.form[1])));
+    el("line", { x1: fmt(xFrom, 1), x2: fmt(xNow + 10, 1), y1: fmt(y, 1), y2: fmt(y, 1), stroke: C.muted, "stroke-width": 1.2, "stroke-dasharray": "3 3" }, svg);
+    el("polygon", { points: fmt(xNow + 10, 1) + "," + fmt(y - 4, 1) + " " + fmt(xNow + 10, 1) + "," + fmt(y + 4, 1) + " " + fmt(xNow + 4, 1) + "," + fmt(y, 1), fill: C.muted }, svg);
+    el("circle", { cx: fmt(xNow, 1), cy: fmt(y, 1), r: 6, fill: C.rock, stroke: "#0C111E", "stroke-width": 2 }, svg);
+    pts.push([xNow, y, k]);
+  });
+  egCharts["egch5"] = { scale: s, pts };
+}
+function egDrawAll() { egDraw1(); egDraw2(); egDraw5(); }
+/* egger hovers */
+["egh0", "egh1", "egh2", "egh3"].forEach(id => attachHover($("cb-" + id), $(id), { padL: 36, padR: 8, W: 300, H: 225 },
+  (px, py, cx, cy) => {
+    const c = egCharts[id]; if (!c) return;
+    const v = c.scale.inv(px), k = Math.min(c.nb - 1, Math.max(0, Math.floor((v - c.x0) / c.bw)));
+    const a = c.x0 + k * c.bw, b = a + c.bw, lab = c.log ? "1e" + a.toFixed(1) + " – 1e" + b.toFixed(1) : (a * 100).toFixed(1) + " – " + (b * 100).toFixed(1) + " %";
+    setTip($("tip-" + id), cx, cy, "<b>" + lab + "</b><br><span class='mono'>posterior " + (c.qn[k] * 100).toFixed(1) + " % · prior " + (c.pn[k] * 100).toFixed(1) + " %</span>", $("cb-" + id).clientWidth);
+  }, () => $("tip-" + id).hidden = true));
+attachHover($("cb-eg1"), $("egch1"), { padL: 64, padR: 150, W: 920, H: 420 },
+  (px, py, cx, cy) => {
+    const c = egCharts["egch1"]; let best = null, bd = 1e9;
+    c.pts.forEach(p => { const d = Math.hypot(p[0] - px, p[1] - py); if (d < bd) { bd = d; best = p; } });
+    if (!best || bd > 20) { $("tip-eg1").hidden = true; return; }
+    const o = best[3], pl = EG_PL[best[2]];
+    setTip($("tip-eg1"), cx, cy, "<b>" + pl.name + "</b><br><span class='mono'>M = " + fmt(o.M, 2) + " ± " + fmt(o.sM, 2) + " M⊕ · R = " + fmt(o.R, 3) + " ± " + fmt(o.sR, 3) + " R⊕</span><br><span class='mono'>P = " + pl.P + " d · T_eq = " + pl.Teq + " K · " + Math.round(pl.F) + " F⊕</span>", $("cb-eg1").clientWidth);
+  }, () => $("tip-eg1").hidden = true);
+attachHover($("cb-eg4"), $("egch4"), { padL: 64, padR: 40, W: 920, H: 340 },
+  (px, py, cx, cy) => {
+    const c = egCharts["egch4"], b = c.bars.find(b => px >= b[0] && px <= b[1]);
+    if (!b) { $("tip-eg4").hidden = true; return; }
+    const pl = EG_PL[b[2]];
+    setTip($("tip-eg4"), cx, cy, "<b>" + pl.name + " · " + b[4] + "</b><br><span class='mono'>Ṁ = " + escSci(pl.mdot[b[3]], 2) + " g/s · escape " + escSci(pl.esc[b[3]], 2) + " s⁻¹</span>", $("cb-eg4").clientWidth);
+  }, () => $("tip-eg4").hidden = true);
+attachHover($("cb-eg5"), $("egch5"), { padL: 110, padR: 30, W: 920, H: 230 },
+  (px, py, cx, cy) => {
+    const c = egCharts["egch5"]; let best = null, bd = 1e9;
+    c.pts.forEach(p => { const d = Math.abs(p[1] - py); if (d < bd) { bd = d; best = p; } });
+    if (!best || bd > 16) { $("tip-eg5").hidden = true; return; }
+    const pl = EG_PL[best[2]];
+    setTip($("tip-eg5"), cx, cy, "<b>" + pl.name + "</b><br><span class='mono'>today " + pl.a + " AU · analogues formed at " + pl.form[0] + "–" + pl.form[1] + " AU" + (pl.formMinor ? " (some " + pl.formMinor[0] + "–" + pl.formMinor[1] + ")" : "") + "</span>", $("cb-eg5").clientWidth);
+  }, () => $("tip-eg5").hidden = true);
+/* egger wiring */
+escSegWire("seg-eg-src", v => EG.src = v, egDraw1);
+escSegWire("seg-eg-pl", v => EG.pl = v, egDraw2);
+escSegWire("seg-eg-w", v => EG.water = v, egDraw2);
+escSegWire("seg-eg-s", v => EG.simg = v, egDraw2);
+$("btn-eg-run").addEventListener("click", () => { egRes = { A: null, B: null }; egDraw2(); });
+
 /* ================= Photobombing -> interiors (concept tab) =================
    Transcribes the target-confusion (Sect. 2.2.3) and cancellation (2.2.4) criteria of
    Cacaj et al. (2025, AJ 169, 244) onto the interior problem. Output = (M, R); the cost
@@ -3292,7 +3770,7 @@ escSegWire("seg-cf-sm", v => CF.sm = +v, cfDrawAll);
 escSegWire("seg-cf-fam", v => CF.fam = v, cfDrawAll);
 
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos"];
+const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -3309,6 +3787,7 @@ updateS1(); drawS2(); drawS3(); resampleS4(true); dornLabels(); dornDraw();
 drawK1(); drawK2(); drawK3();
 drawE2(); drawE3(); drawE4(); drawE5();
 cfDrawAll();
+egDrawAll();
 drawB1(); b2Reset(); b3Reset();
 mInitData(); m1SetVel(); m1Render(); m2Reset(); showTab(tab0);
 </script>
