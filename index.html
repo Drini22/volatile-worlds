@@ -63,6 +63,20 @@
   .chip.warn .v{color:#E88A8A;font-size:14px;line-height:1.4;}
   .esc-formula{font-family:var(--mono);font-size:12.5px;color:var(--ink2);background:var(--surface2);border:1px solid var(--line-soft);border-radius:8px;padding:8px 12px;display:inline-block;margin:6px 0 14px;}
 
+  /* ---------- confusion (concept) tab ---------- */
+  .cf-dict{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.45;}
+  .cf-dict th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 14px 10px 0;border-bottom:1px solid var(--line);font-weight:500;}
+  .cf-dict td{padding:9px 14px 9px 0;border-bottom:1px solid var(--line-soft);vertical-align:top;color:var(--ink2);}
+  .cf-dict td:first-child{color:var(--ink);width:38%;}
+  .cf-dict td .mono{font-size:12.5px;}
+  .cf-dict tr.swap td:first-child::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--rock);margin-right:8px;vertical-align:middle;}
+  .cf-keys{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:10px;font-size:12.5px;color:var(--ink2);}
+  .cf-keys span{display:flex;align-items:center;gap:7px;}
+  .cf-keys i{width:14px;height:14px;border-radius:3px;flex:none;}
+  .cf-keys i.line{height:0;width:16px;border-top:2px solid var(--ink);border-radius:0;}
+  .cf-keys i.dash{height:0;width:16px;border-top:2px dashed var(--muted);border-radius:0;}
+  .verdict.mid{background:rgba(174,182,196,.14);color:#C8CFDA;}
+
   /* ---------- dorn tab ---------- */
   .hist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:6px;}
   @media (max-width:760px){.hist-grid{grid-template-columns:1fr;}}
@@ -187,6 +201,7 @@
   <div class="tabs" role="tablist" aria-label="Papers">
     <button class="tabbtn" id="tab-alibert" role="tab" aria-selected="true">Alibert 2016 <small>break the degeneracy</small></button>
     <button class="tabbtn" id="tab-dorn" role="tab" aria-selected="false">Dorn 2017 <small>map the degeneracy</small></button>
+    <button class="tabbtn concept" id="tab-conf" role="tab" aria-selected="false">Photobombing <small>concept · Cacaj 2025 → interiors</small></button>
     <button class="tabbtn" id="tab-kub" role="tab" aria-selected="false">Kubyshkina 2022 <small>evolve the population</small></button>
     <button class="tabbtn concept" id="tab-esc" role="tab" aria-selected="false">Gas escape <small>concept · how gas leaves</small></button>
     <button class="tabbtn" id="tab-baty" role="tab" aria-selected="false">Baty 2023 <small>learn the equation</small></button>
@@ -485,6 +500,148 @@
   <p>C. Dorn et al. (2017), “A generalized Bayesian inference method for constraining the interiors of super Earths and sub-Neptunes”, A&amp;A 597, A37 · <a href="https://arxiv.org/abs/1609.03908">arXiv:1609.03908</a></p>
 </footer>
 </div><!-- /page-dorn -->
+
+<div id="page-conf" role="tabpanel" aria-labelledby="tab-conf" hidden>
+<section class="pagehero">
+  <p class="eyebrow">Concept tab · Cacaj, Angerhausen, Saxena, Laugier, Kammerer, Alei &amp; Quanz (2025) · AJ 169, 244 · transcribed onto interiors</p>
+  <p class="standfirst">The LIFE photobombing paper asks when two planets in an image are mistaken for one, and answers with a cost, a parsimony penalty, and two maps. Interior modelling asks when two compositions are mistaken for one. Same question, different output space. This tab moves the target-confusion and cancellation criteria onto the (mass, radius) plane, where Alibert's impostor turns out to be a photobomb and Dorn's ridge turns out to be a cancellation.</p>
+</section>
+
+<!-- ================= STATION C1 ================= -->
+<section id="c1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>The dictionary</h2></div>
+  <p class="prose">Every object in the photobombing framework has an interior counterpart. One swap from the obvious guess, marked with a dot: layer masses are the fluxes, but the <strong>material types are the positions</strong>, because a material's response, radius added per unit mass, plays the part of the point-spread function.</p>
+  <div class="panel" style="overflow-x:auto;">
+    <table class="cf-dict">
+      <tr><th>Photobombing (Cacaj et al. 2025)</th><th>Interior degeneracy (Alibert 2016, Dorn 2017)</th></tr>
+      <tr><td>point source <span class="mono">p = (θ, F)</span></td><td>one layer: (material, mass)</td></tr>
+      <tr class="swap"><td>position θ, the nonlinear parameter that shapes the response</td><td>material type: iron, silicate, water ice, H/He</td></tr>
+      <tr class="swap"><td>flux F, the linear parameter</td><td>layer mass. Total mass is the exact superposition, like image flux</td></tr>
+      <tr><td>unit response <span class="mono">U<sub>p</sub></span>, the PSF or the LIFE time series of a unit source</td><td>radius added per unit mass of that material. In this site's toy model it is literally additive: <span class="mono">R = r<sub>solid</sub>(M<sub>s</sub>, f<sub>ice</sub>) + ΔR<sub>gas</sub>(f<sub>gas</sub>)</span></td></tr>
+      <tr><td>output space: image or time series, ~10³ dimensions</td><td>observable space: (M, R), sometimes plus Fe/Si. Two or three dimensions</td></tr>
+      <tr><td>noise covariance Σ</td><td>measurement errors σ<sub>M</sub>, σ<sub>R</sub></td></tr>
+      <tr><td>cost <span class="mono">J = 2 D<sub>KL</sub></span>, squared S/N distance between noiseless outputs (eq. 5–6)</td><td>χ² between predicted and observed (M, R). Dorn's log-likelihood is exactly −J/2</td></tr>
+      <tr><td>parsimony <span class="mono">ξ(N)</span>, AIC on the number of sources</td><td>Occam penalty on the number of layers; the Bayesian evidence does it implicitly</td></tr>
+      <tr><td><span class="mono">Q*</span>, the best simpler model</td><td>the best planet with one layer fewer. Alibert's impostor</td></tr>
+      <tr><td>target confusion <span class="mono">𝒟 &gt; 0</span> (eq. 13): the simpler model fits and resembles nothing that exists</td><td>the missing layer is misread as a different composition: gas becomes ocean, or ocean becomes gas</td></tr>
+      <tr><td>cancellation <span class="mono">𝒞 &gt; 0</span> (eq. 21): two detectable sources, no signal</td><td>the null direction: more water and less gas, same radius. Dorn's ridge</td></tr>
+      <tr><td>resolution δ, area of the FOV where confusion is possible</td><td>width of the confusable region in composition space; Dorn's posterior width as a share of the prior</td></tr>
+      <tr><td>uncorrelation time T*, planets have moved enough for a second look</td><td>the age at which two histories separate, Alibert §3–4</td></tr>
+      <tr><td>moving targets, the static-source assumption</td><td>thermal evolution and escape: Kubyshkina is the moving-target extension</td></tr>
+    </table>
+  </div>
+  <p class="takeaway"><em>The structural difference:</em> in the image problem the output has far more dimensions than the parameters, so confusion is a property of the instrument's kernel and δ₁ comes out independent of flux and noise. In the interior problem the parameters outnumber the observables, so the degeneracy is structural and no signal-to-noise closes it. Alibert's degeneracy is therefore the paper's <em>cancellation</em> case, an exact null direction, while Dorn's posterior width is its <em>contamination</em> case, finite confusion set by noise. The two maps below keep them apart.</p>
+</section>
+
+<!-- ================= STATION C2 ================= -->
+<section id="c2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>The interior confusion map</h2></div>
+  <p class="prose">Fix a mass and the errors, then hand every possible (water, gas) planet to a modeller who is only allowed <strong>two layers</strong>. For each truth P the machine finds Q*, the best two-layer planet, and applies the paper's three conditions: P is measured (always true here); Q* fits, <span class="mono">J(P, Q*) &lt; η²</span> with η² = ξ(3) − ξ(2) = 2; and Q* differs from every sub-planet of the truth, <span class="mono">min<sub>i</sub> J(P<sub>i</sub>, Q*) &gt; αη²</span>, α = 1. The colour is the target confusion value <span class="mono">𝒟 = min<sub>i</sub> J(P<sub>i</sub>, Q*) − J(P, Q*)</span>, normalised to ±1.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Mass (the truth) <output id="o-cf-m">8.0 M⊕</output></label>
+        <input type="range" id="in-cf-m" min="1" max="18" step="0.1" value="8" aria-label="Planet mass"></div>
+      <div class="ctl"><label>Water ice of solid (the truth) <output id="o-cf-fv">20 %</output></label>
+        <input type="range" id="in-cf-fv" min="0" max="0.95" step="0.01" value="0.2" aria-label="Water ice fraction"></div>
+      <div class="ctl"><label>Gas fraction (the truth) <output id="o-cf-g">2.0 %</output></label>
+        <input type="range" id="in-cf-g" min="-4" max="-0.4" step="0.02" value="-1.7" aria-label="Gas fraction (log)"></div>
+      <div class="ctl" style="flex:none;"><label>Radius error σ<sub>R</sub></label>
+        <div class="seg" id="seg-cf-sr" role="group" aria-label="Radius precision">
+          <button aria-pressed="false" data-v="0.02">2 %</button>
+          <button aria-pressed="true" data-v="0.05">5 %</button>
+          <button aria-pressed="false" data-v="0.10">10 %</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Mass error σ<sub>M</sub></label>
+        <div class="seg" id="seg-cf-sm" role="group" aria-label="Mass precision">
+          <button aria-pressed="false" data-v="0.05">5 %</button>
+          <button aria-pressed="true" data-v="0.10">10 %</button>
+          <button aria-pressed="false" data-v="0.20">20 %</button>
+        </div></div>
+      <div class="ctl" style="flex:none;max-width:none;"><label>Two-layer stories the modeller may use</label>
+        <div class="seg" id="seg-cf-fam" role="group" aria-label="Simpler model families">
+          <button aria-pressed="true" data-v="gf">rock+water only · “scorched bare”</button>
+          <button aria-pressed="false" data-v="both">rock+water or rock+gas</button>
+        </div></div>
+    </div>
+    <div class="chart-box" id="cb-cf2">
+      <p class="chart-title">Target confusion 𝒟 for every truth in the water–gas plane · the ringed dot is your planet</p>
+      <p class="chart-sub">Rust: photobombed, the missing layer is misread as a different composition · blue: the dropped layer was undetectable and the composition comes back right · dark: no two-layer planet fits · white line: 𝒟 = 0 · hover anywhere</p>
+      <svg id="cfch2" viewBox="0 0 920 420" aria-label="Interior target confusion map"></svg>
+      <div class="tip" id="tip-cf2" hidden></div>
+    </div>
+    <div class="cf-keys">
+      <span><i style="background:#C97633"></i>𝒟 &gt; 0 · photobombed</span>
+      <span><i style="background:#3D9BD9"></i>𝒟 &lt; 0 · layer dropped, composition right</span>
+      <span><i style="background:#0F1522;border:1px solid var(--line)"></i>Q* rejected · third layer required</span>
+      <span><i class="line"></i>𝒟 = 0</span>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">best two-layer story Q*</div><div class="v" id="cf-q" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">J(P, Q*) · fits if &lt; 2</div><div class="v" id="cf-jpq">–</div></div>
+      <div class="chip"><div class="k">min J(Pᵢ, Q*) · confuses if &gt; 2</div><div class="v" id="cf-jsub">–</div></div>
+      <div class="chip answer"><div class="k">𝒟</div><div class="v" id="cf-d">–</div></div>
+      <div class="chip" style="display:flex;align-items:center;"><span class="verdict" id="cf-verdict">–</span></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">photobombed share of this map</div><div class="v" id="cf-share">–</div></div>
+      <div class="chip"><div class="k">gas that hides harmlessly at this water fraction</div><div class="v" id="cf-hide">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Three things to see.</em> The default modeller is the scorched-bare assumption of the Alibert tab, gas-free planets only. Three bands appear: at the bottom a blue strip where the gas is too small to measure and the water comes back right, above it the rust band where the gas is absorbed into extra water, and at the top the dark region where no gas-free planet reaches the radius, so the impostor is exposed and the third layer is required. The blue strip is what the paper's third condition buys: an undetectable layer is not a photobomb. Second, step the radius error from 10 % to 2 %: the rust band narrows but never closes, because the forward model has more parameters than observables, the interior version of δ₁ overestimating contamination, except that here no S/N cures it. Third, allow the modeller both two-layer stories: the plane goes almost entirely rust, because any measurable volatile content can be told as ocean or as envelope. That is the whole degeneracy in one picture, and the reason Alibert had to fence off the planets that cannot keep gas before the inversion could work.</p>
+</section>
+
+<!-- ================= STATION C3 ================= -->
+<section id="c3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>The cancellation map</h2></div>
+  <p class="prose">In the paper, cancellation is two detectable sources that produce no signal, because LIFE's transmission map has negative lobes. In interiors, cancellation is two detectable composition changes that produce no radius change: more water, less gas. Keep the truth from §2 and move a rival composition around it. Inside the <strong>solid contour</strong> the rival is indistinguishable from the truth, <span class="mono">J &lt; η²</span>. Outside the <strong>dashed contour</strong> at least one of its two changes, taken alone, would have been detected. The lobes between them are the cancellation region: each change is visible, their sum is not.</p>
+  <div class="panel">
+    <div class="chart-box" id="cb-cf3">
+      <p class="chart-title">Target cancellation 𝒞 around your planet · axes are the rival composition</p>
+      <p class="chart-sub">Colour: 𝒞 = max<sub>i</sub> J(P<sub>i</sub>, P₀) − J(P, P₀), normalised · solid: J(P, P₀) = η² · dashed: max<sub>i</sub> J(P<sub>i</sub>, P₀) = η² · hover anywhere</p>
+      <svg id="cfch3" viewBox="0 0 920 420" aria-label="Interior target cancellation map"></svg>
+      <div class="tip" id="tip-cf3" hidden></div>
+    </div>
+    <div class="cf-keys">
+      <span><i style="background:#C97633"></i>𝒞 &gt; 0 · the two changes cancel, at least partly</span>
+      <span><i style="background:#3D9BD9"></i>𝒞 &lt; 0 · the rival is simply different</span>
+      <span>cancellation region = rust inside the solid line and outside the dashed one</span>
+      <span><i class="line"></i>indistinguishable from the truth</span>
+      <span><i class="dash"></i>one change alone is detectable</span>
+    </div>
+    <div class="readouts">
+      <div class="chip answer"><div class="k">the null direction at your planet</div><div class="v" id="cf-slope" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">indistinguishable neighbourhood</div><div class="v" id="cf-blob">–<small> of this map</small></div></div>
+      <div class="chip"><div class="k">cancellation lobes</div><div class="v" id="cf-lobes">–<small> of this map</small></div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Read it against the Dorn tab:</em> the solid contour is the posterior cloud of Dorn §2 at the η² level. The paper's second criterion cuts a hole out of it, the noise blob around the truth where nothing is detectable anyway, and what remains is the physically meaningful part of the ridge: compositions that differ from the truth by a measurable amount of water <em>and</em> a measurable amount of gas, and still return the same radius. That is the degeneracy Alibert set out to break, stated as a cancellation criterion rather than as a pair of example planets.</p>
+</section>
+
+<!-- ================= STATION C4 ================= -->
+<section id="c4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>The uncorrelation age</h2></div>
+  <p class="prose">The paper's uncorrelation time is how long to wait before a second observation is independent of the first, because the planets have moved. The interior analogue is <strong>age</strong>. The truth P and its impostor Q* agree at 5 Gyr by construction, but they cool at different rates, so the cost between them grows toward younger ages. The question becomes: at what age, and with how many planets, does <span class="mono">J(P(t), Q*(t))</span> cross the threshold? Q* is the two-layer story chosen in §2. For N planets drawn from the same two stories the expected cost is N times the cost of one.</p>
+  <div class="panel">
+    <div class="chart-box" id="cb-cf4">
+      <p class="chart-title">Cost between the truth and its two-layer impostor as a function of age</p>
+      <p class="chart-sub">Solid: one planet · faint: the expected cost of 25, 100 and 500 planets · dashed: the threshold η² = 2 · hover for the number of planets needed at each age</p>
+      <svg id="cfch4" viewBox="0 0 920 360" aria-label="Cost versus age between truth and impostor"></svg>
+      <div class="tip" id="tip-cf4" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">one planet exposes the impostor</div><div class="v" id="cf-tstar" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">planets needed at 100 Myr</div><div class="v" id="cf-n100">–</div></div>
+      <div class="chip"><div class="k">planets needed at 1 Gyr</div><div class="v" id="cf-n1g">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Why this is the same argument as Alibert §4:</em> for a single planet the curve never reaches the threshold at any precision offered here, which is the paper's uncorrelation time being infinite. Alibert's answer is the population, and the census station of the Alibert tab is the Monte Carlo version of this chart with age scatter and a Kolmogorov–Smirnov test in place of an expected χ². Reading that experiment as an uncorrelation-age problem makes the two papers one framework.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The criteria are transcribed from Cacaj et al. (2025) §2.2.3 and §2.2.4: the cost is χ² on (M, R), which equals 2D<sub>KL</sub> for Gaussian outputs sharing one covariance (their eq. 5); the parsimony is AIC so that η² = 2 and α = 1 (their eq. 7–12); the confusion value is their eq. 13 and the cancellation conditions their eq. 22–24 with 𝒞 defined by the two single-layer changes. Four choices are this page's: the sub-configurations 𝒫(P) − {P} are the sub-planets that keep the rocky core ({rock}, {rock+ice}, {rock+gas}), since a lone gas or ice layer is not a planet, and Q* is compared only with the sub-planets of its own two-layer family, because across families output resemblance does not imply compositional resemblance (that is the degeneracy) while within a family it does; where both stories fit, the map shows the one with the larger 𝒟, since 𝒟 &gt; 0 is a statement of possibility in the paper; the mass and radius errors are independent Gaussians with the mass treated as a measured quantity, unlike the Dorn tab; and both maps are normalised as (a − b)/(a + b) so that ±1 are the limits, rather than by the sources' own S/N as in the paper's eq. 28. The structure model is the toy of the Alibert and Dorn tabs with the iron fraction fixed at 32.5 %; the age curve uses the toy cooling law and the N-planet cost is an expectation that ignores age scatter. The paper's flux-independent δ₁ has no interior analogue because the forward model is not linear in the parameters that matter.</p>
+  <p>D. Cacaj, D. Angerhausen, P. Saxena, R. Laugier, J. Kammerer, E. Alei &amp; S. P. Quanz (2025), “Photobombing for the Large Interferometer For Exoplanets (LIFE). A New Criterion for Target Confusion and Application to a Mid-infrared Rotating Nulling Interferometer”, AJ 169, 244 · <a href="https://doi.org/10.3847/1538-3881/adbe6c">doi:10.3847/1538-3881/adbe6c</a></p>
+</footer>
+</div><!-- /page-conf -->
 
 <div id="page-kub" role="tabpanel" aria-labelledby="tab-kub" hidden>
 <section class="pagehero">
@@ -1261,7 +1418,7 @@ function drawS3() {
   const s = s3scale = makeScales(Math.log10(0.05), Math.log10(5), yMin, yMax, 920, 400, 64, 150, 26, 42);
   axes(svg, s, [0.1,0.3,1,3,5].map(Math.log10), niceTicks(yMin,yMax,5),
        "age (log scale)", "radius, R⊕",
-       v => { const t = Math.pow(10,v); return t < 1 ? Math.round(t*1000)+" Myr" : t+" Gyr"; },
+       v => { const t = Math.pow(10,v); return t < 1 ? Math.round(t*1000)+" Myr" : (+t.toPrecision(2))+" Gyr"; },
        v => fmt(v,2));
   el("path", { d: linePath(ts.map((t,i)=>[s.x(Math.log10(t)), s.y(dry[i])])), stroke: C.rock, "stroke-width": 2.5, fill: "none" }, svg);
   el("path", { d: linePath(ts.map((t,i)=>[s.x(Math.log10(t)), s.y(wet[i])])), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
@@ -1737,7 +1894,7 @@ function drawK1() {
   const s = makeScales(Math.log10(0.005), 1, yMin - 0.15, yMax + 0.2, 920, 400, 64, 130, 26, 42);
   axes(svg, s, [0.01, 0.05, 0.3, 1, 3, 10].map(Math.log10), niceTicks(yMin - 0.15, yMax + 0.2, 5),
        "age (log scale)", "radius, R⊕",
-       v => { const t = Math.pow(10, v); return t < 1 ? Math.round(t*1000) + " Myr" : t + " Gyr"; },
+       v => { const t = Math.pow(10, v); return t < 1 ? Math.round(t*1000) + " Myr" : (+t.toPrecision(2)) + " Gyr"; },
        v => fmt(v, 1));
   const names = { slow: "slow", mod: "moderate", fast: "fast" };
   rots.forEach((rt, j) => {
@@ -2878,8 +3035,252 @@ $("tog-e5").querySelectorAll("button").forEach(b => b.addEventListener("click", 
   b.setAttribute("aria-pressed", on); ESC5[b.dataset.v] = on; drawE5();
 }));
 
+/* ================= Photobombing -> interiors (concept tab) =================
+   Transcribes the target-confusion (Sect. 2.2.3) and cancellation (2.2.4) criteria of
+   Cacaj et al. (2025, AJ 169, 244) onto the interior problem. Output = (M, R); the cost
+   J = chi^2, which is 2 D_KL for Gaussian outputs sharing one covariance (their eq. 5-6);
+   parsimony = AIC, so eta^2 = xi(3 layers) - xi(2 layers) = 2 and alpha = 1 (eq. 7-12).
+   Sub-configurations P(P) - {P}: the sub-planets that keep the rocky core.
+   Structure model: the toy R5d of the Dorn tab with x_iron = 0.325 (ironFactor = 1). */
+const CF = { m: 8, fv: 0.2, lg: Math.log10(0.02), sr: 0.05, sm: 0.10, fam: "gf" };
+const CF_ETA2 = 2, CF_ALPHA = 1, CF_XI = 0.325, CF_GMAX = 0.4, CF_LGLO = -4, CF_LGHI = Math.log10(0.4);
+const CF_NX = 40, CF_NY = 32;
+const cfR = (M, fv, fg) => R5d(M, fv, fg, CF_XI);
+const cfJ = (a, b, sM, sR) => Math.pow((a.M - b.M) / sM, 2) + Math.pow((a.R - b.R) / sR, 2);
+const cfGasLab = lg => { const p = Math.pow(10, lg) * 100; return (p < 1 ? p.toPrecision(1) : Math.round(p)) + " %"; };
+const cfPct = f => (f * 100 < 1 ? (f * 100).toPrecision(2) : Math.round(f * 100)) + " %";
+function cfTruth(M, fv, fg) {
+  const mRock = M * (1 - fg) * (1 - fv), mIce = M * (1 - fg) * fv, mGas = M * fg;
+  const Ms = mRock + mIce, Mrg = mRock + mGas;
+  return { M, fv, fg, R: cfR(M, fv, fg), sub: [
+    { name: "rock + ice, gas dropped", M: Ms, R: cfR(Ms, fv, 0) },
+    { name: "rock + gas, ice dropped", M: Mrg, R: cfR(Mrg, 0, Mrg > 0 ? mGas / Mrg : 0) },
+    { name: "rock alone", M: mRock, R: cfR(mRock, 0, 0) } ] };
+}
+function cfGolden(f, lo, hi, it) {
+  const g = (Math.sqrt(5) - 1) / 2;
+  let a = lo, b = hi, c = b - g * (b - a), d = a + g * (b - a), fc = f(c), fd = f(d);
+  for (let i = 0; i < it; i++) {
+    if (fc < fd) { b = d; d = c; fd = fc; c = b - g * (b - a); fc = f(c); }
+    else { a = c; c = d; fc = fd; d = a + g * (b - a); fd = f(d); }
+  }
+  return (a + b) / 2;
+}
+function cfFitGasFree(P, sM, sR) {         // Q = (Mq, f, 0); for each Mq the best f is the analytic inversion
+  const IF = ironFactor(CF_XI);
+  const fit = Mq => { const x = (P.R / (Math.pow(Mq, 0.29) * IF) - 1) / 0.36;
+    const f = Math.min(x <= 0 ? 0 : Math.pow(x, 1 / 0.7), FV_MAX); return { M: Mq, fv: f, fg: 0, R: cfR(Mq, f, 0) }; };
+  const Mq = cfGolden(m => cfJ(P, fit(m), sM, sR), Math.max(0.3, P.M - 4 * sM), P.M + 4 * sM, 20);
+  const q = fit(Mq); q.J = cfJ(P, q, sM, sR); q.fam = "gf"; return q;
+}
+function cfFitWaterFree(P, sM, sR) {       // Q = (Mq, 0, g); R rises monotonically with g, so bisect
+  const fit = Mq => { let lo = 0, hi = CF_GMAX;
+    if (cfR(Mq, 0, hi) <= P.R) lo = hi; else if (cfR(Mq, 0, 0) >= P.R) hi = 0;
+    else for (let i = 0; i < 22; i++) { const mid = (lo + hi) / 2; (cfR(Mq, 0, mid) < P.R) ? lo = mid : hi = mid; }
+    const g = (lo + hi) / 2; return { M: Mq, fv: 0, fg: g, R: cfR(Mq, 0, g) }; };
+  const Mq = cfGolden(m => cfJ(P, fit(m), sM, sR), Math.max(0.3, P.M - 4 * sM), P.M + 4 * sM, 20);
+  const q = fit(Mq); q.J = cfJ(P, q, sM, sR); q.fam = "wf"; return q;
+}
+function cfConfuse(P, sM, sR, fam) {
+  // Condition 3 compares Q* with the sub-planets of its *own* family: within one family the map
+  // composition -> (M, R) is injective, so output resemblance means compositional resemblance.
+  // Across families it does not (that is the degeneracy), so a gas-free Q* is judged against
+  // {rock+ice, rock} and a water-free Q* against {rock+gas, rock}. Where both stories fit, the
+  // one that confuses more is shown: the paper's D is a statement of possibility (their Sect. 2.2.3).
+  const cands = [cfFitGasFree(P, sM, sR)];
+  if (fam === "both") cands.push(cfFitWaterFree(P, sM, sR));
+  cands.forEach(q => {
+    const subs = q.fam === "gf" ? [P.sub[0], P.sub[2]] : [P.sub[1], P.sub[2]];
+    q.jSub = Infinity; q.sub = null;
+    subs.forEach(s => { const j = cfJ(s, q, sM, sR); if (j < q.jSub) { q.jSub = j; q.sub = s; } });
+    q.D = q.jSub - q.J;
+  });
+  const fits = cands.filter(q => q.J < CF_ETA2);
+  const q = fits.length ? fits.reduce((a, b) => a.D >= b.D ? a : b) : cands.reduce((a, b) => a.J <= b.J ? a : b);
+  const Dn = (q.jSub + q.J) > 0 ? q.D / (q.jSub + q.J) : 0;
+  const cat = q.J >= CF_ETA2 ? "required" : q.jSub <= CF_ALPHA * CF_ETA2 ? "dropped" : "bombed";
+  return { q, jSub: q.jSub, sub: q.sub, D: q.D, Dn, cat };
+}
+const cfDiv = t => t < 0 ? escLerpHex("#131A2C", "#3D9BD9", Math.min(-t, 1)) : escLerpHex("#131A2C", "#C97633", Math.min(t, 1));
+function cfIso(grid, ok, nx, ny, level, toXY) {   // marching squares on cell-centre values; skips cells with a masked corner
+  let d = "";
+  for (let i = 0; i < nx - 1; i++) for (let j = 0; j < ny - 1; j++) {
+    if (ok && !(ok(i, j) && ok(i + 1, j) && ok(i + 1, j + 1) && ok(i, j + 1))) continue;
+    const a = grid[i][j] - level, b = grid[i + 1][j] - level, c = grid[i + 1][j + 1] - level, e = grid[i][j + 1] - level;
+    if ([a, b, c, e].some(v => !isFinite(v))) continue;
+    const idx = (a > 0 ? 1 : 0) | (b > 0 ? 2 : 0) | (c > 0 ? 4 : 0) | (e > 0 ? 8 : 0);
+    if (idx === 0 || idx === 15) continue;
+    const pt = (i0, j0, v0, i1, j1, v1) => { const t = v0 / (v0 - v1); return toXY(i0 + (i1 - i0) * t, j0 + (j1 - j0) * t); };
+    const B = () => pt(i, j, a, i + 1, j, b), Rr = () => pt(i + 1, j, b, i + 1, j + 1, c), T = () => pt(i, j + 1, e, i + 1, j + 1, c), L = () => pt(i, j, a, i, j + 1, e);
+    const segs = { 1: [L, B], 2: [B, Rr], 3: [L, Rr], 4: [Rr, T], 5: [L, T, B, Rr], 6: [B, T], 7: [L, T], 8: [T, L], 9: [T, B], 10: [B, Rr, T, L], 11: [T, Rr], 12: [Rr, L], 13: [Rr, B], 14: [B, L] }[idx];
+    for (let k = 0; k < segs.length; k += 2) { const p = segs[k](), q = segs[k + 1](); d += "M" + fmt(p[0], 1) + " " + fmt(p[1], 1) + "L" + fmt(q[0], 1) + " " + fmt(q[1], 1); }
+  }
+  return d;
+}
+const cfCell = (i, j) => ({ fv: FV_MAX * (i + 0.5) / CF_NX, lg: CF_LGLO + (CF_LGHI - CF_LGLO) * (j + 0.5) / CF_NY });
+const cfQText = q => q.fam === "gf" ? "no gas · " + cfPct(q.fv) + " water · " + fmt(q.M, 1) + " M⊕" : "no water · " + cfPct(q.fg) + " gas · " + fmt(q.M, 1) + " M⊕";
+function cfColourBar(svg, s, lab) {
+  const bx = s.W - 92, by0 = s.padT, by1 = s.H - s.padB, nb = 40;
+  for (let k = 0; k < nb; k++) el("rect", { x: bx, y: fmt(by1 - (k + 1) * (by1 - by0) / nb, 1), width: 14, height: fmt((by1 - by0) / nb + 0.5, 1), fill: cfDiv(-1 + 2 * (k + 0.5) / nb) }, svg);
+  [-1, -0.5, 0, 0.5, 1].forEach(v => el("text", { x: bx + 20, y: fmt(by1 - (v + 1) / 2 * (by1 - by0) + 4, 1), fill: C.muted, style: "font-family:var(--mono);font-size:11px" }, svg).textContent = (v > 0 ? "+" : "") + v);
+  el("text", { x: bx, y: by0 - 8, fill: C.muted, style: "font-family:var(--mono);font-size:11px" }, svg).textContent = lab;
+}
+let cfMap = null;
+function cfComputeMap() {
+  const key = [CF.m, CF.sr, CF.sm, CF.fam].join("|");
+  if (cfMap && cfMap.key === key) return cfMap;
+  const Dn = [], cat = [], sM = CF.sm * CF.m;
+  let bombed = 0;
+  for (let i = 0; i < CF_NX; i++) {
+    Dn.push(new Array(CF_NY)); cat.push(new Array(CF_NY));
+    for (let j = 0; j < CF_NY; j++) {
+      const c0 = cfCell(i, j), P = cfTruth(CF.m, c0.fv, Math.pow(10, c0.lg));
+      const c = cfConfuse(P, sM, CF.sr * P.R, CF.fam);
+      Dn[i][j] = c.Dn; cat[i][j] = c.cat; if (c.cat === "bombed") bombed++;
+    }
+  }
+  cfMap = { key, Dn, cat, bombed: bombed / (CF_NX * CF_NY) };
+  return cfMap;
+}
+let cf2data = null, cf3data = null, cf4data = null;
+function cfDraw2() {
+  const map = cfComputeMap();
+  const svg = $("cfch2"); svg.innerHTML = "";
+  const s = makeScales(0, FV_MAX, CF_LGLO, CF_LGHI, 920, 420, 64, 110, 26, 42);
+  axes(svg, s, [0, 0.2, 0.4, 0.6, 0.8], [-4, -3, -2, -1], "water-ice fraction of solid (the truth)", "gas fraction of mass (the truth, log)",
+       v => Math.round(v * 100) + "%", cfGasLab);
+  const cw = (s.W - s.padL - s.padR) / CF_NX, ch = (s.H - s.padT - s.padB) / CF_NY;
+  for (let i = 0; i < CF_NX; i++) for (let j = 0; j < CF_NY; j++)
+    el("rect", { x: fmt(s.padL + i * cw, 2), y: fmt(s.H - s.padB - (j + 1) * ch, 2), width: fmt(cw + 0.5, 2), height: fmt(ch + 0.5, 2),
+                 fill: map.cat[i][j] === "required" ? "#0F1522" : cfDiv(map.Dn[i][j]) }, svg);
+  const toXY = (fi, fj) => [s.padL + (fi + 0.5) * cw, s.H - s.padB - (fj + 0.5) * ch];
+  el("path", { d: cfIso(map.Dn, (i, j) => map.cat[i][j] !== "required", CF_NX, CF_NY, 0, toXY), stroke: C.ink, "stroke-width": 1.5, fill: "none" }, svg);
+  cfColourBar(svg, s, "𝒟 (norm.)");
+  // the truth
+  const P = cfTruth(CF.m, CF.fv, Math.pow(10, CF.lg)), sM = CF.sm * CF.m, sR = CF.sr * P.R;
+  const c = cfConfuse(P, sM, sR, CF.fam);
+  el("circle", { cx: fmt(s.x(CF.fv), 1), cy: fmt(s.y(CF.lg), 1), r: 7, fill: C.ink, stroke: C.rock, "stroke-width": 3 }, svg);
+  cf2data = { s, map, cw, ch };
+  $("cf-q").innerHTML = cfQText(c.q);
+  $("cf-jpq").innerHTML = fmt(c.q.J, 2) + "<small> · " + (c.q.J < CF_ETA2 ? "fits" : "rejected") + "</small>";
+  $("cf-jsub").innerHTML = (c.jSub > 999 ? "&gt; 999" : fmt(c.jSub, 2)) + "<small> · nearest: " + c.sub.name + "</small>";
+  $("cf-d").innerHTML = (c.D > 999 ? "&gt; 999" : fmt(c.D, 2)) + "<small> · norm. " + (c.Dn >= 0 ? "+" : "") + fmt(c.Dn, 2) + "</small>";
+  const v = $("cf-verdict");
+  v.textContent = c.cat === "bombed" ? "photobombed: " + (c.q.fam === "gf" ? "gas read as water" : "water read as gas")
+                : c.cat === "dropped" ? "layer dropped, composition right" : "no two-layer planet fits: third layer required";
+  v.className = "verdict " + (c.cat === "bombed" ? "no" : c.cat === "dropped" ? "yes" : "mid");
+  $("cf-share").innerHTML = Math.round(map.bombed * 100) + " %";
+  const i0 = Math.min(CF_NX - 1, Math.floor(CF.fv / FV_MAX * CF_NX));
+  let jTop = -1; while (jTop + 1 < CF_NY && map.cat[i0][jTop + 1] === "dropped") jTop++;
+  $("cf-hide").innerHTML = jTop < 0 ? "none<small> · any gas photobombs</small>" : jTop === CF_NY - 1 ? "any amount" : cfGasLab(CF_LGLO + (CF_LGHI - CF_LGLO) * (jTop + 1) / CF_NY);
+}
+function cfDraw3() {
+  const P0 = cfTruth(CF.m, CF.fv, Math.pow(10, CF.lg)), sM = CF.sm * CF.m, sR = CF.sr * P0.R;
+  const Jc = [], Jm = [], Cn = [];
+  let blob = 0, lobes = 0;
+  for (let i = 0; i < CF_NX; i++) {
+    Jc.push(new Array(CF_NY)); Jm.push(new Array(CF_NY)); Cn.push(new Array(CF_NY));
+    for (let j = 0; j < CF_NY; j++) {
+      const c0 = cfCell(i, j), g = Math.pow(10, c0.lg);
+      const x = cfTruth(CF.m, c0.fv, g), ice = cfTruth(CF.m, c0.fv, P0.fg), gas = cfTruth(CF.m, P0.fv, g);
+      const jc = cfJ(x, P0, sM, sR), jm = Math.max(cfJ(ice, P0, sM, sR), cfJ(gas, P0, sM, sR));
+      Jc[i][j] = jc; Jm[i][j] = jm; Cn[i][j] = (jm + jc) > 0 ? (jm - jc) / (jm + jc) : 0;
+      if (jc < CF_ETA2) { blob++; if (jm > CF_ETA2) lobes++; }
+    }
+  }
+  const svg = $("cfch3"); svg.innerHTML = "";
+  const s = makeScales(0, FV_MAX, CF_LGLO, CF_LGHI, 920, 420, 64, 110, 26, 42);
+  axes(svg, s, [0, 0.2, 0.4, 0.6, 0.8], [-4, -3, -2, -1], "water-ice fraction of solid (the rival)", "gas fraction of mass (the rival, log)",
+       v => Math.round(v * 100) + "%", cfGasLab);
+  const cw = (s.W - s.padL - s.padR) / CF_NX, ch = (s.H - s.padT - s.padB) / CF_NY;
+  for (let i = 0; i < CF_NX; i++) for (let j = 0; j < CF_NY; j++)
+    el("rect", { x: fmt(s.padL + i * cw, 2), y: fmt(s.H - s.padB - (j + 1) * ch, 2), width: fmt(cw + 0.5, 2), height: fmt(ch + 0.5, 2), fill: cfDiv(Cn[i][j]) }, svg);
+  const toXY = (fi, fj) => [s.padL + (fi + 0.5) * cw, s.H - s.padB - (fj + 0.5) * ch];
+  el("path", { d: cfIso(Jc, null, CF_NX, CF_NY, CF_ETA2, toXY), stroke: C.ink, "stroke-width": 1.8, fill: "none" }, svg);
+  el("path", { d: cfIso(Jm, null, CF_NX, CF_NY, CF_ETA2, toXY), stroke: C.muted, "stroke-width": 1.5, fill: "none", "stroke-dasharray": "5 4" }, svg);
+  cfColourBar(svg, s, "𝒞 (norm.)");
+  el("circle", { cx: fmt(s.x(CF.fv), 1), cy: fmt(s.y(CF.lg), 1), r: 7, fill: C.ink, stroke: C.rock, "stroke-width": 3 }, svg);
+  cf3data = { s, Jc, Jm, Cn, P0 };
+  // null direction: dR/df_ice and dR/df_gas at the truth
+  const hv = 0.01, hg = Math.max(P0.fg * 0.1, 1e-5);
+  const dRdv = (cfR(CF.m, Math.min(CF.fv + hv, FV_MAX), P0.fg) - cfR(CF.m, Math.max(CF.fv - hv, 0), P0.fg)) / (Math.min(CF.fv + hv, FV_MAX) - Math.max(CF.fv - hv, 0));
+  const dRdg = (cfR(CF.m, CF.fv, P0.fg + hg) - cfR(CF.m, CF.fv, Math.max(P0.fg - hg, 0))) / (P0.fg + hg - Math.max(P0.fg - hg, 0));
+  const trade = dRdv > 0 ? dRdg / dRdv : NaN;
+  $("cf-slope").innerHTML = isFinite(trade) ? "+0.1 % gas ⇔ −" + fmt(trade * 0.1, 1) + " % water<small> at constant radius · ∂R/∂f<sub>gas</sub> = " + fmt(dRdg, 1) + ", ∂R/∂f<sub>ice</sub> = " + fmt(dRdv, 2) + " R⊕</small>" : "–";
+  $("cf-blob").innerHTML = fmt(blob / (CF_NX * CF_NY) * 100, 1) + " %<small> of this map</small>";
+  $("cf-lobes").innerHTML = fmt(lobes / (CF_NX * CF_NY) * 100, 1) + " %<small> of this map</small>";
+}
+function cfDraw4() {
+  const P = cfTruth(CF.m, CF.fv, Math.pow(10, CF.lg)), sM = CF.sm * CF.m, sR = CF.sr * P.R;
+  const q = cfConfuse(P, sM, sR, CF.fam).q;
+  const ts = []; for (let lg = Math.log10(0.05); lg <= Math.log10(5) + 1e-9; lg += 0.02) ts.push(Math.pow(10, lg));
+  const J1 = ts.map(t => Math.pow((q.M - P.M) / sM, 2) + Math.pow((Rt(q.M, q.fv, q.fg, t) - Rt(P.M, P.fv, P.fg, t)) / sR, 2));
+  const svg = $("cfch4"); svg.innerHTML = "";
+  const s = makeScales(Math.log10(0.05), Math.log10(5), -3, 3, 920, 360, 64, 120, 26, 42);
+  axes(svg, s, [0.1, 0.3, 1, 3, 5].map(Math.log10), [-3, -2, -1, 0, 1, 2, 3], "age (log scale)", "cost J (log)",
+       v => { const t = Math.pow(10, v); return t < 1 ? Math.round(t * 1000) + " Myr" : (+t.toPrecision(2)) + " Gyr"; }, escPow);
+  const yl = j => s.y(Math.min(Math.max(Math.log10(Math.max(j, 1e-12)), -3), 3));
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(Math.log10(CF_ETA2)), 1), y2: fmt(s.y(Math.log10(CF_ETA2)), 1), stroke: C.rock, "stroke-width": 1.5, "stroke-dasharray": "6 5" }, svg);
+  el("text", { x: s.W - s.padR + 8, y: fmt(s.y(Math.log10(CF_ETA2)) + 4, 1), class: "serieslabel", fill: C.rock }, svg).textContent = "η² = 2";
+  [500, 100, 25].forEach(N => {
+    el("path", { d: linePath(ts.map((t, k) => [s.x(Math.log10(t)), yl(N * J1[k])])), stroke: C.muted, "stroke-width": 1.2, fill: "none", opacity: 0.7 }, svg);
+    el("text", { x: fmt(s.x(Math.log10(0.05)) + 6, 1), y: fmt(yl(N * J1[0]) - 6, 1), fill: C.muted, style: "font-family:var(--mono);font-size:10.5px" }, svg).textContent = "N = " + N;
+  });
+  el("path", { d: linePath(ts.map((t, k) => [s.x(Math.log10(t)), yl(J1[k])])), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  el("text", { x: s.W - s.padR + 8, y: fmt(yl(J1[J1.length - 1]) + 4, 1), class: "serieslabel", fill: C.ice }, svg).textContent = "one planet";
+  cf4data = { s, ts, J1 };
+  let tStar = null; ts.forEach((t, k) => { if (J1[k] >= CF_ETA2) tStar = t; });
+  $("cf-tstar").innerHTML = tStar === null ? "never<small> · at σ<sub>R</sub> = " + Math.round(CF.sr * 100) + " % the single-planet cost stays below η²</small>" : "for ages below " + escAge(tStar);
+  const need = t => { let k = 0; while (k < ts.length - 1 && ts[k] < t) k++; const n = CF_ETA2 / Math.max(J1[k], 1e-12); return n > 1e6 ? "&gt; 10⁶" : n <= 1 ? "1" : Math.ceil(n).toLocaleString("en-US"); };
+  $("cf-n100").innerHTML = need(0.1); $("cf-n1g").innerHTML = need(1);
+}
+function cfDrawAll() {
+  $("o-cf-m").textContent = fmt(CF.m, 1) + " M⊕"; $("o-cf-fv").textContent = Math.round(CF.fv * 100) + " %"; $("o-cf-g").textContent = cfGasLab(CF.lg);
+  cfDraw2(); cfDraw3(); cfDraw4();
+}
+/* confusion hovers */
+function cfMapHover(boxId, svgId, tipId, which) {
+  attachHover($(boxId), $(svgId), { padL: 64, padR: 110, W: 920, H: 420 },
+    (px, py, cx, cy) => {
+      const d = which === 2 ? cf2data : cf3data; if (!d) return;
+      const s = d.s, i = Math.min(CF_NX - 1, Math.max(0, Math.floor((px - s.padL) / d.cw))), j = Math.min(CF_NY - 1, Math.max(0, Math.floor((s.H - s.padB - py) / (which === 2 ? d.ch : (s.H - s.padT - s.padB) / CF_NY))));
+      if (py < s.padT || py > s.H - s.padB) { $(tipId).hidden = true; return; }
+      const c0 = cfCell(i, j);
+      let html;
+      if (which === 2) {
+        const P = cfTruth(CF.m, c0.fv, Math.pow(10, c0.lg)), c = cfConfuse(P, CF.sm * CF.m, CF.sr * P.R, CF.fam);
+        html = "<b>truth: " + Math.round(c0.fv * 100) + " % water · " + cfGasLab(c0.lg) + " gas · R = " + fmt(P.R, 2) + " R⊕</b><br><span class='mono'>Q*: " + cfQText(c.q) +
+               "</span><br><span class='mono'>J(P,Q*) = " + fmt(c.q.J, 2) + " · min J(Pᵢ,Q*) = " + (c.jSub > 999 ? "&gt;999" : fmt(c.jSub, 2)) + " · 𝒟 = " + (c.Dn >= 0 ? "+" : "") + fmt(c.Dn, 2) + "</span><br>" +
+               (c.cat === "bombed" ? "photobombed" : c.cat === "dropped" ? "layer dropped, composition right" : "third layer required");
+      } else {
+        const jc = d.Jc[i][j], jm = d.Jm[i][j];
+        html = "<b>rival: " + Math.round(c0.fv * 100) + " % water · " + cfGasLab(c0.lg) + " gas</b><br><span class='mono'>J(rival, truth) = " + fmt(jc, 2) + " · max single-change J = " + fmt(jm, 2) +
+               " · 𝒞 = " + (d.Cn[i][j] >= 0 ? "+" : "") + fmt(d.Cn[i][j], 2) + "</span><br>" +
+               (jc < CF_ETA2 ? (jm > CF_ETA2 ? "cancellation: each change alone is visible, together they are not" : "inside the noise blob: neither change is detectable") : "distinguishable from the truth");
+      }
+      setTip($(tipId), cx, cy, html, $(boxId).clientWidth);
+    }, () => $(tipId).hidden = true);
+}
+cfMapHover("cb-cf2", "cfch2", "tip-cf2", 2);
+cfMapHover("cb-cf3", "cfch3", "tip-cf3", 3);
+attachHover($("cb-cf4"), $("cfch4"), { padL: 64, padR: 120, W: 920, H: 360 },
+  (px, py, cx, cy) => {
+    const d = cf4data; if (!d) return;
+    const t = Math.pow(10, d.s.inv(px));
+    let k = 0; while (k < d.ts.length - 1 && d.ts[k] < t) k++;
+    const n = CF_ETA2 / Math.max(d.J1[k], 1e-12);
+    setTip($("tip-cf4"), cx, cy, "<b>" + escAge(t) + "</b><br><span class='mono'>one planet: J = " + d.J1[k].toExponential(2) + "</span><br><span class='mono'>planets needed: " + (n > 1e6 ? "&gt; 10⁶" : n <= 1 ? "1" : Math.ceil(n).toLocaleString("en-US")) + "</span>", $("cb-cf4").clientWidth);
+  }, () => $("tip-cf4").hidden = true);
+/* confusion wiring */
+$("in-cf-m").addEventListener("input", () => { CF.m = +$("in-cf-m").value; cfDrawAll(); });
+$("in-cf-fv").addEventListener("input", () => { CF.fv = +$("in-cf-fv").value; cfDrawAll(); });
+$("in-cf-g").addEventListener("input", () => { CF.lg = +$("in-cf-g").value; cfDrawAll(); });
+escSegWire("seg-cf-sr", v => CF.sr = +v, cfDrawAll);
+escSegWire("seg-cf-sm", v => CF.sm = +v, cfDrawAll);
+escSegWire("seg-cf-fam", v => CF.fam = v, cfDrawAll);
+
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "kub", "esc", "baty", "mos"];
+const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -2895,6 +3296,7 @@ if (!TABS.includes(tab0)) tab0 = "alibert";
 updateS1(); drawS2(); drawS3(); resampleS4(true); dornLabels(); dornDraw();
 drawK1(); drawK2(); drawK3();
 drawE2(); drawE3(); drawE4(); drawE5();
+cfDrawAll();
 drawB1(); b2Reset(); b3Reset();
 mInitData(); m1SetVel(); m1Render(); m2Reset(); showTab(tab0);
 </script>
