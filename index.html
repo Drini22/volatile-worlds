@@ -106,6 +106,21 @@
   @media (max-width:760px){.rv-grid{grid-template-columns:1fr;}}
   .rv-note{font-size:12.5px;color:var(--muted);margin-top:10px;max-width:70ch;}
 
+  /* ---------- plaNETic (concept) tab ---------- */
+  .pn-flow{width:100%;height:auto;display:block;}
+  .pn-flow .box{fill:var(--surface2);stroke:var(--line);stroke-width:1;}
+  .pn-flow .box.on{stroke:var(--rock);stroke-width:2;fill:rgba(201,118,51,.12);}
+  .pn-flow .lab{font-family:var(--sans);font-size:12.5px;font-weight:600;fill:var(--ink);}
+  .pn-flow .sub{font-family:var(--mono);font-size:10.5px;fill:var(--muted);}
+  .pn-flow .arrow{stroke:var(--muted);stroke-width:1.5;fill:none;}
+  .pn-flow .arrow.on{stroke:var(--rock);}
+  .pn-step{margin-top:14px;padding:14px 16px;background:var(--surface2);border:1px solid var(--line-soft);border-radius:10px;font-size:14px;color:var(--ink2);max-width:72ch;min-height:5.5em;}
+  .pn-step b{color:var(--ink);font-weight:600;}
+  .pn-two{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:760px){.pn-two{grid-template-columns:1fr;}}
+  .pn-tern{display:grid;grid-template-columns:3fr 2fr;gap:20px;align-items:start;}
+  @media (max-width:760px){.pn-tern{grid-template-columns:1fr;}}
+
   /* ---------- dorn tab ---------- */
   .hist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:6px;}
   @media (max-width:760px){.hist-grid{grid-template-columns:1fr;}}
@@ -246,6 +261,7 @@
         <button class="tabbtn concept" id="tab-esc" role="tab" aria-selected="false">Gas escape <small>after Kubyshkina · how gas leaves</small></button>
         <button class="tabbtn concept" id="tab-pp" role="tab" aria-selected="false">PINN playground <small>after Baty · learn the tricks</small></button>
         <button class="tabbtn concept" id="tab-val" role="tab" aria-selected="false">Radius valley <small>after Egger · two peaks and a gap</small></button>
+        <button class="tabbtn concept" id="tab-pnet" role="tab" aria-selected="false">plaNETic <small>after Egger · inside the machine</small></button>
       </div>
     </div>
   </div>
@@ -2197,6 +2213,241 @@
   <p>Fulton et al. (2017), AJ 154, 109 · Van Eylen et al. (2018), MNRAS 479, 4786 · Owen &amp; Wu (2017), ApJ 847, 29 · Ginzburg, Schlichting &amp; Sari (2018), MNRAS 476, 759 · Venturini et al. (2020), A&amp;A 643, L1 · Lopez &amp; Fortney (2014), ApJ 792, 1 · Zeng et al. (2016), ApJ 819, 127</p>
 </footer>
 </div><!-- /page-val -->
+
+<div id="page-pnet" role="tabpanel" aria-labelledby="tab-pnet" hidden>
+<section class="pagehero">
+  <p class="eyebrow">Concept tab · plaNETic · Egger et al. 2024, Leleu et al. 2021, Alibert &amp; Venturini 2019</p>
+  <p class="standfirst">The Egger tab runs plaNETic's grid on HIP 29442. This tab opens the machine. Step through the pipeline, populate the prior simplex and watch the star's chemistry carve it, train a small network to stand in for the structure model and measure how wrong it is, then use that network as the forward model of an accept-or-reject sampler and watch a posterior appear one planet at a time. Every plot is live; nothing is a screenshot of the paper.</p>
+</section>
+
+<!-- ================= STATION P1 ================= -->
+<section id="p1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>The pipeline, one stage at a time</h2></div>
+  <p class="prose">plaNETic is a full-grid acceptance-rejection sampler wrapped around a neural surrogate of the BICEPS structure code. Click a stage, or step through them, to see what happens to a single synthetic planet on its way from the priors to the posterior.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;max-width:none;"><label>Stage</label>
+        <div class="seg" id="seg-pn1" role="group" aria-label="Pipeline stage">
+          <button aria-pressed="true" data-v="0">1 star</button>
+          <button aria-pressed="false" data-v="1">2 planets</button>
+          <button aria-pressed="false" data-v="2">3 priors</button>
+          <button aria-pressed="false" data-v="3">4 inputs</button>
+          <button aria-pressed="false" data-v="4">5 network</button>
+          <button aria-pressed="false" data-v="5">6 likelihood</button>
+          <button aria-pressed="false" data-v="6">7 accept</button>
+          <button aria-pressed="false" data-v="7">8 posterior</button>
+        </div></div>
+    </div>
+    <svg id="pnflow" class="pn-flow" viewBox="0 0 920 300" aria-label="plaNETic pipeline diagram"></svg>
+    <div class="pn-step" id="pn-step"></div>
+  </div>
+  <p class="takeaway"><em>Why a grid and not a chain:</em> Markov chains and nested sampling exist to economise on forward-model calls. Once a call costs 35 microseconds instead of 14 seconds, economy is pointless, and a brute-force grid has two advantages a chain lacks: it never gets stuck, and every draw is independent, so the accepted set is the posterior without burn-in or autocorrelation bookkeeping. The price is a hundred million evaluations per planet, which the network makes affordable.</p>
+</section>
+
+<!-- ================= STATION P2 ================= -->
+<section id="p2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>The prior simplex</h2></div>
+  <p class="prose">Core, mantle and water fractions must add to one, so a composition is a point on a triangle. plaNETic draws points uniformly on it, then applies the physics. The water prior decides which part of the triangle exists at all: born outside the iceline, water up to 50 %; born inside, water zero and the triangle collapses to its core–mantle edge. The Si/Mg/Fe prior then asks whether a mantle can be built from what the core left over: given the bulk Si/Fe and Mg/Fe, the mantle's iron fraction follows analytically, and if it comes out negative or the silicon and magnesium do not fit, the draw is rejected. That rejection is the whole reason the core posterior has the shape it has.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Water prior</label>
+        <div class="seg" id="seg-pn2w" role="group" aria-label="Water prior">
+          <button aria-pressed="true" data-v="A">A · outside the iceline</button>
+          <button aria-pressed="false" data-v="B">B · inside</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Si/Mg/Fe prior</label>
+        <div class="seg" id="seg-pn2s" role="group" aria-label="Si/Mg/Fe prior">
+          <button aria-pressed="true" data-v="1">1 · stellar</button>
+          <button aria-pressed="false" data-v="2">2 · iron-enriched</button>
+          <button aria-pressed="false" data-v="3">3 · free</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;">
+        <button class="btn" id="btn-pn2">↻ Redraw 3000 points</button></div>
+    </div>
+    <div class="pn-tern">
+      <div class="chart-box" id="cb-pn2">
+        <p class="chart-title">3000 draws on the composition simplex</p>
+        <p class="chart-sub">Blue: passes the mantle-composition check · faint: rejected · shaded: forbidden by the water cap · hover any point</p>
+        <svg id="pnch2" viewBox="0 0 560 480" aria-label="Ternary diagram of prior draws"></svg>
+        <div class="tip" id="tip-pn2" hidden></div>
+      </div>
+      <div>
+        <div class="chart-box" id="cb-pn2h">
+          <p class="chart-title">Resulting prior on the core fraction</p>
+          <p class="chart-sub">What survives the rejection, binned</p>
+          <svg id="pnch2h" viewBox="0 0 360 300" aria-label="Histogram of core fraction after rejection"></svg>
+          <div class="tip" id="tip-pn2h" hidden></div>
+        </div>
+        <div class="readouts">
+          <div class="chip"><div class="k">draws kept</div><div class="v" id="pn2keep">–</div></div>
+          <div class="chip"><div class="k">largest core allowed</div><div class="v" id="pn2max">–<small> of the rocky part</small></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Read it against the paper's Fig. 6.</em> The dotted prior curves there are exactly these histograms: peaked near 15 % for the stellar option, broader and shifted up for iron-enriched, flat for free. Nothing about the planet's mass or radius has entered yet. The star's spectrum alone has already ruled out most of the triangle, which is Dorn's abundance argument made explicit as a prior rather than as a likelihood term.</p>
+</section>
+
+<!-- ================= STATION P3 ================= -->
+<section id="p3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Replace the forward model</h2></div>
+  <p class="prose">The paper's network takes nine numbers and returns one, the transit radius, and was trained on 15 million BICEPS structures over five days on 280 CPUs. Here is the same idea at desk scale: a network with six inputs, mass, core fraction, water fraction, log H/He fraction, insolation and age, trained live on 20 000 structures from this site's forward model. Press train, then read the error histogram the way the paper reads its Fig. 5: the question is not whether the network is exact, it is whether its error is small against the 3 % radius precision of CHEOPS.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Hidden width</label>
+        <div class="seg" id="seg-pn3w" role="group" aria-label="Network width">
+          <button aria-pressed="false" data-v="8">8 units</button>
+          <button aria-pressed="true" data-v="32">32 units</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pn3train">▶ Train</button>
+        <button class="btn" id="btn-pn3reset">↺ Reset network</button>
+      </div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pn3a">
+        <p class="chart-title">Prediction error on 2000 held-out structures</p>
+        <p class="chart-sub">(R<sub>net</sub> − R<sub>model</sub>) / R<sub>model</sub> · grey band: ±3 %, the CHEOPS radius precision · rust: 16th and 84th percentiles</p>
+        <svg id="pnch3a" viewBox="0 0 460 340" aria-label="Histogram of surrogate prediction error"></svg>
+        <div class="tip" id="tip-pn3a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pn3b">
+        <p class="chart-title">Training history (log scale)</p>
+        <p class="chart-sub">Mean squared error on the radius, training and validation</p>
+        <svg id="pnch3b" viewBox="0 0 460 340" aria-label="Training loss history"></svg>
+        <div class="tip" id="tip-pn3b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">training step</div><div class="v" id="pn3step">0</div></div>
+      <div class="chip answer"><div class="k">error · 16th to 84th percentile</div><div class="v" id="pn3err">–</div></div>
+      <div class="chip"><div class="k">worst held-out error</div><div class="v" id="pn3max">–</div></div>
+      <div class="chip"><div class="k">one network evaluation</div><div class="v" id="pn3us">–</div></div>
+      <div class="chip"><div class="k">speed-up over BICEPS at 13.6 s</div><div class="v" id="pn3sp">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Two of the paper's design decisions show up here.</em> The network is trained on structures drawn from the same priors it will later be asked about, so its error is smallest exactly where the sampler spends its draws. And it emulates only the forward model, not the inverse problem: the priors, the likelihood and the sampler are still ordinary code, which is why §4 can swap them without retraining anything.</p>
+</section>
+
+<!-- ================= STATION P4 ================= -->
+<section id="p4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>Accept or reject, one planet at a time</h2></div>
+  <p class="prose">Now the sampler. Pick a planet of HIP 29442 and a water prior. Each click draws 5000 synthetic planets from the priors of §2, computes their radii with the network you trained in §3, compares each to the observed radius, and keeps it with probability equal to the likelihood. The accepted planets build the posterior on the right. Switch the forward model to the true structure model to see how much the network's error leaks into the answer.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Planet</label>
+        <div class="seg" id="seg-pn4p" role="group" aria-label="Planet">
+          <button aria-pressed="true" data-v="b">b</button>
+          <button aria-pressed="false" data-v="c">c</button>
+          <button aria-pressed="false" data-v="d">d</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Water prior</label>
+        <div class="seg" id="seg-pn4w" role="group" aria-label="Water prior">
+          <button aria-pressed="true" data-v="A">A · outside</button>
+          <button aria-pressed="false" data-v="B">B · inside</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Forward model</label>
+        <div class="seg" id="seg-pn4f" role="group" aria-label="Forward model">
+          <button aria-pressed="true" data-v="net">the network of §3</button>
+          <button aria-pressed="false" data-v="true">the true structure model</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;flex-direction:row;gap:8px;">
+        <button class="btn" id="btn-pn4draw">▶ Draw 5000 planets</button>
+        <button class="btn" id="btn-pn4clear">↺ Clear</button>
+      </div>
+    </div>
+    <div class="pn-tern">
+      <div class="chart-box" id="cb-pn4a">
+        <p class="chart-title">Proposals in the envelope–radius plane</p>
+        <p class="chart-sub">Each dot one synthetic planet from the last batch · blue: accepted · faint: rejected · band: observed radius ± 1σ · hover any point</p>
+        <svg id="pnch4a" viewBox="0 0 560 420" aria-label="Scatter of proposals with acceptance"></svg>
+        <div class="tip" id="tip-pn4a" hidden></div>
+      </div>
+      <div>
+        <div class="chart-box" id="cb-pn4b">
+          <p class="chart-title">Posterior of the envelope fraction so far</p>
+          <p class="chart-sub">All accepted planets, log bins · dashed: prior</p>
+          <svg id="pnch4b" viewBox="0 0 360 300" aria-label="Histogram of accepted envelope fractions"></svg>
+          <div class="tip" id="tip-pn4b" hidden></div>
+        </div>
+        <div class="readouts">
+          <div class="chip"><div class="k">proposed</div><div class="v" id="pn4n">0</div></div>
+          <div class="chip"><div class="k">accepted</div><div class="v" id="pn4acc">0</div></div>
+          <div class="chip answer"><div class="k">envelope · median, 68 %</div><div class="v" id="pn4med">–</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">with the network</div><div class="v" id="pn4cmpN" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">with the true model</div><div class="v" id="pn4cmpT" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">paper · same priors, stellar Si/Mg/Fe</div><div class="v" id="pn4paper" style="font-size:14px;line-height:1.5">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to notice.</em> The acceptance rate is a few per cent at most: nearly every draw is wasted, which is the cost of a grid and the reason a forward model must be cheap. The accepted cloud is not a band around the observed radius, it is the prior cut by the likelihood, so where the prior is empty the posterior is empty too. And the two forward models give the same posterior to within the sampling noise once the network's error is under a per cent, which is the paper's Fig. 5 argument in action.</p>
+</section>
+
+<!-- ================= STATION P5 ================= -->
+<section id="p5">
+  <div class="sec-head"><span class="sec-num">§5</span><h2>Forward surrogate or inverse network</h2></div>
+  <p class="prose">There are two ways to put a neural network into interior inference. plaNETic emulates the <strong>forward</strong> model and keeps a real sampler around it. Baumeister et al. 2020 and Haldemann et al. 2023 train a network on the <strong>inverse</strong> problem, mapping observables straight to a posterior with mixture-density or invertible networks. The second is faster still. The difference is what happens when you change your mind about a prior.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Now change the water prior</label>
+        <div class="seg" id="seg-pn5" role="group" aria-label="Change prior">
+          <button aria-pressed="true" data-v="A">A · outside the iceline</button>
+          <button aria-pressed="false" data-v="B">B · inside</button>
+        </div></div>
+    </div>
+    <svg id="pnch5" class="pn-flow" viewBox="0 0 920 250" aria-label="Forward surrogate versus inverse network"></svg>
+    <div class="readouts">
+      <div class="chip"><div class="k">cost of the change · plaNETic</div><div class="v" id="pn5a" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">cost of the change · inverse network</div><div class="v" id="pn5b" style="font-size:15px;line-height:1.5">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>This is why the Egger paper could run six prior combinations on one system.</em> With an inverse network the prior is frozen into the training set; asking a different question means regenerating millions of structures and retraining. With a forward surrogate the prior is a few lines of sampling code, and the same network serves every question that stays inside the range it was trained on. That last clause is the Moseley lesson again: the surrogate's contract is its training distribution.</p>
+</section>
+
+<!-- ================= STATION P6 ================= -->
+<section id="p6">
+  <div class="sec-head"><span class="sec-num">§6</span><h2>One star, three planets</h2></div>
+  <p class="prose">plaNETic does not sample radii and masses. It samples the star, then derives each planet's radius from its transit ratio and its mass from its RV semi-amplitude. If the star comes out slightly larger in one draw, all three planets do too. Below, 3000 systems drawn both ways for HIP 29442 b and d.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>How the planets are drawn</label>
+        <div class="seg" id="seg-pn6" role="group" aria-label="Sampling mode">
+          <button aria-pressed="true" data-v="star">through the shared star</button>
+          <button aria-pressed="false" data-v="indep">independently</button>
+        </div></div>
+      <div class="ctl"><label>Stellar radius error <output id="o-pn6s">0.7 %</output></label>
+        <input type="range" id="in-pn6s" min="0.002" max="0.05" step="0.001" value="0.007" aria-label="Stellar radius uncertainty"></div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pn6a">
+        <p class="chart-title">Radius of b against radius of d</p>
+        <p class="chart-sub">3000 synthetic systems</p>
+        <svg id="pnch6a" viewBox="0 0 460 380" aria-label="Scatter of planet b radius versus planet d radius"></svg>
+        <div class="tip" id="tip-pn6a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pn6b">
+        <p class="chart-title">Mass of b against mass of d</p>
+        <p class="chart-sub">From the RV semi-amplitudes and the shared stellar mass</p>
+        <svg id="pnch6b" viewBox="0 0 460 380" aria-label="Scatter of planet b mass versus planet d mass"></svg>
+        <div class="tip" id="tip-pn6b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">correlation of the radii</div><div class="v" id="pn6r">–</div></div>
+      <div class="chip"><div class="k">correlation of the masses</div><div class="v" id="pn6m">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>For this star the effect is modest, and that is the point.</em> HIP 29442's radius is known to 0.7 %, better than any of the transit ratios, so the correlation is weak; drag the slider to the 3 to 5 % typical of a fainter host and it becomes strong. Ignoring it would make sibling planets look independently measured when they are not, and would bias any comparison between them, which matters for a paper whose question is how three planets around one star differ.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The pipeline, the priors, the simplex sampling, the mantle-composition rejection, the acceptance-rejection rule and the joint sampling through the star are transcribed from the public plaNETic code and the paper's §4.2. The network of §3 is real and trains in your browser, but it is a 6-input toy emulating this site's Zeng plus Lopez &amp; Fortney forward model, not the paper's 9-input, six-layer, 2048-unit network emulating BICEPS; its error histogram is the paper's Fig. 5 in form, not in numbers. The sampler of §4 uses the same toy priors as the Egger tab, one planet at a time, with stellar Si/Mg/Fe ratios. §6 uses the paper's Table 3 ratios and semi-amplitudes with Gaussian errors.</p>
+  <p>J. A. Egger et al. (2024), arXiv:2406.18653 · <a href="https://github.com/joannegger/plaNETic">github.com/joannegger/plaNETic</a> · Leleu et al. (2021), A&amp;A 649, A26 · Alibert &amp; Venturini (2019), A&amp;A 626, A21 · Haldemann et al. (2024), A&amp;A 681, A96 (BICEPS) · Baumeister et al. (2020), ApJ 889, 42 · Haldemann et al. (2023), A&amp;A 672, A180</p>
+</footer>
+</div><!-- /page-pnet -->
 
 </div>
 
@@ -4727,6 +4978,321 @@ $("btn-rv3").addEventListener("click", () => { rvPop = null; rvDraw3(); rvDraw4(
 $("in-rv4w").addEventListener("input", () => { RV.w4 = +$("in-rv4w").value; rvDraw4(); });
 escSegWire("seg-rv4m", v => RV.mw4 = +v, rvDraw4);
 
+/* ================= plaNETic (concept tab) =================
+   Inside the machine: pipeline walkthrough, prior simplex with the mantle-composition rejection,
+   a live surrogate of this site's forward model (egRsolid + egRenv), an accept-or-reject sampler
+   that uses that surrogate, forward-vs-inverse schematic, joint sampling through the star. Prefix pn/PN. */
+const PN = { stage: 0, w2: "A", s2: "1", width: 32, p4: "b", w4: "A", f4: "net", w5: "A", mode6: "star", sR6: 0.007 };
+const PN_STAGES = [
+  ["Observed star", "R★, M★, T_eff, age, [Fe/H] [Si/H] [Mg/H]", "<b>Stage 1 · the star.</b> plaNETic starts from the star, not the planet. 10 000 synthetic stars are drawn from the observed radius, mass, temperature, age and abundances of HIP 29442 with their errors. Everything downstream inherits these draws, which is what ties the three planets together in §6."],
+  ["10⁴ planets per star", "mass from K and P, period from P", "<b>Stage 2 · the planets.</b> For each synthetic star, 10 000 synthetic planets are drawn. Their masses come from the RV semi-amplitude and the star's mass, their orbits from the period, their equilibrium temperature from the star. Nothing about composition yet."],
+  ["Priors", "simplex · log H/He · Si/Mg/Fe · water A or B", "<b>Stage 3 · the priors.</b> Core, mantle and water fractions are drawn uniformly on a simplex (water zero for a planet born inside the iceline), H/He log-uniformly from 10⁻⁶ to 0.5, the core's iron fraction from 81 to 100 %, and the mantle chemistry from the star under one of three Si/Mg/Fe options. Draws with an impossible mantle are thrown away here, before any radius is computed. §2 shows this step."],
+  ["9 inputs", "T_eq · Z_env · log L · M · w_core · log w_env · x_S · x_Si · x_Mg", "<b>Stage 4 · the inputs.</b> The surviving draw is turned into the nine numbers the network expects: equilibrium temperature, envelope water fraction, log intrinsic luminosity from the star's age, total mass, core and envelope mass fractions, core sulphur fraction, mantle silicon and magnesium fractions. Two networks exist, for 0.5 to 6 and 6 to 15 Earth masses."],
+  ["DNN", "6 × 2048 ReLU → transit radius", "<b>Stage 5 · the network.</b> A feed-forward network trained on 15 million BICEPS structures returns the transit radius in 35 microseconds instead of 14 seconds. Its error is below 0.6 % for the 84th percentile of the structures it will be asked about, against a 3 % measurement. §3 trains a small one live."],
+  ["Likelihood", "exp(−½ (δ − δ_obs)² / σ²)", "<b>Stage 6 · the likelihood.</b> The radius is converted to a transit depth using the synthetic star's radius and compared with the observed depth. The likelihood is a Gaussian in the depth. Planets that would extend beyond their Hill or Bondi radius are removed as unphysical."],
+  ["Accept or reject", "keep if likelihood > uniform draw", "<b>Stage 7 · accept or reject.</b> A uniform random number is drawn; the planet is kept if the likelihood exceeds it. That is the whole inference step. No chain, no proposal distribution, no convergence test. §4 animates it."],
+  ["Posterior", "all accepted planets, per system", "<b>Stage 8 · the posterior.</b> The accepted planets, kept only for stars where every planet of the system was accepted at least once, are the joint posterior. Medians and percentiles of core, mantle, envelope and envelope water are read off them, which is the paper's Tables B.3 to B.5."],
+];
+function pnDraw1() {
+  const svg = $("pnflow"); svg.innerHTML = "";
+  const W = 210, H = 62, gx = 27, gy = 60, x0 = 10, y0 = 30;
+  const pos = i => [x0 + (i % 4) * (W + gx), y0 + Math.floor(i / 4) * (H + gy + 40)];
+  PN_STAGES.forEach((st, i) => {
+    const [x, y] = pos(i), on = i === PN.stage;
+    el("rect", { x, y, width: W, height: H, rx: 10, class: "box" + (on ? " on" : "") }, svg);
+    el("text", { x: x + 12, y: y + 24, class: "lab" }, svg).textContent = (i + 1) + " · " + st[0];
+    el("text", { x: x + 12, y: y + 44, class: "sub" }, svg).textContent = st[1];
+    if (i < 7) {
+      const [nx, ny] = pos(i + 1);
+      const on2 = i === PN.stage || i + 1 === PN.stage;
+      if (Math.floor(i / 4) === Math.floor((i + 1) / 4)) el("path", { d: "M" + (x + W) + " " + (y + H / 2) + "L" + (nx - 4) + " " + (ny + H / 2), class: "arrow" + (on2 ? " on" : ""), "marker-end": "url(#pnarr)" }, svg);
+      else el("path", { d: "M" + (x + W / 2) + " " + (y + H) + "L" + (x + W / 2) + " " + (y + H + gy / 2) + "L" + (nx + W / 2) + " " + (y + H + gy / 2) + "L" + (nx + W / 2) + " " + (ny - 4), class: "arrow" + (on2 ? " on" : ""), "marker-end": "url(#pnarr)" }, svg);
+    }
+  });
+  const defs = el("defs", {}, svg), m = el("marker", { id: "pnarr", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" }, defs);
+  el("path", { d: "M0 0L10 5L0 10z", fill: C.muted }, m);
+  $("pn-step").innerHTML = PN_STAGES[PN.stage][2];
+}
+/* §2 simplex */
+let pn2pts = null;
+function pnTern(c, m, w) { return [80 + (m + w / 2) * 400, 440 - w * 400 * Math.sqrt(3) / 2]; }
+function pnDraw2() {
+  if (!pn2pts) { pn2pts = []; for (let i = 0; i < 3000; i++) { const u = rand(), v = rand(); pn2pts.push({ c: Math.min(u, v), m: Math.abs(u - v), w: 1 - Math.max(u, v), r1: rand(), r2: randn(), r3: randn(), r4: rand(), r5: rand() }); } }
+  const SiFe0 = EG_SUN.SiFe * Math.pow(10, EG_STAR.SiH[0] - EG_STAR.FeH[0]), MgFe0 = EG_SUN.MgFe * Math.pow(10, EG_STAR.MgH[0] - EG_STAR.FeH[0]);
+  const svg = $("pnch2"); svg.innerHTML = "";
+  const A = pnTern(1, 0, 0), B = pnTern(0, 1, 0), Cc = pnTern(0, 0, 1);
+  el("path", { d: linePath([A, B, Cc, A]), fill: "none", stroke: C.line, "stroke-width": 1.5 }, svg);
+  if (PN.w2 === "A") { const p1 = pnTern(0.5, 0, 0.5), p2 = pnTern(0, 0.5, 0.5); el("path", { d: linePath([p1, Cc, p2, p1]), fill: "rgba(224,101,101,.10)", stroke: "rgba(224,101,101,.4)", "stroke-dasharray": "4 4" }, svg); el("text", { x: fmt(Cc[0], 1), y: fmt(Cc[1] - 12, 1), "text-anchor": "middle", class: "serieslabel", fill: "#E88A8A" }, svg).textContent = "water > 50 %: forbidden"; }
+  el("text", { x: fmt(A[0] - 6, 1), y: fmt(A[1] + 18, 1), "text-anchor": "middle", class: "serieslabel", fill: C.iron }, svg).textContent = "all core";
+  el("text", { x: fmt(B[0] + 6, 1), y: fmt(B[1] + 18, 1), "text-anchor": "middle", class: "serieslabel", fill: C.rock }, svg).textContent = "all mantle";
+  if (PN.w2 === "B") el("text", { x: fmt(Cc[0], 1), y: fmt(Cc[1] - 12, 1), "text-anchor": "middle", class: "serieslabel", fill: C.icefill }, svg).textContent = "all water · unreachable inside the iceline";
+  else el("text", { x: fmt(Cc[0], 1), y: fmt(Cc[1] - 28, 1), "text-anchor": "middle", class: "serieslabel", fill: C.icefill }, svg).textContent = "all water";
+  const kept = [], plotted = [];
+  let maxCore = 0;
+  pn2pts.forEach(p => {
+    let c = p.c, m = p.m, w = p.w;
+    if (PN.w2 === "B") { c = p.r1; m = 1 - c; w = 0; }
+    let ok = true, why = "";
+    if (w > 0.5) { ok = false; why = "water above the 50 % cap"; }
+    else if (PN.s2 !== "3") {
+      let SiFe = SiFe0, MgFe = MgFe0;
+      if (PN.s2 === "2") { const a = 4.84 + 0.92 * p.r2, b = -1.35 + 0.36 * p.r3, spm = 1 / (b + a / (SiFe + MgFe)), sm = SiFe / MgFe; MgFe = spm / (1 + sm); SiFe = spm - MgFe; if (!(SiFe > 0 && MgFe > 0)) { ok = false; why = "negative Si/Fe or Mg/Fe"; } }
+      if (ok) { const mc = egMantle(c, Math.max(m, 1e-6), 0.81 + 0.19 * p.r4, SiFe, MgFe); if (!(mc.si > 0 && mc.mg > 0 && mc.fe >= 0)) { ok = false; why = "mantle would need negative iron: the core already holds more Fe than the bulk ratio allows"; } }
+    }
+    const xy = pnTern(c, m, w);
+    if (ok) { kept.push({ c, m, w }); if (c / (c + m) > maxCore) maxCore = c / (c + m); }
+    plotted.push([xy[0], xy[1], { c, m, w, ok, why }]);
+    el("circle", { cx: fmt(xy[0], 1), cy: fmt(xy[1], 1), r: PN.w2 === "B" ? 2.2 : 2.4, fill: ok ? C.ice : C.muted, opacity: ok ? 0.75 : 0.22 }, svg);
+  });
+  egCharts["pnch2"] = { pts: plotted };
+  // core histogram
+  const hs = $("pnch2h"); hs.innerHTML = "";
+  const nb = 20, cnt = new Array(nb).fill(0);
+  kept.forEach(k => { const cf = k.c / (k.c + k.m); cnt[Math.min(nb - 1, Math.floor(cf * nb))]++; });
+  const yMax = Math.max(...cnt, 1) * 1.15, s = makeScales(0, 1, 0, yMax, 360, 300, 40, 10, 22, 40);
+  axes(hs, s, [0, 0.25, 0.5, 0.75, 1], [], "core fraction of the rocky part", "", v => Math.round(v * 100) + "%", v => "");
+  cnt.forEach((v, i) => el("rect", { x: fmt(s.x(i / nb) + 1, 1), y: fmt(s.y(v), 1), width: fmt(s.x(1 / nb) - s.x(0) - 2, 1), height: fmt(s.y(0) - s.y(v), 1), fill: C.ice, opacity: 0.8 }, hs));
+  egCharts["pnch2h"] = { scale: s, cnt, nb };
+  $("pn2keep").innerHTML = kept.length.toLocaleString("en-US") + "<small> of 3000 · " + Math.round(kept.length / 30) + " %</small>";
+  $("pn2max").innerHTML = Math.round(maxCore * 100) + " %<small> of the rocky part</small>";
+}
+/* §3 surrogate */
+const PN_IN = [[1, 15], [0, 0.5], [0, 0.5], [-6, Math.log10(0.5)], [10, 500], [1, 12]];   // M, cmf, fice, log fgas, F, age
+const pnNorm = x => x.map((v, i) => (v - PN_IN[i][0]) / (PN_IN[i][1] - PN_IN[i][0]) * 2 - 1);
+const pnTrue = x => { const fg = Math.pow(10, x[3]); return egRsolid(x[0] * (1 - fg), x[1], x[2]) + egRenv(x[0], fg, x[4], x[5]); };
+function pnSample() { return PN_IN.map(([a, b]) => a + rand() * (b - a)); }
+function PnNet(H, lr) {
+  const I = 6, P = { W1: new Float64Array(H * I), b1: new Float64Array(H), W2: new Float64Array(H * H), b2: new Float64Array(H), W3: new Float64Array(H), b3: new Float64Array(1), step: 0 };
+  for (let i = 0; i < H * I; i++) P.W1[i] = (rand() * 2 - 1) / Math.sqrt(I);
+  for (let i = 0; i < H * H; i++) P.W2[i] = (rand() * 2 - 1) / Math.sqrt(H);
+  for (let i = 0; i < H; i++) P.W3[i] = (rand() * 2 - 1) / Math.sqrt(H);
+  P.b3[0] = 2;
+  const keys = ["W1", "b1", "W2", "b2", "W3", "b3"], opt = {};
+  keys.forEach(k => opt[k] = { g: new Float64Array(P[k].length), m: new Float64Array(P[k].length), v: new Float64Array(P[k].length) });
+  const a1 = new Float64Array(H), a2 = new Float64Array(H);
+  function fwd(x) {
+    for (let j = 0; j < H; j++) { let z = P.b1[j]; for (let i = 0; i < I; i++) z += P.W1[j * I + i] * x[i]; a1[j] = Math.tanh(z); }
+    for (let k = 0; k < H; k++) { let z = P.b2[k]; const off = k * H; for (let j = 0; j < H; j++) z += P.W2[off + j] * a1[j]; a2[k] = Math.tanh(z); }
+    let y = P.b3[0]; for (let k = 0; k < H; k++) y += P.W3[k] * a2[k]; return y;
+  }
+  return {
+    P, H, fwd,
+    trainStep(batch) {
+      keys.forEach(k => opt[k].g.fill(0));
+      let loss = 0; const B = batch.length;
+      for (const ex of batch) {
+        const y = fwd(ex.x), e = y - ex.t, gy = 2 * e / B; loss += e * e / B;
+        opt.b3.g[0] += gy; const g2 = new Float64Array(H);
+        for (let k = 0; k < H; k++) { opt.W3.g[k] += gy * a2[k]; g2[k] = P.W3[k] * gy; }
+        const g1 = new Float64Array(H);
+        for (let k = 0; k < H; k++) { const gz = g2[k] * (1 - a2[k] * a2[k]), off = k * H; opt.b2.g[k] += gz; for (let j = 0; j < H; j++) { opt.W2.g[off + j] += gz * a1[j]; g1[j] += P.W2[off + j] * gz; } }
+        for (let j = 0; j < H; j++) { const gz = g1[j] * (1 - a1[j] * a1[j]); opt.b1.g[j] += gz; for (let i = 0; i < I; i++) opt.W1.g[j * I + i] += gz * ex.x[i]; }
+      }
+      P.step++;
+      const t = P.step, b1c = 1 - Math.pow(0.9, t), b2c = 1 - Math.pow(0.999, t);
+      keys.forEach(k => { const o = opt[k], p = P[k]; for (let i = 0; i < p.length; i++) { o.m[i] = 0.9 * o.m[i] + 0.1 * o.g[i]; o.v[i] = 0.999 * o.v[i] + 0.001 * o.g[i] * o.g[i]; p[i] -= lr * (o.m[i] / b1c) / (Math.sqrt(o.v[i] / b2c) + 1e-8); } });
+      return loss;
+    },
+  };
+}
+const PN3 = { net: null, train: [], val: [], hist: [], playing: false, lastLoss: undefined, errs: null };
+function pn3Data() {
+  if (PN3.train.length) return;
+  for (let i = 0; i < 20000; i++) { const x = pnSample(); PN3.train.push({ x: pnNorm(x), t: pnTrue(x), raw: x }); }
+  for (let i = 0; i < 2000; i++) { const x = pnSample(); PN3.val.push({ x: pnNorm(x), t: pnTrue(x), raw: x }); }
+}
+function pn3Reset() { pn3Data(); PN3.net = PnNet(PN.width, 0.003); PN3.hist = []; PN3.lastLoss = undefined; pn3Draw(); }
+function pn3Val() { let s = 0; PN3.val.forEach(ex => { const e = PN3.net.fwd(ex.x) - ex.t; s += e * e; }); return s / PN3.val.length; }
+function pn3Draw() {
+  const errs = PN3.val.map(ex => (PN3.net.fwd(ex.x) - ex.t) / ex.t * 100).sort((a, b) => a - b);
+  PN3.errs = errs;
+  const q = f => errs[Math.min(errs.length - 1, Math.floor(f * errs.length))];
+  let svg = $("pnch3a"); svg.innerHTML = "";
+  const lim = Math.max(3.5, Math.min(30, Math.max(-q(0.02), q(0.98)) * 1.2));
+  const nb = 40, cnt = new Array(nb).fill(0); errs.forEach(e => { const k = Math.floor((e + lim) / (2 * lim) * nb); if (k >= 0 && k < nb) cnt[k]++; });
+  const yMax = Math.max(...cnt, 1) * 1.15, s = makeScales(-lim, lim, 0, yMax, 460, 340, 46, 12, 22, 40);
+  axes(svg, s, niceTicks(-lim, lim, 6), [], "prediction error, %", "", v => fmt(v, lim > 10 ? 0 : 1) + "%", v => "");
+  el("rect", { x: fmt(s.x(-3), 1), y: s.padT, width: fmt(s.x(3) - s.x(-3), 1), height: s.H - s.padT - s.padB, fill: "rgba(233,237,246,.06)" }, svg);
+  cnt.forEach((v, i) => el("rect", { x: fmt(s.x(-lim + i * 2 * lim / nb) + 0.5, 1), y: fmt(s.y(v), 1), width: fmt(s.x(2 * lim / nb) - s.x(0) - 1, 1), height: fmt(s.y(0) - s.y(v), 1), fill: C.ice, opacity: 0.8 }, svg));
+  [q(0.16), q(0.84)].forEach(v => el("line", { x1: fmt(s.x(v), 1), x2: fmt(s.x(v), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.rock, "stroke-width": 1.5, "stroke-dasharray": "4 3" }, svg));
+  egCharts["pnch3a"] = { scale: s, cnt, nb, lim };
+  svg = $("pnch3b"); svg.innerHTML = "";
+  if (PN3.hist.length > 1) {
+    const Hh = PN3.hist, lo = Math.min(...Hh.map(h => Math.min(h.l, h.v))) - 0.3, hi = Math.max(...Hh.map(h => Math.max(h.l, h.v))) + 0.3;
+    const s2 = makeScales(0, Hh[Hh.length - 1].s, lo, hi, 460, 340, 46, 12, 22, 40);
+    axes(svg, s2, niceTicks(0, Hh[Hh.length - 1].s, 4), niceTicks(lo, hi, 4), "step", "log₁₀ MSE", v => v >= 1000 ? Math.round(v / 1000) + "k" : Math.round(v), v => fmt(v, 0));
+    el("path", { d: linePath(Hh.map(h => [s2.x(h.s), s2.y(h.l)])), stroke: C.ice, "stroke-width": 2, fill: "none" }, svg);
+    el("path", { d: linePath(Hh.map(h => [s2.x(h.s), s2.y(h.v)])), stroke: C.rock, "stroke-width": 2, fill: "none" }, svg);
+    egCharts["pnch3b"] = { scale: s2, hist: Hh };
+  } else egCharts["pnch3b"] = null;
+  $("pn3step").textContent = PN3.net.P.step;
+  $("pn3err").innerHTML = (q(0.16) >= 0 ? "+" : "") + fmt(q(0.16), 2) + " % … " + (q(0.84) >= 0 ? "+" : "") + fmt(q(0.84), 2) + " %";
+  $("pn3max").innerHTML = fmt(Math.max(-errs[0], errs[errs.length - 1]), 1) + " %";
+  const t0 = performance.now(); for (let i = 0; i < 2000; i++) PN3.net.fwd(PN3.val[i].x); const us = (performance.now() - t0) / 2000 * 1000;
+  $("pn3us").innerHTML = fmt(us, 1) + "<small> µs</small>";
+  $("pn3sp").innerHTML = escSci(13.6 / (us * 1e-6), 1) + "<small> ×</small>";
+}
+function pn3Tick() {
+  if (!PN3.playing) return;
+  for (let i = 0; i < 25; i++) { const b = []; for (let k = 0; k < 64; k++) b.push(PN3.train[Math.floor(rand() * PN3.train.length)]); PN3.lastLoss = PN3.net.trainStep(b); }
+  PN3.hist.push({ s: PN3.net.P.step, l: Math.log10(PN3.lastLoss + 1e-12), v: Math.log10(pn3Val() + 1e-12) });
+  if (PN3.hist.length > 400) PN3.hist = PN3.hist.filter((_, i) => i % 2 === 0);
+  pn3Draw();
+  requestAnimationFrame(pn3Tick);
+}
+/* §4 sampler with the surrogate */
+const PN4 = { n: 0, acc: [], last: [], cmp: { net: null, true: null } };
+function pn4Forward(x) { return PN.f4 === "net" ? PN3.net.fwd(pnNorm(x)) : pnTrue(x); }
+function pn4Batch(N) {
+  const pl = EG_PL[PN.p4], sM = pl.sM, sR = pl.sR;
+  const SiFe = EG_SUN.SiFe * Math.pow(10, EG_STAR.SiH[0] - EG_STAR.FeH[0]), MgFe = EG_SUN.MgFe * Math.pow(10, EG_STAR.MgH[0] - EG_STAR.FeH[0]);
+  const last = [];
+  let n = 0;
+  while (n < N) {
+    const M = pl.M + sM * randn(); if (M < 1 || M > 15) continue;
+    let wsc, wsm, wsw;
+    if (PN.w4 === "A") { const u = rand(), v = rand(); wsc = Math.min(u, v); wsm = Math.abs(u - v); wsw = 1 - Math.max(u, v); if (wsw > 0.5) continue; }
+    else { wsc = rand(); wsm = 1 - wsc; wsw = 0; }
+    if (wsm < 1e-6 || wsc / (wsc + wsm) > 0.5) continue;
+    const mc = egMantle(wsc, wsm, 0.81 + 0.19 * rand(), SiFe, MgFe); if (!(mc.si > 0 && mc.mg > 0 && mc.fe >= 0)) continue;
+    let wg = Math.pow(10, -6 + rand() * (Math.log10(0.5) + 6)), ww;
+    if (PN.w4 === "A") ww = wsw * (1 - wg); else { const Z = 0.005 + 0.0025 * randn(); if (Z <= 0) continue; ww = wg * Z; wg *= (1 - Z); }
+    const age = Math.min(12, Math.max(1, EG_STAR.age[0] + EG_STAR.age[1] * randn()));
+    const x = [M, wsc / (wsc + wsm), PN.w4 === "A" ? wsw : ww / (1 - wg), Math.log10(Math.max(wg, 1e-6)), Math.min(500, Math.max(10, pl.F)), age];
+    const R = pn4Forward(x), like = Math.exp(-0.5 * Math.pow((R - pl.R) / sR, 2)), ok = like > rand();
+    const env = ww + wg;
+    last.push({ env, R, ok, M, x });
+    if (ok) PN4.acc.push(env);
+    n++;
+  }
+  PN4.n += N; PN4.last = last;
+}
+function pn4Draw() {
+  const pl = EG_PL[PN.p4];
+  const svg = $("pnch4a"); svg.innerHTML = "";
+  const s = makeScales(-6, Math.log10(0.6), 0.8, 5.2, 560, 420, 50, 14, 22, 40);
+  axes(svg, s, [-6, -4, -2, 0], [1, 2, 3, 4, 5], "envelope mass fraction (log)", "radius, R⊕", v => "1e" + v, v => fmt(v, 0));
+  el("rect", { x: s.padL, y: fmt(s.y(pl.R + pl.sR), 1), width: s.W - s.padL - s.padR, height: fmt(s.y(pl.R - pl.sR) - s.y(pl.R + pl.sR), 1), fill: "rgba(233,237,246,.10)" }, svg);
+  el("text", { x: s.W - s.padR - 6, y: fmt(s.y(pl.R + pl.sR) - 6, 1), "text-anchor": "end", class: "serieslabel", fill: C.ink2 }, svg).textContent = pl.name + " · R = " + fmt(pl.R, 2) + " ± " + fmt(pl.sR, 3);
+  const pts = [];
+  let shown = 0;
+  PN4.last.forEach(p => {
+    if (!p.ok && shown > 1500) return; if (!p.ok) shown++;
+    const px = s.x(Math.log10(Math.max(p.env, 1e-6))), py = s.y(Math.min(Math.max(p.R, 0.8), 5.2));
+    el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: p.ok ? 3 : 1.8, fill: p.ok ? C.ice : C.muted, opacity: p.ok ? 0.9 : 0.25 }, svg);
+    pts.push([px, py, p]);
+  });
+  egCharts["pnch4a"] = { scale: s, pts };
+  const hs = $("pnch4b"); hs.innerHTML = "";
+  const nb = 24, x0 = -6, x1 = Math.log10(0.6), cnt = new Array(nb).fill(0), pri = new Array(nb).fill(0);
+  PN4.acc.forEach(v => { const k = Math.floor((Math.log10(Math.max(v, 1e-6)) - x0) / (x1 - x0) * nb); if (k >= 0 && k < nb) cnt[k]++; });
+  PN4.last.forEach(p => { const k = Math.floor((Math.log10(Math.max(p.env, 1e-6)) - x0) / (x1 - x0) * nb); if (k >= 0 && k < nb) pri[k]++; });
+  const tot = Math.max(PN4.acc.length, 1), totp = Math.max(PN4.last.length, 1);
+  const yMax = Math.max(Math.max(...cnt) / tot, Math.max(...pri) / totp, 0.01) * 1.15, s2 = makeScales(x0, x1, 0, yMax, 360, 300, 40, 10, 22, 40);
+  axes(hs, s2, [-6, -4, -2, 0], [], "envelope fraction (log)", "", v => "1e" + v, v => "");
+  cnt.forEach((v, i) => el("rect", { x: fmt(s2.x(x0 + i * (x1 - x0) / nb) + 1, 1), y: fmt(s2.y(v / tot), 1), width: fmt(s2.x((x1 - x0) / nb) - s2.x(0) - 2, 1), height: fmt(s2.y(0) - s2.y(v / tot), 1), fill: C.ice, opacity: 0.8 }, hs));
+  const pp = [[s2.x(x0), s2.y(pri[0] / totp)]]; pri.forEach((v, i) => { pp.push([s2.x(x0 + i * (x1 - x0) / nb), s2.y(v / totp)]); pp.push([s2.x(x0 + (i + 1) * (x1 - x0) / nb), s2.y(v / totp)]); });
+  if (PN4.last.length) el("path", { d: linePath(pp), fill: "none", stroke: C.muted, "stroke-width": 1.3, "stroke-dasharray": "4 3" }, hs);
+  egCharts["pnch4b"] = { scale: s2, cnt, pri, nb, x0, x1, tot, totp };
+  $("pn4n").textContent = PN4.n.toLocaleString("en-US");
+  $("pn4acc").innerHTML = PN4.acc.length.toLocaleString("en-US") + (PN4.n ? "<small> · " + fmt(PN4.acc.length / PN4.n * 100, 1) + " %</small>" : "");
+  const a = PN4.acc.slice().sort((x, y) => x - y), q = f => a.length ? a[Math.min(a.length - 1, Math.floor(f * a.length))] : NaN;
+  const med = q(0.5), txt = a.length >= 10 ? egPctF(med) + " <small>(+" + egPctF(q(0.84) - med) + " / −" + egPctF(med - q(0.16)) + ") %</small>" : "<small>draw more planets</small>";
+  $("pn4med").innerHTML = txt;
+  if (a.length >= 10) PN4.cmp[PN.f4] = { pl: PN.p4, w: PN.w4, txt: egPctF(med) + " %<small> · " + a.length + " accepted</small>" };
+  ["net", "true"].forEach(k => { const c = PN4.cmp[k]; $(k === "net" ? "pn4cmpN" : "pn4cmpT").innerHTML = c && c.pl === PN.p4 && c.w === PN.w4 ? c.txt : "–"; });
+  $("pn4paper").innerHTML = pl.paper[PN.w4];
+}
+function pn4Clear() { PN4.n = 0; PN4.acc = []; PN4.last = []; pn4Draw(); }
+/* §5 forward vs inverse */
+function pnDraw5() {
+  const svg = $("pnch5"); svg.innerHTML = "";
+  const box = (x, y, w, h, on, lab, sub) => { el("rect", { x, y, width: w, height: h, rx: 10, class: "box" + (on ? " on" : "") }, svg); el("text", { x: x + 12, y: y + 22, class: "lab" }, svg).textContent = lab; if (sub) el("text", { x: x + 12, y: y + 40, class: "sub" }, svg).textContent = sub; };
+  const arrow = (x1, y1, x2, y2) => el("path", { d: "M" + x1 + " " + y1 + "L" + x2 + " " + y2, class: "arrow", "marker-end": "url(#pnarr5)" }, svg);
+  const defs = el("defs", {}, svg), m = el("marker", { id: "pnarr5", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" }, defs);
+  el("path", { d: "M0 0L10 5L0 10z", fill: C.muted }, m);
+  const wl = PN.w5 === "A" ? "water prior A · outside" : "water prior B · inside";
+  el("text", { x: 10, y: 22, class: "lab", fill: C.ink2 }, svg).textContent = "plaNETic · forward surrogate";
+  box(10, 40, 150, 56, true, "priors", wl); arrow(160, 68, 186, 68);
+  box(190, 40, 150, 56, false, "network", "forward model, fixed"); arrow(340, 68, 366, 68);
+  box(370, 40, 150, 56, false, "likelihood + accept", "ordinary code"); arrow(520, 68, 546, 68);
+  box(550, 40, 150, 56, true, "posterior", PN.w5 === "A" ? "b: envelope 0–60 %" : "b: envelope 6 % H/He");
+  el("text", { x: 10, y: 152, class: "lab", fill: C.ink2 }, svg).textContent = "inverse network · Baumeister 2020, Haldemann 2023";
+  box(10, 170, 150, 56, false, "training set", "generated under one prior"); arrow(160, 198, 186, 198);
+  box(190, 170, 330, 56, false, "network: observables → posterior", "prior baked into the weights"); arrow(520, 198, 546, 198);
+  box(550, 170, 150, 56, PN.w5 === "B", "posterior", PN.w5 === "A" ? "for prior A" : "still for prior A");
+  if (PN.w5 === "B") { el("rect", { x: 720, y: 170, width: 190, height: 56, rx: 10, fill: "rgba(224,101,101,.12)", stroke: "rgba(224,101,101,.4)" }, svg); el("text", { x: 732, y: 192, class: "lab", fill: "#E88A8A" }, svg).textContent = "to answer for prior B:"; el("text", { x: 732, y: 210, class: "sub", fill: "#E88A8A" }, svg).textContent = "regenerate 15 M structures, retrain"; }
+  else { el("text", { x: 720, y: 200, class: "sub" }, svg).textContent = "fine, as long as the question matches the training prior"; }
+  $("pn5a").innerHTML = PN.w5 === "A" ? "nothing yet<small> · switch the prior</small>" : "edit the sampler<small> · rerun the grid, about 9 h</small>";
+  $("pn5b").innerHTML = PN.w5 === "A" ? "nothing yet<small> · switch the prior</small>" : "regenerate and retrain<small> · 5 days on 280 CPUs per network</small>";
+}
+/* §6 joint star */
+const PN6 = { z: null };
+function pnDraw6() {
+  if (!PN6.z) { PN6.z = []; for (let i = 0; i < 3000; i++) PN6.z.push([randn(), randn(), randn(), randn(), randn(), randn(), randn()]); }
+  $("o-pn6s").textContent = fmt(PN.sR6 * 100, 1) + " %";
+  const b = EG_PL.b, d = EG_PL.d, rb = 0.03195, srb = 0.00032, rd = 0.01440, srd = 0.00044, Kb = 2.63, sKb = 0.2, Kd = 1.91, sKd = 0.12;
+  const Rs = 0.980, Ms = 0.901, sMs = 0.043, RSUN_RE = 109.1;
+  const rows = PN6.z.map(z => {
+    const R = Rs * (1 + PN.sR6 * z[0]), M = Ms + sMs * z[1];
+    if (PN.mode6 === "star") return { Rb: (rb + srb * z[2]) * R * RSUN_RE, Rd: (rd + srd * z[3]) * R * RSUN_RE, Mb: b.M * ((Kb + sKb * z[4]) / Kb) * Math.pow(M / Ms, 2 / 3), Md: d.M * ((Kd + sKd * z[5]) / Kd) * Math.pow(M / Ms, 2 / 3) };
+    return { Rb: b.R * (1 + Math.hypot(srb / rb, PN.sR6) * z[2]), Rd: d.R * (1 + Math.hypot(srd / rd, PN.sR6) * z[3]), Mb: b.M * (1 + Math.hypot(sKb / Kb, 2 / 3 * sMs / Ms) * z[4]), Md: d.M * (1 + Math.hypot(sKd / Kd, 2 / 3 * sMs / Ms) * z[5]) };
+  });
+  const corr = (xs, ys) => { const n = xs.length, mx = xs.reduce((a, b) => a + b) / n, my = ys.reduce((a, b) => a + b) / n; let sxy = 0, sxx = 0, syy = 0; for (let i = 0; i < n; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; syy += (ys[i] - my) ** 2; } return sxy / Math.sqrt(sxx * syy); };
+  const sc = (id, xs, ys, xl, yl, x0, x1, y0, y1) => {
+    const svg = $(id); svg.innerHTML = "";
+    const s = makeScales(x0, x1, y0, y1, 460, 380, 52, 14, 22, 40);
+    axes(svg, s, niceTicks(x0, x1, 5), niceTicks(y0, y1, 5), xl, yl, v => fmt(v, 2), v => fmt(v, 2));
+    for (let i = 0; i < xs.length; i++) el("circle", { cx: fmt(s.x(xs[i]), 1), cy: fmt(s.y(ys[i]), 1), r: 1.8, fill: C.ice, opacity: 0.35 }, svg);
+    egCharts[id] = { scale: s };
+  };
+  const Rb = rows.map(r => r.Rb), Rd = rows.map(r => r.Rd), Mb = rows.map(r => r.Mb), Md = rows.map(r => r.Md);
+  sc("pnch6a", Rb, Rd, "R_b, R⊕", "R_d, R⊕", 3.1, 3.7, 1.35, 1.75);
+  sc("pnch6b", Mb, Md, "M_b, M⊕", "M_d, M⊕", 6, 12.5, 3.6, 6.8);
+  $("pn6r").innerHTML = fmt(corr(Rb, Rd), 2) + "<small> · " + (PN.mode6 === "star" ? "through the star" : "independent") + "</small>";
+  $("pn6m").innerHTML = fmt(corr(Mb, Md), 2) + "<small> · " + (PN.mode6 === "star" ? "through the star" : "independent") + "</small>";
+}
+function pnDrawAll() { pnDraw1(); pnDraw2(); pn3Reset(); pn4Clear(); pnDraw5(); pnDraw6(); }
+/* plaNETic hovers */
+attachHover($("cb-pn2"), $("pnch2"), { padL: 0, padR: 0, W: 560, H: 480 },
+  (px, py, cx, cy) => {
+    const c = egCharts["pnch2"]; let best = null, bd = 1e9; c.pts.forEach(p => { const d = Math.hypot(p[0] - px, p[1] - py); if (d < bd) { bd = d; best = p; } });
+    if (!best || bd > 10) { $("tip-pn2").hidden = true; return; }
+    const p = best[2];
+    setTip($("tip-pn2"), cx, cy, "<b>core " + Math.round(p.c * 100) + " % · mantle " + Math.round(p.m * 100) + " % · water " + Math.round(p.w * 100) + " %</b><br>" + (p.ok ? "kept" : "rejected: " + p.why), $("cb-pn2").clientWidth);
+  }, () => $("tip-pn2").hidden = true);
+attachHover($("cb-pn2h"), $("pnch2h"), { padL: 40, padR: 10, W: 360, H: 300 },
+  (px, py, cx, cy) => { const c = egCharts["pnch2h"]; const k = Math.min(c.nb - 1, Math.max(0, Math.floor(c.scale.inv(px) * c.nb))); setTip($("tip-pn2h"), cx, cy, "<b>core " + Math.round(k / c.nb * 100) + "–" + Math.round((k + 1) / c.nb * 100) + " %</b><br><span class='mono'>" + c.cnt[k] + " draws kept</span>", $("cb-pn2h").clientWidth); }, () => $("tip-pn2h").hidden = true);
+attachHover($("cb-pn3a"), $("pnch3a"), { padL: 46, padR: 12, W: 460, H: 340 },
+  (px, py, cx, cy) => { const c = egCharts["pnch3a"]; if (!c) return; const v = c.scale.inv(px), k = Math.min(c.nb - 1, Math.max(0, Math.floor((v + c.lim) / (2 * c.lim) * c.nb))); setTip($("tip-pn3a"), cx, cy, "<b>error " + fmt(-c.lim + k * 2 * c.lim / c.nb, 2) + " to " + fmt(-c.lim + (k + 1) * 2 * c.lim / c.nb, 2) + " %</b><br><span class='mono'>" + c.cnt[k] + " of 2000</span>", $("cb-pn3a").clientWidth); }, () => $("tip-pn3a").hidden = true);
+attachHover($("cb-pn3b"), $("pnch3b"), { padL: 46, padR: 12, W: 460, H: 340 },
+  (px, py, cx, cy) => { const c = egCharts["pnch3b"]; if (!c) { $("tip-pn3b").hidden = true; return; } const st = c.scale.inv(px); let b = c.hist[0]; c.hist.forEach(h => { if (Math.abs(h.s - st) < Math.abs(b.s - st)) b = h; }); setTip($("tip-pn3b"), cx, cy, "<b>step " + b.s + "</b><br><span class='mono'>train 10^" + fmt(b.l, 1) + " · validation 10^" + fmt(b.v, 1) + "</span>", $("cb-pn3b").clientWidth); }, () => $("tip-pn3b").hidden = true);
+attachHover($("cb-pn4a"), $("pnch4a"), { padL: 50, padR: 14, W: 560, H: 420 },
+  (px, py, cx, cy) => {
+    const c = egCharts["pnch4a"]; if (!c) return; let best = null, bd = 1e9; c.pts.forEach(p => { const d = Math.hypot(p[0] - px, p[1] - py); if (d < bd) { bd = d; best = p; } });
+    if (!best || bd > 10) { $("tip-pn4a").hidden = true; return; }
+    const p = best[2];
+    setTip($("tip-pn4a"), cx, cy, "<b>" + (p.ok ? "accepted" : "rejected") + "</b><br><span class='mono'>M " + fmt(p.M, 2) + " M⊕ · core " + Math.round(p.x[1] * 100) + " % of rock · water " + Math.round(p.x[2] * 100) + " % of solid · H/He " + egPctF(Math.pow(10, p.x[3])) + " %</span><br><span class='mono'>R = " + fmt(p.R, 3) + " R⊕</span>", $("cb-pn4a").clientWidth);
+  }, () => $("tip-pn4a").hidden = true);
+attachHover($("cb-pn4b"), $("pnch4b"), { padL: 40, padR: 10, W: 360, H: 300 },
+  (px, py, cx, cy) => { const c = egCharts["pnch4b"]; if (!c) return; const k = Math.min(c.nb - 1, Math.max(0, Math.floor((c.scale.inv(px) - c.x0) / (c.x1 - c.x0) * c.nb))); setTip($("tip-pn4b"), cx, cy, "<b>envelope 1e" + fmt(c.x0 + k * (c.x1 - c.x0) / c.nb, 1) + " – 1e" + fmt(c.x0 + (k + 1) * (c.x1 - c.x0) / c.nb, 1) + "</b><br><span class='mono'>posterior " + (c.cnt[k] / c.tot * 100).toFixed(1) + " % · prior " + (c.pri[k] / c.totp * 100).toFixed(1) + " %</span>", $("cb-pn4b").clientWidth); }, () => $("tip-pn4b").hidden = true);
+/* plaNETic wiring */
+escSegWire("seg-pn1", v => PN.stage = +v, pnDraw1);
+escSegWire("seg-pn2w", v => PN.w2 = v, pnDraw2);
+escSegWire("seg-pn2s", v => PN.s2 = v, pnDraw2);
+$("btn-pn2").addEventListener("click", () => { pn2pts = null; pnDraw2(); });
+escSegWire("seg-pn3w", v => PN.width = +v, () => { PN3.playing = false; $("btn-pn3train").textContent = "▶ Train"; pn3Reset(); });
+$("btn-pn3train").addEventListener("click", () => { PN3.playing = !PN3.playing; $("btn-pn3train").textContent = PN3.playing ? "⏸ Pause" : "▶ Train"; if (PN3.playing) requestAnimationFrame(pn3Tick); });
+$("btn-pn3reset").addEventListener("click", () => { PN3.playing = false; $("btn-pn3train").textContent = "▶ Train"; pn3Reset(); });
+escSegWire("seg-pn4p", v => PN.p4 = v, pn4Clear);
+escSegWire("seg-pn4w", v => PN.w4 = v, pn4Clear);
+escSegWire("seg-pn4f", v => PN.f4 = v, () => { PN4.n = 0; PN4.acc = []; PN4.last = []; pn4Draw(); });
+$("btn-pn4draw").addEventListener("click", () => { pn4Batch(5000); pn4Draw(); });
+$("btn-pn4clear").addEventListener("click", pn4Clear);
+escSegWire("seg-pn5", v => PN.w5 = v, pnDraw5);
+escSegWire("seg-pn6", v => PN.mode6 = v, pnDraw6);
+$("in-pn6s").addEventListener("input", () => { PN.sR6 = +$("in-pn6s").value; pnDraw6(); });
+
 /* ================= Photobombing -> interiors (concept tab) =================
    Transcribes the target-confusion (Sect. 2.2.3) and cancellation (2.2.4) criteria of
    Cacaj et al. (2025, AJ 169, 244) onto the interior problem. Output = (M, R); the cost
@@ -5721,7 +6287,7 @@ function ppInit() {
 }
 
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "val", "pp"];
+const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "val", "pp", "pnet"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -5740,6 +6306,7 @@ drawE2(); drawE3(); drawE4(); drawE5();
 cfDrawAll();
 egDrawAll();
 rvDrawAll();
+pnDrawAll();
 drawB1(); b2Reset(); b3Reset();
 mInitData(); m1SetVel(); m1Render(); m2Reset(); mnInit(); ppInit(); showTab(tab0);
 </script>
