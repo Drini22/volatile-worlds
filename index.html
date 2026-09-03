@@ -5209,7 +5209,7 @@ function pn4cDraw() {
   const L = z => Math.exp(-0.5 * z * z), like = L(PN4C.s);
   // chart a: likelihood curve with the placed planet and the toss strip
   let svg = $("pnch4ca"); svg.innerHTML = "";
-  const s = makeScales(-4, 4, 0, 1.08, 460, 360, 46, 14, 22, 92);
+  const s = makeScales(-4, 4, 0, 1.08, 460, 360, 46, 14, 22, 112);
   axes(svg, s, [-3, -2, -1, 0, 1, 2, 3], [0, 0.5, 1], "radius, in σ from the measurement", "likelihood", v => (v > 0 ? "+" : "") + v + "σ", v => fmt(v, 1));
   const pts = []; for (let z = -4; z <= 4.0001; z += 0.05) pts.push([s.x(z), s.y(L(z))]);
   el("path", { d: linePath(pts) + "L" + fmt(s.x(4), 1) + " " + fmt(s.y(0), 1) + "L" + fmt(s.x(-4), 1) + " " + fmt(s.y(0), 1) + "Z", fill: "rgba(61,155,217,.12)" }, svg);
@@ -5220,7 +5220,7 @@ function pn4cDraw() {
   el("circle", { cx: fmt(s.x(PN4C.s), 1), cy: fmt(s.y(like), 1), r: 6, fill: C.ink, stroke: C.rock, "stroke-width": 3 }, svg);
   el("text", { x: fmt(s.x(PN4C.s) + 10, 1), y: fmt(s.y(like) - 8, 1), class: "serieslabel", fill: C.rock }, svg).textContent = "R = " + fmt(R0 + PN4C.s * sg, 3) + " R⊕ · L = " + fmt(like, 2);
   // toss strip
-  const y0 = s.H - 60;
+  const y0 = s.H - 48;
   el("text", { x: s.padL, y: y0 - 10, class: "serieslabel", fill: C.muted, style: "font-size:11px" }, svg).textContent = PN4C.tosses ? "100 uniform draws against L = " + fmt(like, 2) + ": " + PN4C.tosses.filter(t => t < like).length + " survived" : "press the button to toss the coin";
   if (PN4C.tosses) PN4C.tosses.forEach((t, i) => el("rect", { x: fmt(s.padL + i * 4, 1), y: y0, width: 3, height: 22, rx: 1, fill: t < like ? C.ice : C.muted, opacity: t < like ? 0.95 : 0.35 }, svg));
   egCharts["pnch4ca"] = { scale: s, like };
