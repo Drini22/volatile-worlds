@@ -111,7 +111,7 @@
   .pn-flow .box{fill:var(--surface2);stroke:var(--line);stroke-width:1;}
   .pn-flow .box.on{stroke:var(--rock);stroke-width:2;fill:rgba(201,118,51,.12);}
   .pn-flow .lab{font-family:var(--sans);font-size:12.5px;font-weight:600;fill:var(--ink);}
-  .pn-flow .sub{font-family:var(--mono);font-size:10.5px;fill:var(--muted);}
+  .pn-flow .sub{font-family:var(--mono);font-size:9.5px;fill:var(--muted);}
   .pn-flow .arrow{stroke:var(--muted);stroke-width:1.5;fill:none;}
   .pn-flow .arrow.on{stroke:var(--rock);}
   .pn-step{margin-top:14px;padding:14px 16px;background:var(--surface2);border:1px solid var(--line-soft);border-radius:10px;font-size:14px;color:var(--ink2);max-width:72ch;min-height:5.5em;}
@@ -4984,18 +4984,18 @@ escSegWire("seg-rv4m", v => RV.mw4 = +v, rvDraw4);
    that uses that surrogate, forward-vs-inverse schematic, joint sampling through the star. Prefix pn/PN. */
 const PN = { stage: 0, w2: "A", s2: "1", width: 32, p4: "b", w4: "A", f4: "net", w5: "A", mode6: "star", sR6: 0.007 };
 const PN_STAGES = [
-  ["Observed star", "R★, M★, T_eff, age, [Fe/H] [Si/H] [Mg/H]", "<b>Stage 1 · the star.</b> plaNETic starts from the star, not the planet. 10 000 synthetic stars are drawn from the observed radius, mass, temperature, age and abundances of HIP 29442 with their errors. Everything downstream inherits these draws, which is what ties the three planets together in §6."],
-  ["10⁴ planets per star", "mass from K and P, period from P", "<b>Stage 2 · the planets.</b> For each synthetic star, 10 000 synthetic planets are drawn. Their masses come from the RV semi-amplitude and the star's mass, their orbits from the period, their equilibrium temperature from the star. Nothing about composition yet."],
-  ["Priors", "simplex · log H/He · Si/Mg/Fe · water A or B", "<b>Stage 3 · the priors.</b> Core, mantle and water fractions are drawn uniformly on a simplex (water zero for a planet born inside the iceline), H/He log-uniformly from 10⁻⁶ to 0.5, the core's iron fraction from 81 to 100 %, and the mantle chemistry from the star under one of three Si/Mg/Fe options. Draws with an impossible mantle are thrown away here, before any radius is computed. §2 shows this step."],
-  ["9 inputs", "T_eq · Z_env · log L · M · w_core · log w_env · x_S · x_Si · x_Mg", "<b>Stage 4 · the inputs.</b> The surviving draw is turned into the nine numbers the network expects: equilibrium temperature, envelope water fraction, log intrinsic luminosity from the star's age, total mass, core and envelope mass fractions, core sulphur fraction, mantle silicon and magnesium fractions. Two networks exist, for 0.5 to 6 and 6 to 15 Earth masses."],
-  ["DNN", "6 × 2048 ReLU → transit radius", "<b>Stage 5 · the network.</b> A feed-forward network trained on 15 million BICEPS structures returns the transit radius in 35 microseconds instead of 14 seconds. Its error is below 0.6 % for the 84th percentile of the structures it will be asked about, against a 3 % measurement. §3 trains a small one live."],
-  ["Likelihood", "exp(−½ (δ − δ_obs)² / σ²)", "<b>Stage 6 · the likelihood.</b> The radius is converted to a transit depth using the synthetic star's radius and compared with the observed depth. The likelihood is a Gaussian in the depth. Planets that would extend beyond their Hill or Bondi radius are removed as unphysical."],
-  ["Accept or reject", "keep if likelihood > uniform draw", "<b>Stage 7 · accept or reject.</b> A uniform random number is drawn; the planet is kept if the likelihood exceeds it. That is the whole inference step. No chain, no proposal distribution, no convergence test. §4 animates it."],
-  ["Posterior", "all accepted planets, per system", "<b>Stage 8 · the posterior.</b> The accepted planets, kept only for stars where every planet of the system was accepted at least once, are the joint posterior. Medians and percentiles of core, mantle, envelope and envelope water are read off them, which is the paper's Tables B.3 to B.5."],
+  ["Observed star", "R★ M★ T_eff age abundances", "<b>Stage 1 · the star.</b> plaNETic starts from the star, not the planet. 10 000 synthetic stars are drawn from the observed radius, mass, temperature, age and abundances of HIP 29442 with their errors. Everything downstream inherits these draws, which is what ties the three planets together in §6."],
+  ["10⁴ planets per star", "mass from K · orbit from P", "<b>Stage 2 · the planets.</b> For each synthetic star, 10 000 synthetic planets are drawn. Their masses come from the RV semi-amplitude and the star's mass, their orbits from the period, their equilibrium temperature from the star. Nothing about composition yet."],
+  ["Priors", "simplex · log H/He · Si/Mg/Fe", "<b>Stage 3 · the priors.</b> Core, mantle and water fractions are drawn uniformly on a simplex (water zero for a planet born inside the iceline), H/He log-uniformly from 10⁻⁶ to 0.5, the core's iron fraction from 81 to 100 %, and the mantle chemistry from the star under one of three Si/Mg/Fe options. Draws with an impossible mantle are thrown away here, before any radius is computed. §2 shows this step."],
+  ["9 inputs", "T_eq Z_env L M fractions chem.", "<b>Stage 4 · the inputs.</b> The surviving draw is turned into the nine numbers the network expects: equilibrium temperature, envelope water fraction, log intrinsic luminosity from the star's age, total mass, core and envelope mass fractions, core sulphur fraction, mantle silicon and magnesium fractions. Two networks exist, for 0.5 to 6 and 6 to 15 Earth masses."],
+  ["DNN", "6 layers × 2048 ReLU → radius", "<b>Stage 5 · the network.</b> A feed-forward network trained on 15 million BICEPS structures returns the transit radius in 35 microseconds instead of 14 seconds. Its error is below 0.6 % for the 84th percentile of the structures it will be asked about, against a 3 % measurement. §3 trains a small one live."],
+  ["Likelihood", "Gaussian in the transit depth", "<b>Stage 6 · the likelihood.</b> The radius is converted to a transit depth using the synthetic star's radius and compared with the observed depth. The likelihood is a Gaussian in the depth. Planets that would extend beyond their Hill or Bondi radius are removed as unphysical."],
+  ["Accept or reject", "keep if L > uniform draw", "<b>Stage 7 · accept or reject.</b> A uniform random number is drawn; the planet is kept if the likelihood exceeds it. That is the whole inference step. No chain, no proposal distribution, no convergence test. §4 animates it."],
+  ["Posterior", "all accepted planets", "<b>Stage 8 · the posterior.</b> The accepted planets, kept only for stars where every planet of the system was accepted at least once, are the joint posterior. Medians and percentiles of core, mantle, envelope and envelope water are read off them, which is the paper's Tables B.3 to B.5."],
 ];
 function pnDraw1() {
   const svg = $("pnflow"); svg.innerHTML = "";
-  const W = 210, H = 62, gx = 27, gy = 60, x0 = 10, y0 = 30;
+  const W = 206, H = 62, gx = 20, gy = 60, x0 = 12, y0 = 30;
   const pos = i => [x0 + (i % 4) * (W + gx), y0 + Math.floor(i / 4) * (H + gy + 40)];
   PN_STAGES.forEach((st, i) => {
     const [x, y] = pos(i), on = i === PN.stage;
@@ -5221,8 +5221,8 @@ function pnDraw5() {
   box(10, 170, 150, 56, false, "training set", "generated under one prior"); arrow(160, 198, 186, 198);
   box(190, 170, 330, 56, false, "network: observables → posterior", "prior baked into the weights"); arrow(520, 198, 546, 198);
   box(550, 170, 150, 56, PN.w5 === "B", "posterior", PN.w5 === "A" ? "for prior A" : "still for prior A");
-  if (PN.w5 === "B") { el("rect", { x: 720, y: 170, width: 190, height: 56, rx: 10, fill: "rgba(224,101,101,.12)", stroke: "rgba(224,101,101,.4)" }, svg); el("text", { x: 732, y: 192, class: "lab", fill: "#E88A8A" }, svg).textContent = "to answer for prior B:"; el("text", { x: 732, y: 210, class: "sub", fill: "#E88A8A" }, svg).textContent = "regenerate 15 M structures, retrain"; }
-  else { el("text", { x: 720, y: 200, class: "sub" }, svg).textContent = "fine, as long as the question matches the training prior"; }
+  if (PN.w5 === "B") { el("rect", { x: 720, y: 170, width: 190, height: 56, rx: 10, fill: "rgba(224,101,101,.12)", stroke: "rgba(224,101,101,.4)" }, svg); el("text", { x: 732, y: 192, class: "lab", fill: "#E88A8A" }, svg).textContent = "to answer for prior B:"; el("text", { x: 732, y: 206, class: "sub", fill: "#E88A8A" }, svg).textContent = "regenerate 15 M structures,"; el("text", { x: 732, y: 219, class: "sub", fill: "#E88A8A" }, svg).textContent = "then retrain the network"; }
+  else { el("text", { x: 715, y: 192, class: "sub" }, svg).textContent = "fine, as long as the question"; el("text", { x: 715, y: 208, class: "sub" }, svg).textContent = "matches the training prior"; }
   $("pn5a").innerHTML = PN.w5 === "A" ? "nothing yet<small> · switch the prior</small>" : "edit the sampler<small> · rerun the grid, about 9 h</small>";
   $("pn5b").innerHTML = PN.w5 === "A" ? "nothing yet<small> · switch the prior</small>" : "regenerate and retrain<small> · 5 days on 280 CPUs per network</small>";
 }
