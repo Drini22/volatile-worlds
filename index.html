@@ -2645,7 +2645,7 @@
       <div class="chip"><div class="k">Earths per Earth-hosting system</div><div class="v" id="dv1mult">–</div></div>
     </div>
   </div>
-  <p class="takeaway"><em>Why the floor rises for small stars.</em> A lighter star is easier to shake, but its temperate zone sits closer in, where periods are short and the velocity signal for a fixed mass is larger, so the heaviest Earth at the inner edge produces a bigger signal and the floor that hides it must be higher: 0.43 m/s for a Sun, 1.55 m/s for a 0.2 solar-mass star. The floor is deliberately pessimistic, it hides every Earth by construction, because the paper is about systems where no Earth has been seen. The example dots show what survives: around a Sun only the giants, around Trappist-1 every planet, because seven Earths at a few days' period are loud even at 1.55 m/s.</p>
+  <p class="takeaway"><em>Why the floor rises for small stars.</em> A lighter star is easier to shake, but its temperate zone sits closer in, where periods are short and the velocity signal for a fixed mass is larger, so the heaviest Earth at the inner edge produces a bigger signal and the floor that hides it must be higher: 0.43 m/s for a Sun, 1.55 m/s for a 0.2 solar-mass star. The floor is deliberately pessimistic, it hides every Earth by construction, because the paper is about systems where no Earth has been seen. The example dots show what survives: around a Sun only Jupiter and Saturn, around Trappist-1 the four heaviest of its seven Earths, because Earth-mass planets at a few days' period around a tenth of a solar mass are loud even at 1.55 m/s.</p>
 </section>
 
 <!-- ================= DV2 ================= -->
@@ -2760,7 +2760,7 @@
       <div class="chip"><div class="k">does it actually host one?</div><div class="v" id="dv4truth" style="font-size:14px;line-height:1.5">–</div></div>
     </div>
   </div>
-  <p class="takeaway"><em>The Solar System fails its own test.</em> Put through the G-star floor it keeps Jupiter and Saturn, is classed anti-ordered, and its witness is Jupiter: a giant on a long period, for which the paper's table gives a few percent. Venus and Earth are both there. The paper says this plainly and leaves it as an open question about whether the Solar System is unusual or the model is. The reverse check is the 24 known systems that do host an Earth-like planet by this definition: after the same bias, every one of them lands in a category the table calls likely. Trappist-1 is the clean case, low-mass with all seven planets detectable and an 88 percent verdict; TOI-178 is low-mass too but packed at short periods, which drags its probability down to the sixties, and indeed none of its planets is temperate.</p>
+  <p class="takeaway"><em>The Solar System fails its own test.</em> Put through the G-star floor it keeps Jupiter and Saturn, is classed anti-ordered, and its witness is Jupiter: a giant on a long period, for which the paper's table gives a few percent. Venus and Earth are both there. The paper says this plainly and leaves it as an open question about whether the Solar System is unusual or the model is. The reverse check is the 24 known systems that do host an Earth-like planet by this definition: after the same bias, every one of them lands in a category the table calls likely. Trappist-1 is the clean case, low-mass with four of its seven planets above the floor and an 88 percent verdict; TOI-178 is low-mass too but packed at short periods, which drags its probability down to the sixties, and indeed none of its planets is temperate.</p>
 </section>
 
 <!-- ================= DV5 ================= -->
@@ -7167,7 +7167,7 @@ function dvDraw4() {
     const T = (DV_T8[pop] || {})[cl];
     if (!T) $("dv4p").innerHTML = "n/a<small> · too few such systems in the paper</small>";
     else if (T.all !== undefined) $("dv4p").innerHTML = T.all + " %<small> · class as a whole</small>";
-    else { const pick = (arr, v) => v === null ? "–" : (v > arr[0] ? arr[2] : arr[1]) + " %" + "<small> (" + (v > arr[0] ? ">" : "<") + " " + arr[0] + ")</small>"; $("dv4p").innerHTML = pick(T.M, m) + " · " + pick(T.R, R) + " · " + pick(T.P, Pd); }
+    else { const pick = (arr, v) => v === null ? "–" : (v > arr[0] ? arr[2] : arr[1]) + " %" + "<small> (" + (v > arr[0] ? "&gt;" : "&lt;") + " " + arr[0] + ")</small>"; $("dv4p").innerHTML = pick(T.M, m) + " · " + pick(T.R, R) + " · " + pick(T.P, Pd); }
   }
   const truth = S.M.map((m, i) => m >= 0.5 && m <= 3 && dvTeq(S.a[i], L) >= 160 && dvTeq(S.a[i], L) <= 510 ? S.pl[i] : null).filter(x => x);
   $("dv4truth").innerHTML = truth.length ? "<span style='color:#6ECD93'>yes</span> · " + truth.join(", ") + "<br><small>" + (truth.some(k => det[S.pl.indexOf(k)]) ? "and the survey sees it" : "hidden below the floor") + "</small>" : "<span style='color:var(--muted)'>no</span><br><small>nothing of 0.5–3 M⊕ at 160–510 K</small>";
