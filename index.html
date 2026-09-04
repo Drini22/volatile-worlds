@@ -289,6 +289,7 @@
       <p class="tab-label">Concept tabs · read alongside the papers they follow</p>
       <div class="tabs" role="tablist" aria-label="Concept tabs">
         <button class="tabbtn concept" id="tab-frost" role="tab" aria-selected="false">Frost line <small>after Alibert · where the water was</small></button>
+        <button class="tabbtn concept" id="tab-evo" role="tab" aria-selected="false">Planet evolution <small>after Alibert · the clock on every planet</small></button>
         <button class="tabbtn concept" id="tab-conf" role="tab" aria-selected="false">Photobombing <small>after Dorn · Cacaj 2025 → interiors</small></button>
         <button class="tabbtn concept" id="tab-esc" role="tab" aria-selected="false">Gas escape <small>after Kubyshkina · how gas leaves</small></button>
         <button class="tabbtn concept" id="tab-pp" role="tab" aria-selected="false">PINN playground <small>after Baty · learn the tricks</small></button>
@@ -586,6 +587,197 @@
   <p>Chiang &amp; Goldreich (1997), ApJ 490, 368 · Bell &amp; Lin (1994), ApJ 427, 987 · Hartmann et al. (1998), ApJ 495, 385 · Hayashi (1981), PTPS 70, 35 · Sasselov &amp; Lecar (2000), ApJ 528, 995 · Garaud &amp; Lin (2007), ApJ 654, 606 · Oka, Nakamoto &amp; Ida (2011), ApJ 738, 141 · Martin &amp; Livio (2012), MNRAS 425, L6 · Bitsch et al. (2015), A&amp;A 575, A28 · Morbidelli et al. (2016), Icarus 267, 368 · Kruijer et al. (2017), PNAS 114, 6712 · Cieza et al. (2016), Nature 535, 258 · Baraffe et al. (2015), A&amp;A 577, A42 · Gough (1981), Solar Phys. 74, 21 · Sackmann, Boothroyd &amp; Kraemer (1993), ApJ 418, 457</p>
 </footer>
 </div><!-- /page-frost -->
+
+<div id="page-evo" role="tabpanel" aria-labelledby="tab-evo" hidden>
+<section class="pagehero">
+  <p class="eyebrow">Concept tab · planet evolution · not a paper</p>
+  <p class="standfirst">A planet's radius is a clock. Alibert's argument is that composition sets the energy budget and the energy budget sets how fast the envelope shrinks. Kubyshkina's is that the star's X-rays strip that envelope on the same clock. This page runs both at once, under a star that is itself changing, with one time knob. Then it does the same to four hundred planets and lets the radius valley open by itself.</p>
+  <div class="layer-key" role="img" aria-label="Layer color key: iron core, silicate mantle, icy mantle, hydrogen-helium envelope">
+    <span><i class="dot" style="background:var(--iron)"></i>iron core</span>
+    <span><i class="dot" style="background:var(--rock)"></i>silicate mantle</span>
+    <span><i class="dot" style="background:var(--icefill)"></i>icy mantle</span>
+    <span><i class="dot" style="background:rgba(61,155,217,.4)"></i>H/He gas envelope</span>
+  </div>
+</section>
+
+<!-- ================= STATION AE1 ================= -->
+<section id="ae1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>The star's clock</h2></div>
+  <p class="prose">Half of a planet's evolution is the star's. A young star is bright because it is still contracting, and it is loud in X-rays because it spins fast. Both fade, but on very different schedules: a Sun settles in tens of millions of years, a red dwarf keeps contracting for hundreds of millions and stays X-ray saturated for a billion. Pick a star here; every section below reads it.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Star</label>
+        <div class="seg" id="seg-ae-ms" role="group" aria-label="Stellar mass">
+          <button aria-pressed="false" data-v="0.3">0.3 M☉ · red dwarf</button>
+          <button aria-pressed="false" data-v="0.6">0.6 M☉ · K dwarf</button>
+          <button aria-pressed="true" data-v="1.0">1.0 M☉ · Sun</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Rotation at birth</label>
+        <div class="seg" id="seg-ae-rot" role="group" aria-label="Rotation">
+          <button aria-pressed="false" data-v="slow">slow</button>
+          <button aria-pressed="true" data-v="med">medium</button>
+          <button aria-pressed="false" data-v="fast">fast</button>
+        </div></div>
+      <div class="ctl"><label>Planet's orbit <output id="o-ae-a">0.100 AU</output></label>
+        <input type="range" id="in-ae-a" min="-1.7" max="0" step="0.01" value="-1" aria-label="Orbital distance, logarithmic"></div>
+    </div>
+    <div class="rv-grid">
+      <div class="chart-box" id="cb-aech1">
+        <p class="chart-title">Luminosity through life</p>
+        <p class="chart-sub">Baraffe et al. (2015) tracks · bold: the selected star · the marker follows the §2 clock · hover for the planet's temperature and X-ray dose</p>
+        <svg id="aech1" viewBox="0 0 620 380" aria-label="Stellar luminosity against age for three stellar masses"></svg>
+        <div class="tip" id="tip-aech1" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-aech2">
+        <p class="chart-title">X-ray and ultraviolet output</p>
+        <p class="chart-sub">Blue slow, grey medium, rust fast rotator · saturated while young, then fading as t<sup>−1.23</sup></p>
+        <svg id="aech2" viewBox="0 0 380 380" aria-label="XUV luminosity against age for three rotation histories"></svg>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">star at the clock</div><div class="v" id="ae-r1L">–</div></div>
+      <div class="chip"><div class="k">planet's equilibrium temperature</div><div class="v" id="ae-r1T">–</div></div>
+      <div class="chip answer"><div class="k">XUV flux at the planet</div><div class="v" id="ae-r1F">–</div></div>
+      <div class="chip"><div class="k">X-ray phase</div><div class="v" id="ae-r1S">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Read the two charts against each other.</em> The luminosity of the 0.3 M☉ star falls by a factor of sixty before it settles, so a planet that ends up temperate around a red dwarf spent its first hundred million years far too hot. And because a red dwarf's X-ray output tracks its luminosity while saturated, then stays saturated for a billion years, the total X-ray dose a close-in planet receives is set as much by the star's mass as by its own orbit. That dose is what §2 and §3 spend.</p>
+</section>
+
+<!-- ================= STATION AE2 ================= -->
+<section id="ae2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>One planet through time</h2></div>
+  <p class="prose">Build the planet from Alibert's first page: a solid part with some water, wrapped in some H/He. Then turn the clock. Two things happen to the envelope. It <strong>cools</strong>, so it contracts, which is the dashed line. And it <strong>escapes</strong>, so it thins, which is the solid line. The cross-section shows what is left at the clock time.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Total mass at birth <output id="o-ae-m">8.0 M⊕</output></label>
+        <input type="range" id="in-ae-m" min="1" max="15" step="0.5" value="8" aria-label="Planet mass"></div>
+      <div class="ctl"><label>Water (of the solid) <output id="o-ae-fw">0 %</output></label>
+        <input type="range" id="in-ae-fw" min="0" max="0.7" step="0.01" value="0" aria-label="Water fraction of the solid part"></div>
+      <div class="ctl"><label>H/He at birth <output id="o-ae-fg">5.0 %</output></label>
+        <input type="range" id="in-ae-fg" min="0" max="0.3" step="0.005" value="0.05" aria-label="Initial envelope fraction of the planet mass"></div>
+    </div>
+    <div class="controls">
+      <div class="ctl" style="max-width:320px;"><label>Clock <output id="o-ae-t">5 Gyr</output></label>
+        <input type="range" id="in-ae-t" min="0" max="4" step="0.01" value="3.699" aria-label="Age, logarithmic"></div>
+      <div class="ctl" style="flex:none;"><label>Jump to</label>
+        <div style="display:flex;gap:8px;"><button class="btn preset" id="btn-ae-young">100 Myr</button><button class="btn preset" id="btn-ae-now">5 Gyr</button></div></div>
+      <div class="ctl" style="flex:none;"><label>Escape</label>
+        <div class="seg" id="seg-ae-esc" role="group" aria-label="Escape on or off">
+          <button aria-pressed="true" data-v="on">on</button>
+          <button aria-pressed="false" data-v="off">cooling only</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Boil-off at 3 Myr</label>
+        <div class="seg" id="seg-ae-boil" role="group" aria-label="Boil-off on or off">
+          <button aria-pressed="true" data-v="on">on</button>
+          <button aria-pressed="false" data-v="off">off</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Escape law</label>
+        <div class="seg" id="seg-ae-law" role="group" aria-label="Escape law">
+          <button aria-pressed="true" data-v="el">energy-limited</button>
+          <button aria-pressed="false" data-v="hba">Kubyshkina hydro</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Envelope opacity</label>
+        <div class="seg" id="seg-ae-op" role="group" aria-label="Envelope opacity">
+          <button aria-pressed="true" data-v="enh">enhanced</button>
+          <button aria-pressed="false" data-v="sol">solar</button>
+        </div></div>
+    </div>
+    <div class="rv-grid">
+      <div>
+        <div class="chart-box" id="cb-aech3">
+          <p class="chart-title">Transit radius through life</p>
+          <p class="chart-sub">Dashed: cooling only · solid: cooling and escape · shaded: still inside the gas disk · hover for values</p>
+          <svg id="aech3" viewBox="0 0 620 360" aria-label="Planet radius against age"></svg>
+          <div class="tip" id="tip-aech3" hidden></div>
+        </div>
+      </div>
+      <div class="planet-card">
+        <h3>The planet at the clock</h3>
+        <svg id="ae-pl" viewBox="0 0 300 300" aria-label="Cross-section of the planet at the selected age"></svg>
+        <div class="bigR"><span id="ae-plR">–</span> <small>R⊕ at <span id="ae-plage">–</span></small></div>
+        <p class="comp-line" id="ae-plcap"></p>
+      </div>
+    </div>
+    <div class="chart-box" id="cb-aech4" style="margin-top:14px;">
+      <p class="chart-title">What is left of the envelope</p>
+      <p class="chart-sub">Rust step at 3 Myr: boil-off when the disk goes · blue: escape afterwards</p>
+      <svg id="aech4" viewBox="0 0 920 280" aria-label="Envelope fraction against age"></svg>
+    </div>
+    <div class="readouts">
+      <div class="chip answer"><div class="k">radius now</div><div class="v" id="ae-r2R">–</div></div>
+      <div class="chip"><div class="k">H/He now</div><div class="v" id="ae-r2f">–</div></div>
+      <div class="chip"><div class="k">temperature · XUV flux</div><div class="v" id="ae-r2T">–</div></div>
+      <div class="chip"><div class="k">mass-loss rate now</div><div class="v" id="ae-r2M">–</div></div>
+      <div class="chip"><div class="k">lost so far</div><div class="v" id="ae-r2L">–</div></div>
+      <div class="chip"><div class="k">verdict</div><div class="v" id="ae-r2B">–</div></div>
+      <div class="chip"><div class="k">water a bare planet would have lost</div><div class="v" id="ae-r2W">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Why the two lines part company.</em> Cooling contracts the envelope but never removes it; on this model the thickness of a 5 % envelope on 8 M⊕ roughly halves between 100 Myr and 10 Gyr, taking the radius from 4.3 to 3.1 R⊕, and that is all. Escape is different in kind: its rate goes as R³, so a puffy young envelope loses mass fastest exactly when it is largest, and the process feeds on itself until either the star's X-rays fade or the envelope is gone. Move the planet inward, or give it a red dwarf, and watch the solid line drop onto the bare-rock radius while the dashed line barely notices. The last chip is the 55 Cancri e question: even once the hydrogen is gone, the same X-ray budget cannot remove more than a few hundred oceans, and a wet planet carries thousands.</p>
+</section>
+
+<!-- ================= STATION AE3 ================= -->
+<section id="ae3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Four hundred planets, one clock</h2></div>
+  <p class="prose">The same engine applied to a synthetic population around the §1 star: cores drawn from the Owen &amp; Wu distribution, envelopes between 1 % and 30 % of the core, periods from 1 to 100 days. Nothing here knows about a radius valley. Turn the clock and watch one appear.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="max-width:320px;"><label>Clock <output id="o-ae3-t">5 Gyr</output></label>
+        <input type="range" id="in-ae3-t" min="0" max="4" step="0.01" value="3.699" aria-label="Population age, logarithmic"></div>
+      <div class="ctl" style="flex:none;"><label>Water in the solids</label>
+        <div class="seg" id="seg-ae3-pre" role="group" aria-label="Water preset">
+          <button aria-pressed="true" data-v="dry">all dry</button>
+          <button aria-pressed="false" data-v="wet">all 70 % water</button>
+          <button aria-pressed="false" data-v="mix">mixed</button>
+        </div></div>
+    </div>
+    <div class="rv-grid">
+      <div class="chart-box" id="cb-aech5">
+        <p class="chart-title">Mass–radius at the clock</p>
+        <p class="chart-sub">Rust: stripped bare · blue: still has H/He · dashed: bare rock and bare 70 %-water lines</p>
+        <svg id="aech5" viewBox="0 0 620 400" aria-label="Synthetic population on the mass-radius diagram"></svg>
+      </div>
+      <div class="chart-box" id="cb-aech6">
+        <p class="chart-title">Period–radius, with the real sky behind</p>
+        <p class="chart-sub">Grey: archive planets with radii known to 0.15 R⊕ · colours as on the left</p>
+        <svg id="aech6" viewBox="0 0 380 400" aria-label="Synthetic population on the period-radius diagram with archive planets"></svg>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip answer"><div class="k">radius valley</div><div class="v" id="ae-r3v">–</div></div>
+      <div class="chip"><div class="k">stripped bare</div><div class="v" id="ae-r3b">–</div></div>
+      <div class="chip"><div class="k">radii</div><div class="v" id="ae-r3m">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Where the valley comes from.</em> Small cores on short orbits lose everything and land on the bare-rock line; large cores on wide orbits keep a few percent of H/He, which is enough to double their radius. The planets in between, the ones that keep a sliver, are rare because a sliver is unstable: thin envelopes are small, small envelopes cool slowly, but at these fluxes a thin envelope is lost in a few hundred million years anyway. The gap sits near 1.8 R⊕ for the Sun and shifts with the star: a red dwarf's long saturated phase pushes it outward in period and strips more of the sample. Switch on the 70 % water preset and the bare line itself moves up, which is why a valley position is a statement about core composition (Owen &amp; Wu 2017).</p>
+</section>
+
+<!-- ================= STATION AE4 ================= -->
+<section id="ae4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>Same planet, three stars</h2></div>
+  <p class="prose">Take the §2 planet and place it around each star at the distance that gives the same equilibrium temperature today. The present-day irradiation is identical by construction. The histories are not.</p>
+  <div class="panel">
+    <div class="chart-box" id="cb-aech7">
+      <p class="chart-title">Three histories, one temperature today</p>
+      <p class="chart-sub">Rust: 0.3 M☉ · grey: 0.6 M☉ · blue: 1.0 M☉ · same rotation class as §1</p>
+      <svg id="aech7" viewBox="0 0 920 360" aria-label="Planet radius against age around three stars at equal present-day temperature"></svg>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">0.3 M☉</div><div class="v" id="ae-r4a">–</div></div>
+      <div class="chip"><div class="k">0.6 M☉</div><div class="v" id="ae-r4b">–</div></div>
+      <div class="chip"><div class="k">1.0 M☉</div><div class="v" id="ae-r4c">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>The Luger &amp; Barnes point.</em> A planet that is temperate around a red dwarf today sat much closer to its star, in absolute terms, than a temperate planet around the Sun, and the red dwarf was tens of times brighter and X-ray saturated for a billion years while the planet was young. Equal temperature today means very unequal pasts, and the past is what removed the envelope. This is why the habitable-zone planets of M dwarfs are expected to be bare, and often dry.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The star is a table: Baraffe et al. (2015) tracks for 0.3, 0.6 and 1.0 M☉, with the Sun continued past 8 Gyr by Gough's main-sequence law. X-rays are R<sub>X</sub> = 5.1×10⁻⁴ L<sub>bol</sub> while saturated (Johnstone et al. 2021), ending at ages read from their rotation-evolution models for slow, median and fast rotators, then falling as t<sup>−1.23</sup> (Jackson et al. 2012); the extreme ultraviolet follows Johnstone's surface-flux relations, and the whole family is scaled so the median Sun delivers 4.6 erg cm⁻² s⁻¹ of XUV at 1 AU today (Ribas et al. 2005). The planet is a rock-plus-ice solid (Zeng-type rock with Alibert's ice factor) under the Lopez &amp; Fortney (2014) envelope tables, interpolated in mass, envelope fraction, flux and age, with their enhanced-opacity grid as default and the solar-metallicity grid as the alternative; before 100 Myr the tables are extrapolated along their 0.1–1 Gyr slope. Escape is energy-limited with a 10 % efficiency (Owen &amp; Wu 2017) or, on the toggle, the Kubyshkina et al. (2018) hydrodynamic approximation with the orbit converted to the Sun-equivalent distance at the same temperature; boil-off at disk dispersal uses the same Λ-versus-Σ criterion as the Gas escape tab. Water is condensed throughout, Alibert's ice-VII layer, so the steam skin of a hot water world (Turbet et al. 2020; Aguichine et al. 2021) is not drawn and a wet close-in planet is a few percent too small here. Not modelled: H/He dissolving in a magma ocean, core-powered mass loss (Ginzburg et al. 2018, a bolometric effect with a similar valley), migration, late accretion, and any spread in stellar age within the population. Two known offsets: Mordasini et al. (2012) cold-start planets are about 15 % smaller than these at 100 Myr and agree after 1 Gyr, and Alibert's own tracks are far less puffy than Lopez &amp; Fortney's at 10 % gas, so the divergence between his dry and wet twins is a few percent on his model and tens of percent here.</p>
+  <p>Baraffe et al. (2015), A&amp;A 577, A42 · Johnstone et al. (2021), A&amp;A 649, A96 · Jackson, Davis &amp; Wheatley (2012), MNRAS 422, 2024 · Tu et al. (2015), A&amp;A 577, L3 · Ribas et al. (2005), ApJ 622, 680 · Lopez &amp; Fortney (2014), ApJ 792, 1 · Owen &amp; Wu (2016), ApJ 817, 107 · Owen &amp; Wu (2017), ApJ 847, 29 · Kubyshkina et al. (2018), ApJL 866, L18 · Ginzburg, Schlichting &amp; Sari (2018), MNRAS 476, 759 · Luger &amp; Barnes (2015), Astrobiology 15, 119 · Mordasini et al. (2012), A&amp;A 547, A112 · Valencia et al. (2013), ApJ 775, 10 · Turbet et al. (2020), A&amp;A 638, A41 · Aguichine et al. (2021), ApJ 914, 84 · Alibert (2016), A&amp;A 591, A79</p>
+</footer>
+</div><!-- /page-evo -->
+
 
 <div id="page-dorn" role="tabpanel" aria-labelledby="tab-dorn" hidden>
 <section class="pagehero">
@@ -8701,8 +8893,361 @@ escSegWire("seg-fl-burst", v => FL.burst = v === "on", flDrawAll);
 $("btn-fl-now").addEventListener("click", () => { FL.tcur = 4570; $("in-fl-t").value = Math.log10(4570); flDrawAll(); });
 $("btn-fl-disk").addEventListener("click", () => { FL.tcur = 1; $("in-fl-t").value = 0; flDrawAll(); });
 
+const AE_LF = { f: [0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2], m: [1.0, 1.5, 2.4, 3.6, 5.5, 8.5, 13.0, 20.0], F: [0.1, 10.0, 1000.0], t: [100, 1000, 10000], R: [[[[1.25,1.17,1.19,1.24,1.43,1.89,2.57,3.0,4.32,6.81,11.7],[1.31,1.25,1.28,1.31,1.47,1.93,2.58,3.17,3.97,6.18,10.6],[1.42,1.37,1.41,1.44,1.6,2.14,2.51,3.11,4.3,5.36,9.05],[1.53,1.49,1.52,1.57,1.71,2.18,2.51,3.02,4.31,5.57,7.86],[1.66,1.63,1.67,1.72,1.84,2.23,2.53,2.97,4.09,5.69,7.25],[1.82,1.79,1.82,1.87,2.0,2.33,2.57,2.95,3.9,5.29,7.73],[1.97,1.96,1.99,2.04,2.16,2.45,2.67,3.0,3.81,4.99,7.25],[2.15,2.14,2.17,2.23,2.33,2.58,2.79,3.1,3.82,4.82,6.68]],[[1.34,1.25,1.29,1.35,1.53,2.05,2.79,3.12,4.72,7.13,11.1],[1.38,1.33,1.37,1.41,1.58,2.07,2.8,3.41,4.31,6.47,10.4],[1.47,1.44,1.48,1.51,1.68,2.25,2.67,3.32,4.5,5.67,9.14],[1.58,1.54,1.58,1.64,1.77,2.26,2.62,3.17,4.55,5.71,8.11],[1.7,1.67,1.71,1.77,1.89,2.3,2.6,3.07,4.27,5.94,7.3],[1.85,1.83,1.86,1.92,2.04,2.37,2.63,3.01,4.01,5.5,7.98],[1.99,1.99,2.02,2.08,2.19,2.48,2.7,3.04,3.88,5.12,7.5],[2.17,2.17,2.19,2.25,2.35,2.61,2.82,3.13,3.87,4.9,6.81]],[[1.59,1.63,1.7,1.75,1.88,2.42,3.13,3.99,6.21,8.88,11.3],[1.63,1.67,1.72,1.77,1.9,2.46,3.25,3.84,6.01,9.41,14.0],[1.7,1.72,1.77,1.81,1.97,2.63,3.13,3.89,5.35,8.59,15.4],[1.77,1.79,1.83,1.87,2.02,2.57,3.01,3.67,5.23,7.27,13.4],[1.87,1.88,1.92,1.96,2.1,2.54,2.9,3.46,4.89,6.68,10.3],[1.99,2.0,2.03,2.08,2.21,2.56,2.86,3.31,4.48,6.23,8.82],[2.12,2.12,2.15,2.21,2.32,2.63,2.89,3.27,4.22,5.64,8.36],[2.27,2.27,2.3,2.36,2.47,2.73,2.95,3.3,4.12,5.28,7.38]]],[[[1.07,1.09,1.12,1.15,1.37,1.68,1.98,2.43,3.11,4.26,6.74],[1.18,1.19,1.22,1.26,1.45,1.74,1.99,2.38,3.27,3.96,6.1],[1.32,1.33,1.36,1.39,1.6,1.82,2.05,2.38,3.22,4.23,5.52],[1.45,1.46,1.49,1.52,1.71,1.9,2.1,2.42,3.15,4.25,5.62],[1.6,1.61,1.64,1.67,1.85,2.02,2.19,2.47,3.16,4.13,5.84],[1.77,1.78,1.8,1.84,1.99,2.15,2.32,2.57,3.19,4.09,5.74],[1.94,1.95,1.97,2.01,2.15,2.3,2.46,2.7,3.28,4.11,5.58],[2.12,2.13,2.16,2.21,2.32,2.46,2.62,2.86,3.42,4.17,5.56]],[[1.18,1.2,1.23,1.27,1.5,1.84,2.2,2.72,3.63,5.07,7.45],[1.27,1.29,1.32,1.36,1.56,1.87,2.16,2.6,3.58,4.68,6.96],[1.4,1.41,1.44,1.48,1.68,1.92,2.17,2.54,3.47,4.52,6.24],[1.51,1.53,1.55,1.59,1.77,1.98,2.2,2.54,3.34,4.53,5.85],[1.65,1.66,1.69,1.72,1.9,2.07,2.27,2.56,3.31,4.36,6.14],[1.81,1.82,1.84,1.89,2.03,2.2,2.37,2.64,3.31,4.27,5.99],[1.97,1.98,2.01,2.05,2.18,2.34,2.5,2.76,3.37,4.24,5.76],[2.15,2.16,2.18,2.24,2.36,2.49,2.65,2.9,3.49,4.27,5.68]],[[1.61,1.65,1.71,1.77,1.85,2.2,2.6,3.09,4.24,6.04,8.75],[1.65,1.68,1.73,1.78,1.88,2.24,2.59,3.1,4.14,5.91,9.34],[1.71,1.73,1.78,1.82,1.96,2.26,2.57,3.02,4.13,5.5,8.76],[1.78,1.8,1.84,1.87,2.02,2.27,2.54,2.96,3.94,5.34,7.86],[1.87,1.89,1.92,1.94,2.11,2.32,2.54,2.9,3.8,5.05,7.13],[1.99,2.0,2.02,2.05,2.21,2.39,2.59,2.9,3.68,4.81,6.84],[2.12,2.13,2.15,2.19,2.32,2.49,2.67,2.96,3.65,4.65,6.41],[2.27,2.27,2.29,2.34,2.46,2.61,2.78,3.06,3.7,4.57,6.14]]],[[[1.08,1.1,1.13,1.17,1.24,1.37,1.53,1.75,2.32,2.97,4.14],[1.19,1.2,1.23,1.27,1.34,1.46,1.61,1.82,2.33,3.04,4.05],[1.32,1.34,1.37,1.4,1.47,1.57,1.71,1.92,2.4,3.07,4.13],[1.45,1.47,1.49,1.53,1.59,1.7,1.83,2.01,2.49,3.12,4.23],[1.6,1.62,1.64,1.67,1.76,1.85,1.97,2.16,2.59,3.22,4.27],[1.77,1.78,1.8,1.84,1.88,2.02,2.14,2.32,2.75,3.34,4.37],[1.94,1.95,1.97,2.0,2.1,2.18,2.3,2.5,2.93,3.5,4.51],[2.12,2.14,2.16,2.19,2.27,2.37,2.49,2.69,3.13,3.71,4.66]],[[1.23,1.25,1.28,1.31,1.39,1.55,1.75,2.02,2.72,3.7,5.11],[1.31,1.33,1.36,1.4,1.48,1.62,1.79,2.05,2.66,3.57,5.03],[1.43,1.44,1.47,1.51,1.58,1.7,1.85,2.1,2.65,3.44,4.89],[1.54,1.55,1.58,1.62,1.69,1.8,1.94,2.15,2.69,3.41,4.67],[1.67,1.69,1.71,1.75,1.84,1.93,2.07,2.27,2.75,3.44,4.61],[1.82,1.84,1.86,1.9,1.98,2.08,2.21,2.41,2.86,3.51,4.62],[1.98,1.99,2.02,2.05,2.14,2.23,2.36,2.56,3.02,3.63,4.7],[2.16,2.17,2.2,2.23,2.31,2.41,2.54,2.74,3.21,3.81,4.81]],[[1.76,1.81,1.88,1.96,2.01,2.08,2.16,2.29,2.6,3.49,4.88],[1.77,1.81,1.88,1.94,1.99,2.05,2.15,2.28,2.83,3.72,5.36],[1.82,1.85,1.9,1.95,1.99,2.05,2.14,2.36,3.01,3.89,5.55],[1.87,1.9,1.94,1.98,2.02,2.09,2.18,2.42,3.1,3.97,5.48],[1.95,1.97,2.01,2.04,2.09,2.15,2.31,2.54,3.14,4.01,5.47],[2.05,2.07,2.1,2.12,2.15,2.28,2.43,2.67,3.21,4.01,5.4],[2.17,2.18,2.21,2.23,2.28,2.4,2.55,2.79,3.33,4.05,5.35],[2.31,2.32,2.34,2.36,2.45,2.55,2.69,2.92,3.45,4.15,5.32]]]] };
+const AE_LF_SOLAR = [[[[1.22,1.16,1.18,1.21,1.32,1.65,2.17,2.75,4.32,6.81,11.7],[1.3,1.24,1.26,1.3,1.4,1.71,2.15,2.65,3.97,6.18,10.6],[1.41,1.36,1.4,1.42,1.53,1.79,2.17,2.58,3.66,5.36,9.05],[1.53,1.49,1.51,1.54,1.64,1.89,2.21,2.56,3.49,4.93,7.86],[1.66,1.63,1.66,1.69,1.79,2.01,2.28,2.6,3.37,4.58,6.96],[1.81,1.79,1.82,1.85,1.95,2.14,2.39,2.67,3.36,4.35,6.32],[1.97,1.97,1.98,2.02,2.11,2.3,2.52,2.78,3.41,4.29,5.94],[2.15,2.15,2.17,2.2,2.29,2.47,2.67,2.93,3.52,4.32,5.75]],[[1.32,1.24,1.27,1.31,1.44,1.82,2.4,3.06,4.72,7.13,11.1],[1.36,1.32,1.35,1.38,1.5,1.84,2.32,2.88,4.31,6.47,10.4],[1.46,1.43,1.48,1.5,1.59,1.88,2.26,2.71,3.88,5.67,9.14],[1.57,1.55,1.58,1.6,1.71,1.95,2.27,2.64,3.61,5.13,8.11],[1.69,1.68,1.71,1.73,1.84,2.05,2.33,2.66,3.46,4.7,7.13],[1.84,1.83,1.86,1.89,1.98,2.18,2.43,2.72,3.42,4.43,6.39],[1.99,2.01,2.02,2.05,2.14,2.32,2.55,2.82,3.46,4.35,5.96],[2.17,2.18,2.19,2.23,2.31,2.49,2.69,2.95,3.56,4.37,5.77]],[[1.59,1.63,1.7,1.75,1.83,2.3,3.12,3.99,6.21,8.88,11.3],[1.63,1.67,1.72,1.77,1.89,2.31,3.02,3.83,6.01,9.41,14.0],[1.7,1.72,1.77,1.81,1.93,2.32,2.9,3.55,5.35,8.59,15.4],[1.77,1.79,1.83,1.87,1.99,2.34,2.81,3.36,4.82,7.27,13.4],[1.87,1.88,1.92,1.96,2.08,2.37,2.76,3.22,4.39,6.25,10.3],[1.99,2.0,2.03,2.08,2.19,2.5,2.76,3.15,4.12,5.56,8.48],[2.12,2.12,2.15,2.21,2.31,2.58,2.81,3.16,3.99,5.18,7.43],[2.27,2.27,2.3,2.35,2.45,2.68,2.9,3.21,3.94,4.97,6.8]]],[[[1.07,1.09,1.12,1.15,1.28,1.55,1.79,2.13,2.98,4.26,6.74],[1.18,1.19,1.22,1.26,1.38,1.62,1.82,2.13,2.87,3.96,6.1],[1.32,1.33,1.36,1.39,1.52,1.72,1.9,2.16,2.81,3.75,5.52],[1.45,1.46,1.49,1.52,1.65,1.82,1.99,2.23,2.81,3.65,5.21],[1.6,1.61,1.64,1.67,1.79,1.95,2.11,2.34,2.87,3.62,5.0],[1.77,1.78,1.8,1.83,1.94,2.1,2.25,2.47,2.97,3.67,4.91],[1.94,1.95,1.97,2.0,2.11,2.25,2.4,2.61,3.11,3.77,4.92],[2.12,2.13,2.16,2.19,2.3,2.42,2.57,2.78,3.28,3.92,5.0]],[[1.18,1.2,1.23,1.27,1.47,1.81,2.12,2.58,3.63,5.07,7.45],[1.27,1.29,1.32,1.36,1.52,1.82,2.08,2.47,3.4,4.68,6.96],[1.4,1.41,1.44,1.48,1.63,1.86,2.08,2.41,3.18,4.26,6.24],[1.51,1.53,1.55,1.59,1.72,1.93,2.12,2.4,3.07,4.02,5.73],[1.65,1.66,1.69,1.72,1.85,2.02,2.19,2.45,3.04,3.86,5.34],[1.81,1.82,1.84,1.88,1.99,2.15,2.31,2.54,3.08,3.81,5.09],[1.97,1.98,2.01,2.04,2.15,2.29,2.44,2.67,3.18,3.86,5.02],[2.15,2.16,2.18,2.22,2.32,2.45,2.6,2.82,3.33,3.99,5.07]],[[1.61,1.65,1.71,1.77,1.81,2.15,2.5,3.01,4.24,6.04,8.75],[1.65,1.68,1.73,1.78,1.87,2.18,2.5,2.98,4.14,5.91,9.34],[1.71,1.73,1.78,1.82,1.93,2.21,2.5,2.91,3.93,5.5,8.76],[1.78,1.8,1.84,1.87,1.99,2.24,2.5,2.87,3.77,5.11,7.86],[1.87,1.89,1.92,1.94,2.1,2.3,2.52,2.85,3.65,4.79,7.0],[1.99,2.0,2.02,2.05,2.19,2.38,2.58,2.88,3.59,4.58,6.39],[2.12,2.13,2.15,2.19,2.31,2.48,2.66,2.94,3.59,4.48,6.05],[2.27,2.27,2.29,2.34,2.45,2.61,2.78,3.04,3.65,4.47,5.85]]],[[[1.08,1.1,1.13,1.17,1.22,1.37,1.53,1.75,2.25,2.94,4.14],[1.19,1.2,1.23,1.27,1.31,1.45,1.6,1.81,2.28,2.93,4.05],[1.32,1.34,1.37,1.4,1.45,1.58,1.71,1.9,2.35,2.95,3.98],[1.45,1.47,1.49,1.53,1.58,1.7,1.82,2.01,2.44,3.01,3.97],[1.6,1.62,1.64,1.67,1.75,1.84,1.96,2.15,2.56,3.11,4.03],[1.77,1.78,1.8,1.84,1.91,2.0,2.13,2.31,2.72,3.25,4.14],[1.94,1.95,1.97,2.0,2.09,2.17,2.3,2.48,2.9,3.44,4.31],[2.12,2.14,2.16,2.19,2.25,2.36,2.49,2.68,3.1,3.65,4.53]],[[1.23,1.25,1.28,1.31,1.44,1.68,1.87,2.17,2.84,3.7,5.11],[1.31,1.33,1.36,1.4,1.49,1.72,1.9,2.19,2.83,3.66,5.03],[1.43,1.44,1.47,1.51,1.6,1.78,1.96,2.21,2.8,3.58,4.89],[1.54,1.55,1.58,1.62,1.73,1.87,2.03,2.27,2.81,3.53,4.75],[1.67,1.69,1.71,1.75,1.85,1.98,2.13,2.35,2.86,3.52,4.64],[1.82,1.84,1.86,1.9,1.98,2.11,2.25,2.47,2.95,3.58,4.61],[1.98,1.99,2.02,2.05,2.13,2.26,2.4,2.61,3.07,3.68,4.66],[2.16,2.17,2.2,2.23,2.32,2.43,2.56,2.77,3.23,3.83,4.77]],[[1.76,1.81,1.88,1.96,2.01,2.08,2.18,2.31,2.7,3.49,4.88],[1.77,1.81,1.88,1.94,1.99,2.08,2.17,2.33,2.91,3.76,5.36],[1.82,1.85,1.9,1.95,2.0,2.08,2.22,2.49,3.1,3.94,5.55],[1.87,1.9,1.94,1.98,2.03,2.12,2.3,2.58,3.2,4.03,5.54],[1.95,1.97,2.01,2.04,2.1,2.21,2.38,2.64,3.26,4.08,5.49],[2.05,2.07,2.1,2.12,2.19,2.31,2.48,2.73,3.31,4.1,5.44],[2.17,2.18,2.21,2.23,2.34,2.43,2.59,2.83,3.38,4.13,5.4],[2.31,2.32,2.34,2.36,2.47,2.57,2.72,2.95,3.49,4.2,5.38]]]];
+/* ================= Planet evolution (concept tab) =================
+   One planet, one star, ten billion years. Star: BHAC15 pre-main-sequence + main-sequence tracks for 0.3, 0.6 and
+   1.0 M☉ (Baraffe et al. 2015), X-rays saturated at R_X = 5.1×10⁻⁴ L_bol (Johnstone et al. 2021) until a mass- and
+   rotation-dependent age, then ∝ t^−1.23 (Jackson et al. 2012); EUV from the Johnstone surface-flux relations; the
+   family is normalised so the medium-rotation Sun gives 4.6 erg cm⁻² s⁻¹ of XUV at 1 AU today (Ribas et al. 2005).
+   Planet: Zeng-type rock with Alibert's ice factor (egRsolid) plus the Lopez & Fortney 2014 enhanced-opacity
+   envelope tables interpolated in mass, envelope fraction, flux and age. Escape: the Gas escape tab's engine
+   (Kubyshkina et al. 2018 hydro approximation, energy-limited fallback, boil-off at disk dispersal) driven by this
+   star. Prefix ae/AE.                                                                                             */
+const AEC = { G: 6.674e-8, kB: 1.381e-16, mH: 1.6735e-24, ME: 5.972e27, RE: 6.371e8, MS: 1.989e33, RS: 6.957e10, LS: 3.828e33, AU: 1.496e13, yr: 3.156e7, Fe: 4.6, ocean: 1.4e24, tdisk: 3, mu: 2.35 };
+const AE = { ms: 1.0, rot: "med", a: 0.1, m: 8, fw: 0, fg0: 0.05, t: 5000, esc: true, boil: true, law: "el", op: "enh" };
+const AE3 = { t: 5000, preset: "dry" };
+const AE_LF_ENH = AE_LF.R;   // the solar-metallicity tables (their Tables 2-4) are AE_LF_SOLAR; the opacity toggle swaps AE_LF.R
+/* BHAC15 tracks: [log t (yr), log L/L☉, R/R☉]; the 1 M☉ track ends at 8.3 Gyr and is extended with Gough's (1981) main-sequence law */
+const AE_STAR = {
+  "0.3": [[5.70,-0.204,2.203],[5.95,-0.433,1.717],[6.20,-0.639,1.356],[6.45,-0.836,1.095],[6.70,-1.023,0.899],[6.95,-1.200,0.741],[7.20,-1.358,0.612],[7.45,-1.512,0.502],[7.70,-1.688,0.411],[7.95,-1.844,0.344],[8.21,-1.955,0.302],[8.47,-1.986,0.290],[8.72,-1.988,0.290],[8.96,-1.986,0.290],[9.20,-1.982,0.292],[9.45,-1.974,0.295],[9.70,-1.961,0.299],[9.95,-1.948,0.304],[10.0,-1.945,0.304]],
+  "0.6": [[5.70,0.160,2.524],[5.95,-0.027,2.059],[6.20,-0.213,1.694],[6.45,-0.399,1.404],[6.70,-0.575,1.173],[6.95,-0.751,0.978],[7.20,-0.924,0.821],[7.45,-1.064,0.703],[7.70,-1.131,0.621],[7.95,-1.083,0.575],[8.21,-1.170,0.546],[8.47,-1.170,0.549],[8.72,-1.169,0.552],[8.95,-1.166,0.554],[9.20,-1.162,0.556],[9.45,-1.155,0.559],[9.70,-1.145,0.562],[9.95,-1.127,0.568],[10.0,-1.122,0.569]],
+  "1.0": [[5.70,0.503,3.079],[5.95,0.320,2.511],[6.20,0.144,2.071],[6.45,-0.033,1.710],[6.70,-0.198,1.429],[6.95,-0.323,1.220],[7.20,-0.339,1.083],[7.45,-0.071,1.059],[7.70,-0.169,0.895],[7.98,-0.163,0.902],[8.20,-0.152,0.906],[8.49,-0.145,0.909],[8.70,-0.139,0.913],[8.96,-0.128,0.922],[9.21,-0.108,0.935],[9.45,-0.070,0.962],[9.70,0.011,1.028],[9.92,0.166,1.214],[10.0,0.275,1.35]]
+};
+const AE_TSAT = { "0.3": { slow: 1000, med: 1600, fast: 1900 }, "0.6": { slow: 40, med: 350, fast: 700 }, "1.0": { slow: 5, med: 22, fast: 280 } };
+const AE_TS = (() => { const a = []; for (let lg = 0; lg <= 4 + 1e-9; lg += 0.02) a.push(Math.pow(10, lg)); return a; })();   // Myr
+const AE_LTAB = {}, AE_RTAB = {};
+Object.keys(AE_STAR).forEach(k => { AE_LTAB[k] = AE_STAR[k].map(r => [Math.pow(10, r[0] - 6), Math.pow(10, r[1])]); AE_RTAB[k] = AE_STAR[k].map(r => [Math.pow(10, r[0] - 6), r[2]]); });
+const aeKey = ms => ms.toFixed(1);
+const aeLbol = (ms, t) => flInterp(AE_LTAB[aeKey(ms)], t);                       // L☉, t in Myr
+const aeRstar = (ms, t) => flInterp(AE_RTAB[aeKey(ms)], t);                      // R☉
+function aeLx(ms, rot, t) {                                                        // erg/s
+  const ts = AE_TSAT[aeKey(ms)][rot];
+  if (t <= ts) return 5.135e-4 * aeLbol(ms, t) * AEC.LS;
+  return 5.135e-4 * aeLbol(ms, ts) * AEC.LS * Math.pow(t / ts, -1.23);
+}
+function aeLxuvRaw(ms, rot, t) {
+  const A = 4 * Math.PI * Math.pow(aeRstar(ms, t) * AEC.RS, 2), Fx = aeLx(ms, rot, t) / A;
+  const F1 = Math.pow(10, 2.04 + 0.681 * Math.log10(Fx)), F2 = Math.pow(10, -0.341 + 0.920 * Math.log10(F1));
+  return (Fx + F1 + F2) * A;
+}
+const AE_NORM = AEC.Fe * 4 * Math.PI * AEC.AU * AEC.AU / aeLxuvRaw(1.0, "med", 4570);
+const aeLxuv = (ms, rot, t) => AE_NORM * aeLxuvRaw(ms, rot, t);
+const aeFxuv = (ms, rot, a, t) => aeLxuv(ms, rot, t) / (4 * Math.PI * Math.pow(a * AEC.AU, 2));   // erg cm⁻² s⁻¹ at the planet
+const aeFbol = (ms, a, t) => aeLbol(ms, t) / (a * a);                                              // F⊕
+const aeTeq = (ms, a, t) => 278.6 * Math.pow(aeLbol(ms, t), 0.25) / Math.sqrt(a);
+const aeDeq = (ms, a, t) => a / Math.sqrt(aeLbol(ms, t));      // distance from the Sun with the same T_eq: what the Kubyshkina fit calls d
+const aePreMS = ms => ({ "0.3": 300, "0.6": 100, "1.0": 40 })[aeKey(ms)];
+/* ---- structure: Lopez & Fortney 2014 enhanced-opacity tables (their Tables 5-7; radius of core + envelope + radiative skin) ---- */
+const aeLerp = (x, xs, ys) => {
+  if (x <= xs[0]) return ys[0]; if (x >= xs[xs.length - 1]) return ys[ys.length - 1];
+  let i = 1; while (xs[i] < x) i++;
+  return ys[i - 1] + (x - xs[i - 1]) / (xs[i] - xs[i - 1]) * (ys[i] - ys[i - 1]);
+};
+const AE_LF_LM = AE_LF.m.map(Math.log10), AE_LF_LF = AE_LF.f.map(Math.log10), AE_LF_LX = AE_LF.F.map(Math.log10), AE_LF_LT = AE_LF.t.map(Math.log10);
+function aeDRenv(M, f, F, t) {           // envelope + skin thickness above an Earth-like core, R⊕; M total mass, f envelope fraction of M, F in F⊕, t in Myr
+  if (f <= 0) return 0;
+  const fT = Math.max(f, 1e-4), lm = Math.log10(Math.min(Math.max(M, 1), 20)), lf = Math.log10(Math.min(fT, 0.2)), lx = Math.log10(Math.min(Math.max(F, 0.1), 1000));
+  const core = Math.pow(Math.min(Math.max(M, 1), 20), 0.25);
+  const at = ti => {                   // interpolate the table at age index ti: log R over log f, log m, log F
+    const overM = xi => AE_LF_LM.map((_, mi) => Math.log10(Math.max(aeLerp(lf, AE_LF_LF, AE_LF.R[ti][xi][mi]) - core, 0.01)));
+    const overX = AE_LF_LX.map((_, xi) => aeLerp(lm, AE_LF_LM, overM(xi)));
+    return aeLerp(lx, AE_LF_LX, overX);
+  };
+  const lt = Math.log10(Math.max(t, 10));
+  let ld;
+  if (lt >= AE_LF_LT[0]) ld = aeLerp(lt, AE_LF_LT, [at(0), at(1), at(2)]);
+  else { const a0 = at(0), a1 = at(1); ld = a0 + (lt - AE_LF_LT[0]) / (AE_LF_LT[1] - AE_LF_LT[0]) * (a1 - a0); }   // before 100 Myr: continue the 0.1-1 Gyr slope
+  let dR = Math.pow(10, ld);
+  if (f < 1e-4) dR *= Math.pow(f / 1e-4, 0.59);
+  return dR;
+}
+const aeRsolid = (Ms, fw) => egRsolid(Ms, 0.325, fw);
+const aeRadius = (m, fw, fg, F, t) => aeRsolid(m * (1 - fg), fw) + aeDRenv(m, fg, F, t);
+/* ---- evolution ---- */
+function aeLam(M, R, T) { return escLam(M, R, T); }
+function aeRelax(m0, fw, Matm, ms, rot, a, t) {   // boil-off (Owen & Wu 2016 via the Kubyshkina Λ ≥ e^Σ criterion): shed envelope until the planet is bound
+  const F = aeFxuv(ms, rot, a, t), T = aeTeq(ms, a, t), d = aeDeq(ms, a, t), Fb = aeFbol(ms, a, t);
+  const ok = Ma => { const M = m0 + Ma / AEC.ME, fg = Ma / (M * AEC.ME), R = aeRadius(M, fw, fg, Fb, t); return aeLam(M, R, T) >= Math.exp(escSigma(F, d, R)); };
+  if (ok(Matm)) return Matm;
+  if (!ok(0)) return 0;
+  let lo = 0, hi = Matm;
+  for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (ok(mid)) lo = mid; else hi = mid; }
+  return lo;
+}
+function aeEvolve(m, fw, fg0, ms, rot, a, opt) {   // m: total mass at birth (M⊕); returns tracks on AE_TS
+  const n = AE_TS.length, R = new Array(n), fg = new Array(n), rate = new Array(n), Teq = new Array(n), ocean = new Array(n);
+  const m0 = m * (1 - fg0);                        // solid mass, conserved
+  let Matm = fg0 * m * AEC.ME, prev = AE_TS[0], lostB = 0, lostX = 0, bareAt = null, boiled = false, oc = 0;
+  for (let k = 0; k < n; k++) {
+    const t = AE_TS[k], dt = (t - prev) * 1e6 * AEC.yr; prev = t;
+    const F = aeFxuv(ms, rot, a, t), T = aeTeq(ms, a, t), Fb = aeFbol(ms, a, t), d = aeDeq(ms, a, t);
+    const embedded = t < AEC.tdisk;
+    if (!embedded && opt.esc && opt.boil && !boiled) { boiled = true; const m2 = aeRelax(m0, fw, Matm, ms, rot, a, t); lostB = Matm - m2; Matm = m2; }
+    let md = 0;
+    if (!embedded && opt.esc && dt > 0 && Matm > 0) {
+      let rem = dt;
+      for (let i = 0; i < 60 && rem > 0 && Matm > 0; i++) {
+        const M = m0 + Matm / AEC.ME, f = Matm / (M * AEC.ME), Rp = aeRadius(M, fw, f, Fb, t);
+        const Lc = Math.max(aeLam(M, Rp, T), 1), h = escHBA(F, d, Rp, Lc);
+        md = (AE.law === "el" || h.lo) ? escEL(F, Rp, M, 0.1) : h.mdot;
+        if (!(md > 0)) { md = 0; break; }
+        const step = Math.min(rem, 0.05 * Matm / md);
+        Matm = Math.max(0, Matm - md * step); lostX += md * step; rem -= step;
+      }
+      if (rem > 0 && Matm > 0 && md > 0) { const dm = Math.min(Matm, md * rem); Matm -= dm; lostX += dm; }
+      if (Matm < 1e-4 * m0 * AEC.ME) { lostX += Matm; Matm = 0; }       // below 0.01 % of the planet the envelope is gone (the table floor)
+    }
+    if (!embedded && dt > 0) {                     // water that a bare planet would have lost by now (energy-limited, ε = 0.3, Luger & Barnes 2015)
+      const Rb = aeRsolid(m0, fw); oc += escEL(F, Rb, m0, 0.3) * dt;
+    }
+    const M = m0 + Matm / AEC.ME, f = Matm > 0 ? Matm / (M * AEC.ME) : 0;
+    R[k] = aeRadius(M, fw, f, Fb, t); fg[k] = f; rate[k] = md; Teq[k] = T; ocean[k] = oc / AEC.ocean;
+    if (bareAt === null && Matm <= 0 && !embedded) bareAt = t;
+  }
+  return { R, fg, rate, Teq, ocean, lostB, lostX, bareAt, M0: fg0 * m * AEC.ME, m0 };
+}
+const aeIdx = t => { let k = 0; while (k < AE_TS.length - 1 && AE_TS[k] < t) k++; return k; };
+/* ---- population ---- */
+let aeSeed = 7;
+const aeRand = () => { aeSeed = (aeSeed * 1664525 + 1013904223) >>> 0; return aeSeed / 4294967296; };
+function aePopSample(preset) {
+  aeSeed = 7; const out = [];
+  while (out.length < 400) {
+    const mc = 3 * Math.sqrt(-2 * Math.log(1 - Math.min(aeRand(), 0.999999)));   // Rayleigh σ = 3 M⊕, Owen & Wu 2017
+    if (mc < 1 || mc > 15) continue;
+    const X = Math.pow(10, -2 + 1.477 * aeRand());                                    // log-flat 1-30 % of core mass
+    const fw = preset === "dry" ? 0 : preset === "wet" ? 0.7 : 0.7 * aeRand();
+    const P = Math.pow(10, 2 * aeRand());                                              // 1-100 d
+    out.push({ mc, X, fw, P });
+  }
+  return out;
+}
+let aePopCache = null;
+function aePop() {
+  const key = AE.ms + "|" + AE.rot + "|" + AE3.preset + "|" + AE.law + "|" + AE.op;
+  if (aePopCache && aePopCache.key === key) return aePopCache;
+  const pl = aePopSample(AE3.preset);
+  pl.forEach(p => {
+    p.a = Math.pow(AEC.G * AE.ms * AEC.MS * Math.pow(p.P * 86400, 2) / (4 * Math.PI * Math.PI), 1 / 3) / AEC.AU;
+    const m = p.mc * (1 + p.X), fg0 = p.X / (1 + p.X);
+    p.tr = aeEvolve(m, p.fw, fg0, AE.ms, AE.rot, p.a, { esc: true, boil: true });
+    p.m = m;
+  });
+  aePopCache = { key, pl };
+  return aePopCache;
+}
+/* ---- labels ---- */
+const aeTlab = t => flTlab(t);
+const aeSci = x => flSci(x);
+const aeAgeTicks = [0, 1, 2, 3, 4], aeAgeFmt = v => aeTlab(Math.pow(10, v));
+const AE_CH = {};
+const AE_COL = { slow: C.ice, med: C.muted, fast: C.rock };
+const AE_ROTN = { slow: "slow rotator", med: "medium rotator", fast: "fast rotator" };
+/* ---- §1 star ---- */
+function aeDraw1() {
+  const ms = AE.ms, rot = AE.rot, a = AE.a;
+  let svg = $("aech1"); svg.innerHTML = "";
+  const s = makeScales(0, 4, -2.3, 0.9, 620, 380, 46, 60, 30, 40);
+  const lx = t => s.x(Math.log10(t));
+  el("rect", { x: fmt(s.padL, 1), y: s.padT, width: fmt(lx(AEC.tdisk) - s.padL, 1), height: s.H - s.padT - s.padB, fill: "rgba(61,155,217,.05)" }, svg);
+  el("text", { x: fmt(s.padL + 6, 1), y: s.H - s.padB - 8, class: "serieslabel", fill: C.muted, style: "font-size:10.5px" }, svg).textContent = "disk";
+  axes(svg, s, aeAgeTicks, [-2, -1, 0], "age (log)", "luminosity, L☉ (log)", aeAgeFmt, v => v === 0 ? "1" : v === -1 ? "0.1" : "0.01");
+  [0.3, 0.6, 1.0].forEach(m => {
+    const on = m === ms;
+    el("path", { d: linePath(AE_TS.map(t => [lx(t), s.y(Math.log10(aeLbol(m, t)))])), stroke: on ? C.ink : C.line, "stroke-width": on ? 2.5 : 1.2, fill: "none" }, svg);
+    el("text", { x: s.W - s.padR + 5, y: fmt(s.y(Math.log10(aeLbol(m, 10000))) + 4, 1), class: "serieslabel", fill: on ? C.ink : C.muted, style: "font-size:10.5px" }, svg).textContent = m.toFixed(1) + " M☉";
+  });
+  const tp = aePreMS(ms);
+  el("line", { x1: fmt(lx(tp), 1), x2: fmt(lx(tp), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.ink2, "stroke-dasharray": "2 4" }, svg);
+  el("text", { x: fmt(lx(tp) + 4, 1), y: s.padT + 12, class: "serieslabel", fill: C.ink2, style: "font-size:10.5px" }, svg).textContent = "on the main sequence";
+  el("line", { x1: fmt(lx(AE.t), 1), x2: fmt(lx(AE.t), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.ink, opacity: .7 }, svg);
+  el("circle", { cx: fmt(lx(AE.t), 1), cy: fmt(s.y(Math.log10(aeLbol(ms, AE.t))), 1), r: 5, fill: C.ink, stroke: "#0C111E", "stroke-width": 2 }, svg);
+  AE_CH.c1 = { s, lx };
+  // XUV
+  svg = $("aech2"); svg.innerHTML = "";
+  const s2 = makeScales(0, 4, 27, 31.2, 380, 380, 46, 30, 30, 40);
+  const lx2 = t => s2.x(Math.log10(t));
+  axes(svg, s2, aeAgeTicks, [27, 28, 29, 30, 31], "age (log)", "L_XUV, erg/s (log)", aeAgeFmt, v => escPow(v));
+  ["slow", "med", "fast"].forEach(r => {
+    const on = r === rot;
+    el("path", { d: linePath(AE_TS.map(t => [lx2(t), s2.y(Math.log10(aeLxuv(ms, r, t)))])), stroke: AE_COL[r], "stroke-width": on ? 2.5 : 1.2, opacity: on ? 1 : .55, fill: "none" }, svg);
+  });
+  const ts = AE_TSAT[aeKey(ms)][rot];
+  el("line", { x1: fmt(lx2(ts), 1), x2: fmt(lx2(ts), 1), y1: s2.padT, y2: s2.H - s2.padB, stroke: C.ink2, "stroke-dasharray": "2 4" }, svg);
+  el("text", { x: fmt(lx2(ts) + 4, 1), y: s2.padT + 12, class: "serieslabel", fill: C.ink2, style: "font-size:10.5px" }, svg).textContent = "saturation ends";
+  el("line", { x1: fmt(lx2(AE.t), 1), x2: fmt(lx2(AE.t), 1), y1: s2.padT, y2: s2.H - s2.padB, stroke: C.ink, opacity: .7 }, svg);
+  el("circle", { cx: fmt(lx2(AE.t), 1), cy: fmt(s2.y(Math.log10(aeLxuv(ms, rot, AE.t))), 1), r: 5, fill: AE_COL[rot], stroke: "#0C111E", "stroke-width": 2 }, svg);
+  AE_CH.c2 = { s: s2, lx: lx2 };
+  // readouts
+  const L = aeLbol(ms, AE.t), F = aeFxuv(ms, rot, a, AE.t);
+  $("ae-r1L").innerHTML = (L >= 10 ? Math.round(L) : fmt(L, L < 0.1 ? 3 : 2)) + "<small> L☉ · R " + fmt(aeRstar(ms, AE.t), 2) + " R☉</small>";
+  $("ae-r1T").innerHTML = Math.round(aeTeq(ms, a, AE.t)) + "<small> K at " + fmt(a, 3) + " AU</small>";
+  $("ae-r1F").innerHTML = aeSci(F) + "<small> erg cm⁻² s⁻¹ · " + (F / AEC.Fe >= 100 ? Math.round(F / AEC.Fe) : fmt(F / AEC.Fe, 1)) + " × today's Earth</small>";
+  $("ae-r1S").innerHTML = (AE.t < ts ? "saturated" : "decaying") + "<small> · " + AE_ROTN[rot] + ", ends " + aeTlab(ts) + "</small>";
+}
+/* ---- §2 one planet ---- */
+let aeTr = null;
+function aeDrawPlanet(svg, fw, fg, rSolid, rTot) {
+  svg.innerHTML = "";
+  const cx = 150, cy = 150, xIron = 0.325;
+  const vIron = xIron * (1 - fw) / 3.2, vRock = (1 - xIron) * (1 - fw) / 1.6, vIce = fw / 0.8, vTot = vIron + vRock + vIce;
+  const rs = Math.min(rSolid, 4.8) * PXPER_RE, rOut = Math.min(rTot, 4.8) * PXPER_RE;
+  const rIron = rs * Math.cbrt(vIron / vTot), rRock = rs * Math.cbrt((vIron + vRock) / vTot);
+  const defs = el("defs", {}, svg), gid = "env" + svg.id, gr = el("radialGradient", { id: gid }, defs);
+  el("stop", { offset: (rs / rOut * 100) + "%", "stop-color": "rgba(61,155,217,0.38)" }, gr);
+  el("stop", { offset: "88%", "stop-color": "rgba(61,155,217,0.12)" }, gr);
+  el("stop", { offset: "100%", "stop-color": "rgba(61,155,217,0)" }, gr);
+  if (fg > 1e-5) el("circle", { cx, cy, r: fmt(rOut, 1), fill: "url(#" + gid + ")" }, svg);
+  if (fw > 0.004) el("circle", { cx, cy, r: fmt(rs, 1), fill: C.icefill }, svg);
+  el("circle", { cx, cy, r: fmt(fw > 0.004 ? rRock : rs, 1), fill: C.rock }, svg);
+  el("circle", { cx, cy, r: fmt(rIron, 1), fill: C.iron }, svg);
+}
+function aeDraw2() {
+  const { ms, rot, a, m, fw, fg0 } = AE;
+  $("o-ae-m").textContent = fmt(m, 1) + " M⊕"; $("o-ae-fw").textContent = pct(fw); $("o-ae-fg").textContent = fmt(fg0 * 100, 1) + " %";
+  $("o-ae-t").textContent = aeTlab(AE.t); $("o-ae-a").textContent = fmt(a, 3) + " AU";
+  const cool = aeEvolve(m, fw, fg0, ms, rot, a, { esc: false, boil: false });
+  const cur = AE.esc ? aeEvolve(m, fw, fg0, ms, rot, a, { esc: true, boil: AE.boil }) : cool;
+  aeTr = { cool, cur };
+  const k = aeIdx(AE.t), embedded = AE.t < AEC.tdisk;
+  const M = cur.m0 + (cur.fg[k] > 0 ? cur.fg[k] / (1 - cur.fg[k]) * cur.m0 : 0);
+  aeDrawPlanet($("ae-pl"), fw, cur.fg[k], aeRsolid(cur.m0, fw), cur.R[k]);
+  $("ae-plR").textContent = fmt(cur.R[k], 2);
+  $("ae-plcap").textContent = fmt(M, 1) + " M⊕ · solid part " + pct(fw) + " water · " + (cur.fg[k] > 1e-5 ? "H/He " + fmt(cur.fg[k] * 100, cur.fg[k] < 0.01 ? 2 : 1) + " % of mass" : "no envelope");
+  $("ae-plage").textContent = aeTlab(AE.t) + (embedded ? " · still in the disk" : "");
+  // R(t)
+  let svg = $("aech3"); svg.innerHTML = "";
+  const yMax = Math.max(...cool.R.slice(aeIdx(AEC.tdisk)), ...cur.R) * 1.08, yMin = Math.min(...cur.R, ...cool.R) * 0.92;
+  const s = makeScales(0, 4, yMin, yMax, 620, 360, 46, 120, 30, 40), lx = t => s.x(Math.log10(t));
+  el("rect", { x: fmt(s.padL, 1), y: s.padT, width: fmt(lx(AEC.tdisk) - s.padL, 1), height: s.H - s.padT - s.padB, fill: "rgba(61,155,217,.05)" }, svg);
+  axes(svg, s, aeAgeTicks, niceTicks(yMin, yMax, 5), "age (log)", "transit radius, R⊕", aeAgeFmt, v => fmt(v, 1));
+  const tp = aePreMS(ms), ts = AE_TSAT[aeKey(ms)][rot];
+  [[tp, "main sequence"], [ts, "saturation ends"]].forEach((g, i) => {
+    el("line", { x1: fmt(lx(g[0]), 1), x2: fmt(lx(g[0]), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.line, "stroke-dasharray": "2 4" }, svg);
+    el("text", { x: fmt(lx(g[0]) + 4, 1), y: s.padT + 12 + 12 * i, class: "serieslabel", fill: C.muted, style: "font-size:10px" }, svg).textContent = g[1];
+  });
+  const after = AE_TS.map((t, i) => i).filter(i => AE_TS[i] >= AEC.tdisk);
+  el("path", { d: linePath(after.map(i => [lx(AE_TS[i]), s.y(cool.R[i])])), stroke: C.muted, "stroke-width": 1.5, "stroke-dasharray": "5 5", fill: "none" }, svg);
+  if (AE.esc) el("path", { d: linePath(after.map(i => [lx(AE_TS[i]), s.y(cur.R[i])])), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  const rEnd = cur.R[cur.R.length - 1], cEnd = cool.R[cool.R.length - 1];
+  el("text", { x: s.W - s.padR + 6, y: fmt(s.y(cEnd) + (AE.esc && Math.abs(s.y(cEnd) - s.y(rEnd)) < 12 ? -8 : 4), 1), class: "serieslabel", fill: C.muted, style: "font-size:10.5px" }, svg).textContent = "cooling only · " + fmt(cEnd, 2);
+  if (AE.esc) el("text", { x: s.W - s.padR + 6, y: fmt(s.y(rEnd) + 4, 1), class: "serieslabel", fill: C.ice, style: "font-size:10.5px" }, svg).textContent = "with escape · " + fmt(rEnd, 2);
+  if (cur.bareAt !== null) el("text", { x: fmt(lx(cur.bareAt) + 5, 1), y: fmt(s.y(cur.R[aeIdx(cur.bareAt)]) - 8, 1), class: "serieslabel", fill: C.rock, style: "font-size:10.5px" }, svg).textContent = "bare at " + aeTlab(cur.bareAt);
+  el("line", { x1: fmt(lx(AE.t), 1), x2: fmt(lx(AE.t), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.ink, opacity: .7 }, svg);
+  el("circle", { cx: fmt(lx(AE.t), 1), cy: fmt(s.y(cur.R[k]), 1), r: 5, fill: AE.esc ? C.ice : C.muted, stroke: "#0C111E", "stroke-width": 2 }, svg);
+  AE_CH.c3 = { s, lx };
+  // envelope fraction and loss rate
+  svg = $("aech4"); svg.innerHTML = "";
+  const fMax = Math.max(fg0 * 100 * 1.15, 0.5);
+  const s4 = makeScales(0, 4, 0, fMax, 920, 280, 46, 24, 30, 40), lx4 = t => s4.x(Math.log10(t));
+  axes(svg, s4, aeAgeTicks, niceTicks(0, fMax, 4), "age (log)", "H/He, % of mass", aeAgeFmt, v => fmt(v, 1));
+  el("path", { d: linePath(after.map(i => [lx4(AE_TS[i]), s4.y(cur.fg[i] * 100)])), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  el("line", { x1: fmt(lx4(AEC.tdisk), 1), x2: fmt(lx4(AEC.tdisk), 1), y1: fmt(s4.y(fg0 * 100), 1), y2: fmt(s4.y(cur.fg[aeIdx(AEC.tdisk)] * 100), 1), stroke: C.rock, "stroke-width": 2 }, svg);
+  el("circle", { cx: fmt(lx4(AEC.tdisk), 1), cy: fmt(s4.y(fg0 * 100), 1), r: 3.5, fill: C.rock }, svg);
+  if (cur.lostB > 0.02 * cur.M0) el("text", { x: fmt(lx4(AEC.tdisk) + 6, 1), y: fmt(s4.y(fg0 * 100) + 4, 1), class: "serieslabel", fill: C.rock, style: "font-size:10.5px" }, svg).textContent = "boil-off: " + Math.round(cur.lostB / cur.M0 * 100) + " % gone at once";
+  el("line", { x1: fmt(lx4(AE.t), 1), x2: fmt(lx4(AE.t), 1), y1: s4.padT, y2: s4.H - s4.padB, stroke: C.ink, opacity: .7 }, svg);
+  el("circle", { cx: fmt(lx4(AE.t), 1), cy: fmt(s4.y(cur.fg[k] * 100), 1), r: 5, fill: C.ice, stroke: "#0C111E", "stroke-width": 2 }, svg);
+  AE_CH.c4 = { s: s4, lx: lx4 };
+  // chips
+  const lost = cur.M0 > 0 ? (cur.M0 - cur.fg[k] / Math.max(1 - cur.fg[k], 1e-9) * cur.m0 * AEC.ME) : 0;
+  $("ae-r2R").innerHTML = fmt(cur.R[k], 2) + "<small> R⊕ · cooling only " + fmt(cool.R[k], 2) + "</small>";
+  $("ae-r2f").innerHTML = (cur.fg[k] > 1e-5 ? fmt(cur.fg[k] * 100, cur.fg[k] < 0.01 ? 2 : 1) + " %" : "0") + "<small> of " + fmt(fg0 * 100, 1) + " % at birth</small>";
+  $("ae-r2T").innerHTML = Math.round(cur.Teq[k]) + "<small> K · " + aeSci(aeFxuv(ms, rot, a, AE.t)) + " erg cm⁻² s⁻¹</small>";
+  $("ae-r2M").innerHTML = (embedded ? "–<small> embedded in the disk</small>" : cur.rate[k] > 0 ? aeSci(cur.rate[k]) + "<small> g/s · " + escTime(cur.fg[k] / (1 - cur.fg[k]) * cur.m0 * AEC.ME / cur.rate[k]) + " to strip at this rate</small>" : "0<small> · " + (cur.fg[k] > 1e-5 ? "escape off" : "nothing left to lose") + "</small>");
+  $("ae-r2L").innerHTML = cur.M0 > 0 ? Math.round(Math.min(lost / cur.M0, 1) * 100) + " %<small> of the envelope · " + fmt(Math.max(lost, 0) / AEC.ME, 3) + " M⊕</small>" : "–<small> no envelope</small>";
+  const have = fw * cur.m0 * AEC.ME / AEC.ocean;
+  $("ae-r2W").innerHTML = (embedded ? "0" : cur.ocean[k] >= 100 ? Math.round(cur.ocean[k]).toLocaleString("en-US") : fmt(cur.ocean[k], 1)) + "<small> oceans" + (fw > 0 ? " of " + Math.round(have).toLocaleString("en-US") + " on board" : "") + (cur.fg[k] > 1e-5 ? " · only once the H/He is gone" : "") + "</small>";
+  $("ae-r2B").innerHTML = cur.bareAt !== null ? "bare<small> since " + aeTlab(cur.bareAt) + "</small>" : "keeps it<small> · " + fmt(cur.fg[cur.fg.length - 1] * 100, 2) + " % at 10 Gyr</small>";
+}
+/* ---- §3 population ---- */
+function aeDraw3() {
+  $("o-ae3-t").textContent = aeTlab(AE3.t);
+  const pop = aePop().pl, k = aeIdx(AE3.t);
+  let svg = $("aech5"); svg.innerHTML = "";
+  const s = makeScales(0, Math.log10(20), 0, 5.2, 620, 400, 46, 16, 30, 40), lx = m => s.x(Math.log10(m));
+  axes(svg, s, [1, 2, 3, 5, 10, 20].map(Math.log10), [1, 2, 3, 4, 5], "mass, M⊕ (log)", "radius, R⊕", v => Math.round(Math.pow(10, v)) + "", v => v + "");
+  const F5 = aeFbol(AE.ms, 0.1, AE3.t), ms = []; for (let lg = 0; lg <= Math.log10(20) + 1e-9; lg += 0.05) ms.push(Math.pow(10, lg));
+  el("path", { d: linePath(ms.map(m => [lx(m), s.y(aeRsolid(m, 0))])), stroke: C.rock, "stroke-width": 1.2, "stroke-dasharray": "4 4", fill: "none", opacity: .8 }, svg);
+  el("path", { d: linePath(ms.map(m => [lx(m), s.y(aeRsolid(m, 0.7))])), stroke: C.icefill, "stroke-width": 1.2, "stroke-dasharray": "4 4", fill: "none", opacity: .9 }, svg);
+  el("text", { x: fmt(lx(14), 1), y: fmt(s.y(aeRsolid(14, 0)) + 14, 1), class: "serieslabel", fill: C.rock, style: "font-size:10px" }, svg).textContent = "bare rock";
+  el("text", { x: fmt(lx(14), 1), y: fmt(s.y(aeRsolid(14, 0.7)) - 6, 1), class: "serieslabel", fill: C.icefill, style: "font-size:10px" }, svg).textContent = "70 % water, bare";
+  let nb = 0;
+  pop.forEach(p => { const bare = p.tr.fg[k] < 1e-5; if (bare) nb++;
+    const M = p.tr.m0 / (1 - p.tr.fg[k]);
+    el("circle", { cx: fmt(lx(M), 1), cy: fmt(s.y(Math.min(p.tr.R[k], 5.2)), 1), r: 2.6, fill: bare ? C.rock : C.ice, opacity: .75 }, svg); });
+  AE_CH.c5 = { s, lx, k };
+  // period-radius with the archive behind
+  svg = $("aech6"); svg.innerHTML = "";
+  const s6 = makeScales(0, 2, 0, 5.2, 380, 400, 46, 12, 30, 40), lxP = P => s6.x(Math.log10(P));
+  axes(svg, s6, [0, 1, 2], [1, 2, 3, 4, 5], "period, d (log)", "radius, R⊕", v => Math.round(Math.pow(10, v)) + "", v => v + "");
+  RV_DATA.forEach(d => { if (d[0] >= 1 && d[0] <= 100 && d[2] < 0.15 && d[1] <= 5.2) el("circle", { cx: fmt(lxP(d[0]), 1), cy: fmt(s6.y(d[1]), 1), r: 1.6, fill: C.muted, opacity: .35 }, svg); });
+  pop.forEach(p => el("circle", { cx: fmt(lxP(p.P), 1), cy: fmt(s6.y(Math.min(p.tr.R[k], 5.2)), 1), r: 2.4, fill: p.tr.fg[k] < 1e-5 ? C.rock : C.ice, opacity: .8 }, svg));
+  el("text", { x: s6.W - s6.padR - 4, y: s6.padT + 12, "text-anchor": "end", class: "serieslabel", fill: C.muted, style: "font-size:10px" }, svg).textContent = "grey: archive planets today";
+  AE_CH.c6 = { s: s6 };
+  // valley from the radius histogram
+  const bins = new Array(26).fill(0); pop.forEach(p => { const b = Math.floor((p.tr.R[k] - 1.0) / 0.1); if (b >= 0 && b < 26) bins[b]++; });
+  let best = -1, bestV = 1e9;                       // emptiest 0.1 R⊕ bin between 1.3 and 2.5 R⊕, and the peaks either side of it
+  for (let b = 3; b <= 15; b++) { const v = bins[b] + 0.5 * (bins[b - 1] + bins[b + 1]); if (v < bestV) { bestV = v; best = b; } }
+  const peak = (lo, hi) => Math.max(...bins.slice(lo, hi + 1).map((v, i) => v + 0.5 * (bins[lo + i - 1] + bins[lo + i + 1])), 0);
+  const depth = bestV / Math.max(Math.min(peak(1, best - 1), peak(best + 1, 20)), 1e-9);
+  const rv = 1.0 + (best + 0.5) * 0.1, medc = [...pop].sort((x, y) => x.mc - y.mc)[200].mc, pred = 1.85 * Math.pow(medc / 3, 0.25);
+  $("ae-r3v").innerHTML = (depth < 0.85 ? fmt(rv, 2) + " R⊕<small> · " + (depth < 0.6 ? "" : "shallow, ") + Math.round((1 - depth) * 100) + " % below its shoulders" : "not open<small>") + " · Owen &amp; Wu: " + fmt(pred, 2) + " R⊕ for a " + fmt(medc, 1) + " M⊕ core</small>";
+  $("ae-r3b").innerHTML = Math.round(nb / pop.length * 100) + " %<small> bare · " + (pop.length - nb) + " keep an envelope</small>";
+  const Rs = pop.map(p => p.tr.R[k]).sort((x, y) => x - y);
+  $("ae-r3m").innerHTML = fmt(Rs[200], 2) + "<small> R⊕ median · " + fmt(Rs[40], 2) + "–" + fmt(Rs[360], 2) + " (10–90 %)</small>";
+}
+/* ---- §4 three stars ---- */
+function aeDraw4() {
+  const { rot, a, m, fw, fg0 } = AE;
+  const svg = $("aech7"); svg.innerHTML = "";
+  const Lref = aeLbol(AE.ms, 4570), tracks = {}, dist = {};
+  [0.3, 0.6, 1.0].forEach(ms => { dist[ms] = a * Math.sqrt(aeLbol(ms, 4570) / Lref); tracks[ms] = aeEvolve(m, fw, fg0, ms, rot, dist[ms], { esc: true, boil: AE.boil }); });
+  const all = [].concat(...[0.3, 0.6, 1.0].map(ms => tracks[ms].R.slice(aeIdx(AEC.tdisk))));
+  const yMax = Math.max(...all) * 1.08, yMin = Math.min(...all) * 0.92;
+  const s = makeScales(0, 4, yMin, yMax, 920, 360, 46, 150, 30, 40), lx = t => s.x(Math.log10(t));
+  axes(svg, s, aeAgeTicks, niceTicks(yMin, yMax, 5), "age (log)", "transit radius, R⊕", aeAgeFmt, v => fmt(v, 1));
+  const col = { 0.3: C.rock, 0.6: C.muted, 1.0: C.ice }, after = AE_TS.map((t, i) => i).filter(i => AE_TS[i] >= AEC.tdisk);
+  const ends = [0.3, 0.6, 1.0].map(ms => tracks[ms].R[tracks[ms].R.length - 1]);
+  [0.3, 0.6, 1.0].forEach((ms, j) => {
+    el("path", { d: linePath(after.map(i => [lx(AE_TS[i]), s.y(tracks[ms].R[i])])), stroke: col[ms], "stroke-width": 2.5, fill: "none" }, svg);
+    let y = s.y(ends[j]); ends.forEach((e, q) => { if (q < j && Math.abs(s.y(e) - y) < 13) y = s.y(e) + 13; });
+    el("text", { x: s.W - s.padR + 6, y: fmt(y + 4, 1), class: "serieslabel", fill: col[ms], style: "font-size:10.5px" }, svg).textContent = ms.toFixed(1) + " M☉ at " + fmt(dist[ms], 3) + " AU";
+    const tr = tracks[ms], id = ms === 0.3 ? "ae-r4a" : ms === 0.6 ? "ae-r4b" : "ae-r4c";
+    $(id).innerHTML = (tr.bareAt !== null ? "bare<small> since " + aeTlab(tr.bareAt) + "</small>" : fmt(tr.fg[tr.fg.length - 1] / fg0 * 100, 0) + " %<small> of the envelope kept</small>");
+  });
+  AE_CH.c7 = { s, lx, tracks };
+}
+function aeDrawAll() { aeDraw1(); aeDraw2(); aeDraw3(); aeDraw4(); }
+/* hovers */
+attachHover($("cb-aech3"), $("aech3"), { padL: 46, padR: 120, W: 620, H: 360 },
+  (px, py, cx, cy) => { const c = AE_CH.c3; if (!c || !aeTr) return;
+    const t = Math.pow(10, c.s.inv(px)), k = aeIdx(t);
+    setTip($("tip-aech3"), cx, cy, "<b>" + aeTlab(t) + "</b><br><span class='mono'>" + fmt(aeTr.cur.R[k], 2) + " R⊕ · H/He " + fmt(aeTr.cur.fg[k] * 100, 2) + " %<br>cooling only " + fmt(aeTr.cool.R[k], 2) + " R⊕</span>", $("cb-aech3").clientWidth); },
+  () => $("tip-aech3").hidden = true);
+attachHover($("cb-aech1"), $("aech1"), { padL: 46, padR: 60, W: 620, H: 380 },
+  (px, py, cx, cy) => { const c = AE_CH.c1; if (!c) return;
+    const t = Math.pow(10, c.s.inv(px)), L = aeLbol(AE.ms, t);
+    setTip($("tip-aech1"), cx, cy, "<b>" + aeTlab(t) + "</b><br><span class='mono'>" + fmt(L, 3) + " L☉ · T_eq " + Math.round(aeTeq(AE.ms, AE.a, t)) + " K<br>XUV " + aeSci(aeFxuv(AE.ms, AE.rot, AE.a, t)) + " erg cm⁻² s⁻¹</span>", $("cb-aech1").clientWidth); },
+  () => $("tip-aech1").hidden = true);
+/* wiring */
+escSegWire("seg-ae-ms", v => { AE.ms = +v; }, aeDrawAll);
+escSegWire("seg-ae-rot", v => { AE.rot = v; }, aeDrawAll);
+$("in-ae-a").addEventListener("input", () => { AE.a = Math.pow(10, +$("in-ae-a").value); aeDraw1(); aeDraw2(); aeDraw4(); });
+$("in-ae-m").addEventListener("input", () => { AE.m = +$("in-ae-m").value; aeDraw2(); aeDraw4(); });
+$("in-ae-fw").addEventListener("input", () => { AE.fw = +$("in-ae-fw").value; aeDraw2(); aeDraw4(); });
+$("in-ae-fg").addEventListener("input", () => { AE.fg0 = +$("in-ae-fg").value; aeDraw2(); aeDraw4(); });
+$("in-ae-t").addEventListener("input", () => { AE.t = Math.pow(10, +$("in-ae-t").value); aeDraw1(); aeDraw2(); });
+escSegWire("seg-ae-esc", v => { AE.esc = v === "on"; }, aeDraw2);
+escSegWire("seg-ae-law", v => { AE.law = v; }, () => { aeDraw2(); aeDraw3(); aeDraw4(); });
+escSegWire("seg-ae-op", v => { AE.op = v; AE_LF.R = v === "enh" ? AE_LF_ENH : AE_LF_SOLAR; }, aeDrawAll);
+escSegWire("seg-ae-boil", v => { AE.boil = v === "on"; }, () => { aeDraw2(); aeDraw4(); });
+$("in-ae3-t").addEventListener("input", () => { AE3.t = Math.pow(10, +$("in-ae3-t").value); aeDraw3(); });
+escSegWire("seg-ae3-pre", v => { AE3.preset = v; }, aeDraw3);
+[["btn-ae-young", 100], ["btn-ae-now", 5000]].forEach(b => $(b[0]).addEventListener("click", () => { AE.t = b[1]; $("in-ae-t").value = Math.log10(b[1]); aeDraw1(); aeDraw2(); }));
+
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "mis", "dav", "val", "pp", "pnet", "frost", "per"];
+const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "mis", "dav", "val", "pp", "pnet", "frost", "evo", "per"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -8722,6 +9267,7 @@ cfDrawAll();
 egDrawAll();
 rvDrawAll();
 flDrawAll();
+aeDrawAll();
 pnDrawAll();
 tlDrawAll();
 pvDrawAll();
