@@ -6694,8 +6694,8 @@ function pvDraw6() {
 /* ---- §7 the table ---- */
 function pvDraw7() {
   const svg = $("pvch7"); svg.innerHTML = "";
-  const s = makeScales(PV_LOG(30), PV_LOG(1.4e10), -6, 8, 920, 400, 64, 24, 22, 44);
-  axes(svg, s, [PV_LOG(30), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(v => v).filter(v => v >= PV_LOG(30) && (v % 1 === 0 || v === PV_LOG(30))), [-6, -4, -2, 0, 2, 4, 6, 8], "timescale of the mechanism (log years)", "change of the period (log seconds)", v => v === 0 ? "1 yr" : v === 3 ? "1 kyr" : v === 6 ? "1 Myr" : v === 9 ? "1 Gyr" : v % 1 === 0 ? "" : "1 month", v => v === -6 ? "1 µs" : v === -4 ? "0.1 ms" : v === -2 ? "10 ms" : v === 0 ? "1 s" : v === 2 ? "100 s" : v === 4 ? "3 h" : v === 6 ? "12 d" : "3 yr");
+  const x0 = PV_LOG(30 / 365.25), s = makeScales(x0, PV_LOG(1.4e10), -6, 8, 920, 400, 64, 24, 22, 44);
+  axes(svg, s, [x0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [-6, -4, -2, 0, 2, 4, 6, 8], "timescale of the mechanism (log years)", "change of the period (log seconds)", v => v === x0 ? "1 month" : v === 0 ? "1 yr" : v === 3 ? "1 kyr" : v === 6 ? "1 Myr" : v === 9 ? "1 Gyr" : "", v => v === -6 ? "1 µs" : v === -4 ? "0.1 ms" : v === -2 ? "10 ms" : v === 0 ? "1 s" : v === 2 ? "100 s" : v === 4 ? "3 h" : v === 6 ? "12 d" : "3 yr");
   el("rect", { x: s.padL, y: fmt(s.y(1), 1), width: s.W - s.padL - s.padR, height: fmt(s.y(-6) - s.y(1), 1), fill: "rgba(107,118,144,.12)" }, svg);
   el("text", { x: s.W - s.padR - 6, y: fmt(s.y(-5.6), 1), "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = "grey: below the timing precision of a single transit";
   const Pd = TL_PL.d.P * PV_DAY;
