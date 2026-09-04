@@ -121,6 +121,16 @@
   .pn-tern{display:grid;grid-template-columns:3fr 2fr;gap:20px;align-items:start;}
   @media (max-width:760px){.pn-tern{grid-template-columns:1fr;}}
 
+  /* ---------- leleu tab ---------- */
+  .tl-toggles{display:flex;gap:6px;flex-wrap:wrap;}
+  .tl-toggles button{background:none;border:1px solid var(--line);border-radius:8px;color:var(--ink2);font-family:var(--mono);font-size:12.5px;padding:6px 12px;cursor:pointer;}
+  .tl-toggles button[aria-pressed="true"]{background:var(--surface2);color:var(--ink);border-color:var(--muted);font-weight:600;}
+  .tl-ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px;}
+  @media (max-width:760px){.tl-ladder{grid-template-columns:repeat(2,1fr);}}
+  .tl-ladder .rung{background:var(--surface2);border:1px solid var(--line-soft);border-radius:10px;padding:10px 12px;font-family:var(--mono);font-size:12px;color:var(--ink2);line-height:1.6;}
+  .tl-ladder .rung b{color:var(--ink);font-size:15px;font-weight:500;}
+  .tl-ladder .rung .res{color:#7FC2EA;}
+
   /* ---------- dorn tab ---------- */
   .hist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:6px;}
   @media (max-width:760px){.hist-grid{grid-template-columns:1fr;}}
@@ -252,6 +262,7 @@
         <button class="tabbtn" id="tab-baty" role="tab" aria-selected="false">Baty 2023 <small>learn the equation</small></button>
         <button class="tabbtn" id="tab-mos" role="tab" aria-selected="false">Moseley 2020 <small>emulate the simulator</small></button>
         <button class="tabbtn" id="tab-egg" role="tab" aria-selected="false">Egger 2024 <small>infer the system</small></button>
+        <button class="tabbtn" id="tab-lel" role="tab" aria-selected="false">Leleu 2021 <small>read the architecture</small></button>
       </div>
     </div>
     <div class="tabgroup">
@@ -2024,6 +2035,213 @@
   <p>J. A. Egger et al. (2024), “Unveiling the internal structure and formation history of the three planets transiting HIP 29442 (TOI-469) with CHEOPS”, A&amp;A · <a href="https://arxiv.org/abs/2406.18653">arXiv:2406.18653</a> · code: <a href="https://github.com/joannegger/plaNETic">github.com/joannegger/plaNETic</a> · Haldemann et al. (2024), A&amp;A 681, A96 (BICEPS) · Lopez &amp; Fortney (2014), ApJ 792, 1 · Zeng et al. (2016), ApJ 819, 127</p>
 </footer>
 </div><!-- /page-egg -->
+
+<div id="page-lel" role="tabpanel" aria-labelledby="tab-lel" hidden>
+<section class="pagehero">
+  <p class="eyebrow">A. Leleu, Y. Alibert, N. C. Hara, M. J. Hooton, T. G. Wilson et al. (2021) · A&amp;A 649, A26 · arXiv:2101.09260</p>
+  <p class="standfirst">Every tab so far asked what one planet is made of. This one asks what a whole system remembers. TOI-178 has six transiting planets in 21 days of orbit, five of them locked in a chain of Laplace resonances, 2:4:6:9:12, which means nothing violent has happened to them since the disk. And yet their densities jump up and down along the chain by a factor of six. The paper is a detective story, a piece of celestial mechanics, and a puzzle for formation theory, in that order. Every station below runs the real ephemerides.</p>
+</section>
+
+<!-- ================= STATION L1 ================= -->
+<section id="lel1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>Six periods from twenty-six days</h2></div>
+  <p class="prose">TESS watched TOI-178 for one 26-day sector and reported three candidates: 6.55, 10.35 and 9.96 days. Two were real. The 10.35-day one was a ghost: one transit of planet f flanked by two of planet g, spaced 10.35 days apart by accident. Below is a synthetic Sector 2 built from the paper's ephemerides, depths and durations, with white noise, and a box-least-squares search you can run on it. Switch planets on and off and watch the ghost appear and vanish.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;max-width:none;"><label>Planets present in the light curve</label>
+        <div class="tl-toggles" id="tog-tl1" role="group" aria-label="Planets present">
+          <button aria-pressed="true" data-v="b">b · 1.91 d</button><button aria-pressed="true" data-v="c">c · 3.24 d</button><button aria-pressed="true" data-v="d">d · 6.56 d</button>
+          <button aria-pressed="true" data-v="e">e · 9.96 d</button><button aria-pressed="true" data-v="f">f · 15.23 d</button><button aria-pressed="true" data-v="g">g · 20.71 d</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Noise per 2-min point</label>
+        <div class="seg" id="seg-tl1n" role="group" aria-label="Noise level">
+          <button aria-pressed="false" data-v="600">600 ppm</button>
+          <button aria-pressed="true" data-v="900">900 ppm</button>
+          <button aria-pressed="false" data-v="1300">1300 ppm</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Fold the data at</label>
+        <div class="seg" id="seg-tl1f" role="group" aria-label="Fold period">
+          <button aria-pressed="true" data-v="6.5577">6.56 d</button>
+          <button aria-pressed="false" data-v="10.35">10.35 d</button>
+          <button aria-pressed="false" data-v="9.961881">9.96 d</button>
+          <button aria-pressed="false" data-v="3.23845">3.24 d</button>
+        </div></div>
+    </div>
+    <div class="chart-box" id="cb-tl1a">
+      <p class="chart-title">Synthetic TESS Sector 2 · 30-minute bins · transits marked by planet</p>
+      <p class="chart-sub">Real periods, epochs, depths and durations from the paper's Tables 3 and 4 · the 1.5-day gap is the mid-sector data downlink · hover a marker</p>
+      <svg id="tlch1a" viewBox="0 0 920 260" aria-label="Synthetic light curve with transit markers"></svg>
+      <div class="tip" id="tip-tl1a" hidden></div>
+    </div>
+    <div class="census-grid" style="margin-top:18px;">
+      <div class="chart-box" id="cb-tl1b">
+        <p class="chart-title">Box-least-squares periodogram, 1 to 13 days</p>
+        <p class="chart-sub">Peaks labelled · rust: the ghost period · hover</p>
+        <svg id="tlch1b" viewBox="0 0 460 340" aria-label="BLS periodogram"></svg>
+        <div class="tip" id="tip-tl1b" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-tl1c">
+        <p class="chart-title">Folded at the chosen period</p>
+        <p class="chart-sub">Each binned point coloured by the planet that actually caused the dip</p>
+        <svg id="tlch1c" viewBox="0 0 460 340" aria-label="Folded light curve"></svg>
+        <div class="tip" id="tip-tl1c" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">strongest peaks</div><div class="v" id="tl1peaks" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">events that make the 10.35 d fold</div><div class="v" id="tl1ghost" style="font-size:14px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">transits in the sector · b c d e f g</div><div class="v" id="tl1n" style="font-size:15px">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Why a single sector cannot settle a system like this.</em> Planets f and g transit once and twice in 26 days; a period search needs at least two events, and three events from two different planets at the right spacing look exactly like one planet. The 10.35-day candidate was even proposed to be a co-orbital pair. What broke it was prediction: the paper's Laplace-resonance hypothesis said the ghost's third event had to be a 20.7-day planet, computed its next transit to within hours, and CHEOPS caught it on 7 September 2020. Planet b, at 263 ppm, is below what this search can find in one sector; it took CHEOPS's 11-day stare and a dedicated transit detection algorithm.</p>
+</section>
+
+<!-- ================= STATION L2 ================= -->
+<section id="lel2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>A chain of Laplace resonances</h2></div>
+  <p class="prose">Consecutive pairs sit just outside first-order mean-motion resonances: c–d near 2:1, d–e and e–f near 3:2, f–g near 4:3. Each pair's distance from exact resonance sets a super-period, and the remarkable thing is that all four super-periods are the same, about 260 days. That coincidence is what a Laplace resonance means: the three-body angles ψ built from consecutive triplets stop circulating and librate around fixed values. The integration below is a real N-body run with the paper's masses and ephemerides, started at the epoch of TESS Sector 2. Perturb planet f and watch the chain break.</p>
+  <div class="panel">
+    <div class="tl-ladder" id="tl-ladder"></div>
+    <div class="controls">
+      <div class="ctl"><label>Shift the period of f by <output id="o-tl2dp">0.000 d</output></label>
+        <input type="range" id="in-tl2dp" min="-0.03" max="0.03" step="0.002" value="0" aria-label="Period shift of planet f"></div>
+      <div class="ctl"><label>Eccentricity of f <output id="o-tl2e">0.000</output></label>
+        <input type="range" id="in-tl2e" min="0" max="0.06" step="0.005" value="0" aria-label="Eccentricity of planet f"></div>
+      <div class="ctl"><label>Mass of f <output id="o-tl2m">7.7 M⊕</output></label>
+        <input type="range" id="in-tl2m" min="1" max="12" step="0.5" value="7.7" aria-label="Mass of planet f"></div>
+      <div class="ctl" style="flex:none;"><label>Integrate for</label>
+        <div class="seg" id="seg-tl2y" role="group" aria-label="Integration length">
+          <button aria-pressed="false" data-v="20">20 yr</button>
+          <button aria-pressed="true" data-v="50">50 yr</button>
+          <button aria-pressed="false" data-v="100">100 yr</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;"><button class="btn" id="btn-tl2">▶ Integrate</button></div>
+    </div>
+    <div class="chart-box" id="cb-tl2">
+      <p class="chart-title">The three Laplace angles through time</p>
+      <p class="chart-sub">ψ₁ = λ<sub>c</sub> − 4λ<sub>d</sub> + 3λ<sub>e</sub> · ψ₂ = 2λ<sub>d</sub> − 5λ<sub>e</sub> + 3λ<sub>f</sub> · ψ₃ = λ<sub>e</sub> − 3λ<sub>f</sub> + 2λ<sub>g</sub> · dashed: the paper's equilibria 180°, 169°, 79° · hover</p>
+      <svg id="tlch2" viewBox="0 0 920 380" aria-label="Laplace angles versus time"></svg>
+      <div class="tip" id="tip-tl2" hidden></div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--ice)"></i>ψ₁</span>
+      <span><i style="border-color:var(--rock)"></i>ψ₂</span>
+      <span><i style="border-color:#6ECD93"></i>ψ₃</span>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">angles at the TESS epoch · this run / paper</div><div class="v" id="tl2ep" style="font-size:14px;line-height:1.5">–</div></div>
+      <div class="chip answer"><div class="k">verdict</div><div class="v" id="tl2v" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">libration half-widths ψ₁ · ψ₂ · ψ₃</div><div class="v" id="tl2amp" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">diffusion index log₁₀|n<sub>f</sub>⁽¹⁾ − n<sub>f</sub>⁽²⁾| / n<sub>f</sub></div><div class="v" id="tl2diff">–</div></div>
+      <div class="chip"><div class="k">integration</div><div class="v" id="tl2ms">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>How fragile, and why that matters.</em> Shift f's period by two hundredths of a day, or give it an eccentricity of a few hundredths, and every angle starts circulating: the chain is gone. That fragility is the paper's central inference. A configuration this delicate cannot survive a giant impact or even a close encounter, so the five outer planets have been sitting in this arrangement since they migrated into it in the gas disk, seven billion years ago. The chain is a fossil of the disk phase. Planet b, at 1.91 days, is just outside the 5:3 with c and would need a period of 1.95 days to join; the paper's guess is that tides pulled it away.</p>
+</section>
+
+<!-- ================= STATION L3 ================= -->
+<section id="lel3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Transit timing variations</h2></div>
+  <p class="prose">Planets near resonance tug on each other in step, so their transits arrive early and late with a period equal to the super-period, about 260 days here, and amplitudes that scale with the perturber's mass. The same N-body run, extended to six years, gives the transit times; subtracting a linear ephemeris leaves the variations. This is the paper's Fig. 14, and its point: TTVs would measure the masses independently of the radial velocities, whose error bars are still 20 to 40 percent.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Mass of d × <output id="o-tl3md">1.00</output></label>
+        <input type="range" id="in-tl3md" min="0.3" max="2.5" step="0.05" value="1" aria-label="Mass multiplier for planet d"></div>
+      <div class="ctl"><label>Mass of f × <output id="o-tl3mf">1.00</output></label>
+        <input type="range" id="in-tl3mf" min="0.3" max="2.5" step="0.05" value="1" aria-label="Mass multiplier for planet f"></div>
+      <div class="ctl" style="flex:none;max-width:none;"><label>Show</label>
+        <div class="tl-toggles" id="tog-tl3" role="group" aria-label="Planets shown">
+          <button aria-pressed="false" data-v="b">b</button><button aria-pressed="true" data-v="c">c</button><button aria-pressed="true" data-v="d">d</button>
+          <button aria-pressed="true" data-v="e">e</button><button aria-pressed="true" data-v="f">f</button><button aria-pressed="true" data-v="g">g</button>
+        </div></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;"><button class="btn" id="btn-tl3">▶ Integrate 6 years</button></div>
+    </div>
+    <div class="chart-box" id="cb-tl3">
+      <p class="chart-title">Observed minus computed transit times over six years</p>
+      <p class="chart-sub">Each transit one point, joined · a linear ephemeris fitted per planet has been removed · hover</p>
+      <svg id="tlch3" viewBox="0 0 920 380" aria-label="Transit timing variations"></svg>
+      <div class="tip" id="tip-tl3" hidden></div>
+    </div>
+    <div class="readouts" id="tl3amps"></div>
+  </div>
+  <p class="takeaway"><em>Read the amplitudes as a mass meter.</em> Double the mass of f and the timing swings of e and g grow with it, while f's own swing hardly changes: a planet's TTV measures its neighbours, not itself. That is why a chain is ideal for the method, every planet has two neighbours pulling on it, and why the paper ends by asking for a few more years of transit monitoring. Two timescales are visible: the 260-day super-period, and a slow drift over years that is the Laplace angles themselves librating.</p>
+</section>
+
+<!-- ================= STATION L4 ================= -->
+<section id="lel4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>Densities out of order</h2></div>
+  <p class="prose">Formation theory expects density to fall with distance from the star, because the outer planets keep more of their primordial gas, and to fall with mass, because heavier cores accrete more of it. TOI-178 does neither. Planet d, at 6.6 days, is six times less dense than its inner neighbour c and less dense than e outside it; planet f, the most massive, is denser than the lighter planets on either side of it. Below, the six planets against this site's composition lines, and the toy interior sampler of the Egger tab run on all six.</p>
+  <div class="panel">
+    <div class="census-grid">
+      <div class="chart-box" id="cb-tl4a">
+        <p class="chart-title">Density against equilibrium temperature</p>
+        <p class="chart-sub">Error bars from the paper · dotted: Earth-like density at each planet's mass, from the Zeng relation · hover</p>
+        <svg id="tlch4a" viewBox="0 0 460 360" aria-label="Density versus equilibrium temperature"></svg>
+        <div class="tip" id="tip-tl4a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-tl4b">
+        <p class="chart-title">Mass–radius diagram with composition lines</p>
+        <p class="chart-sub">Lines from the Egger tab's forward model at 20 F⊕ and 7 Gyr · hover a planet</p>
+        <svg id="tlch4b" viewBox="0 0 460 360" aria-label="Mass radius diagram of TOI-178"></svg>
+        <div class="tip" id="tip-tl4b" hidden></div>
+      </div>
+    </div>
+    <div class="controls" style="margin-top:18px;">
+      <div class="ctl" style="flex:none;justify-content:flex-end;"><button class="btn" id="btn-tl4">▶ Run the toy interiors for all six</button></div>
+      <div class="ctl" style="flex:none;"><div class="chip"><div class="k">P(gas in d &gt; gas in e)</div><div class="v" id="tl4pde">–<small> · paper 92 %</small></div></div></div>
+    </div>
+    <div class="chart-box" id="cb-tl4c">
+      <p class="chart-title">Gas and water fractions from the toy sampler, against equilibrium temperature</p>
+      <p class="chart-sub">Medians with 16th to 84th percentiles · outside-iceline prior, stellar Si/Mg/Fe, 20 000 draws per planet · the paper's Fig. 18 in miniature</p>
+      <svg id="tlch4c" viewBox="0 0 920 340" aria-label="Gas and water fractions versus equilibrium temperature"></svg>
+      <div class="tip" id="tip-tl4c" hidden></div>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--rock)"></i>H/He mass fraction</span>
+      <span><i style="border-color:var(--ice)"></i>water fraction of solid</span>
+    </div>
+  </div>
+  <p class="takeaway"><em>The puzzle stated plainly.</em> The two inner planets are consistent with bare rock at Earth-like density, on the near side of the radius valley; the outer four need volatiles. That much follows the usual picture, with evaporation stripping the inner two. What does not follow is the order among the outer four: d holds more gas than e with 92 percent probability in the paper's inference, though e is heavier and farther out, and f is denser than both neighbours. The orbits say the system has been undisturbed since the disk. The compositions say something varied planet to planet while it formed. Reconciling the regularity of the orbits with the disorder of the densities is, the paper says, a challenge for planetary system formation models, and it is the reason this system is called a Rosetta Stone.</p>
+</section>
+
+<!-- ================= STATION L5 ================= -->
+<section id="lel5">
+  <div class="sec-head"><span class="sec-num">§5</span><h2>What the chain forbids and predicts</h2></div>
+  <p class="prose">A resonant chain is a rule, and rules make predictions. The impact parameters grow linearly with the two-thirds power of the period, which means the orbits share one plane, and that plane tilts the outer orbits off the star: any planet beyond about 26 days would not transit. The chain's super-period, meanwhile, fixes where a seventh planet would have to sit to continue it. Slide the super-period to see how robust those periods are, and where the habitable zone begins.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Super-period of the chain <output id="o-tl5sp">260 d</output></label>
+        <input type="range" id="in-tl5sp" min="240" max="290" step="1" value="260" aria-label="Super period"></div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-tl5a">
+        <p class="chart-title">Impact parameter against P<sup>2/3</sup></p>
+        <p class="chart-sub">The paper's Fig. 8 · a straight line means one orbital plane · dashed: where the line reaches b = 1</p>
+        <svg id="tlch5a" viewBox="0 0 460 340" aria-label="Impact parameter versus period"></svg>
+        <div class="tip" id="tip-tl5a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-tl5b">
+        <p class="chart-title">Where a seventh planet could continue the chain</p>
+        <p class="chart-sub">Periods from the paper's eq. C.7 for first- and second-order resonances with g · shaded: would not transit · green: habitable zone</p>
+        <svg id="tlch5b" viewBox="0 0 460 340" aria-label="Candidate periods for a seventh planet"></svg>
+        <div class="tip" id="tip-tl5b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">no transits beyond</div><div class="v" id="tl5plim">–</div></div>
+      <div class="chip"><div class="k">first-order continuations</div><div class="v" id="tl5cont" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">planet mass in the chain</div><div class="v">24.8<small> M⊕ · heavy elements ≥ 14.9</small></div></div>
+      <div class="chip"><div class="k">minimum-mass nebula for this star</div><div class="v">≈ 13<small> M⊕ of solids · scaled to 0.65 M☉, [Fe/H] −0.23</small></div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Two predictions worth remembering.</em> A seventh planet at 45, 32 or 28 days would continue the chain and would not be seen in transit, so the way to find it is radial velocity or timing, not photometry. And the planets already found hold about as much heavy material as a minimum-mass nebula scaled to this small, metal-poor star would supply, which is either a coincidence or a statement that the disk was used up efficiently. The innermost edge of the habitable zone lies near 40 days, so the chain, if it continues, reaches temperate orbits.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The ephemerides, radii, masses, impact parameters and equilibrium temperatures are the paper's Tables 3 and 4; the Laplace angles, super-periods and continuation periods are its equations 1, 2 and C.7, and the angles this page computes at the TESS epoch match its Table 6 to within half a degree. The N-body integration is real: a heliocentric kick–drift–kick scheme with exact Kepler drifts, the six planets at their median masses, circular and coplanar initial orbits placed at the mean longitudes of the transit ephemerides. The paper uses REBOUND with the same initial conditions, so the libration equilibria agree; the amplitudes differ at the tens-of-percent level because a circular start is itself a small perturbation. The light curve of §1 is synthetic, the paper's transit depths and durations plus white noise, with no stellar variability, no instrument systematics and a simplified box search; the ghost period arises from the true ephemerides, not from anything added. The interiors of §4 use this site's toy forward model with solar-scaled abundances at [Fe/H] = −0.23, not the paper's plaNETic run, and its gas fractions are indicative only. The habitable-zone edge and the minimum-mass nebula figure are the paper's estimates.</p>
+  <p>A. Leleu et al. (2021), “Six transiting planets and a chain of Laplace resonances in TOI-178”, A&amp;A 649, A26 · <a href="https://arxiv.org/abs/2101.09260">arXiv:2101.09260</a> · Lithwick, Xie &amp; Wu (2012), ApJ 761, 122 (super-periods and TTVs) · Delisle (2017), A&amp;A 605, A96 (Laplace equilibria)</p>
+</footer>
+</div><!-- /page-lel -->
 
 <div id="page-val" role="tabpanel" aria-labelledby="tab-val" hidden>
 <section class="pagehero">
@@ -4586,8 +4804,8 @@ function egMantle(wc, wm, xFeCore, SiFe, MgFe) {      // plaNETic mantle_composi
   const si = a2 * SiFe / (1 - a1 * SiFe), mg = lam * si;
   return { si, mg, fe: 1 - si - mg };
 }
-function egRun(plKey, water, simg, N) {
-  const pl = EG_PL[plKey], t0 = performance.now();
+function egRun(plKey, water, simg, N, plOverride, starOverride) {
+  const pl = plOverride || EG_PL[plKey], ST = starOverride || EG_STAR, t0 = performance.now();
   const core = new Float64Array(N), mantle = new Float64Array(N), env = new Float64Array(N), z = new Float64Array(N);
   const fv = new Float64Array(N), fg = new Float64Array(N), cmf = new Float64Array(N), Rt = new Float64Array(N), Mt = new Float64Array(N), Rs = new Float64Array(N);
   const acc = [];
@@ -4595,9 +4813,9 @@ function egRun(plKey, water, simg, N) {
   while (n < N && tried < 20 * N) {
     tried++;
     // star: abundances and age, per sample
-    const FeH = EG_STAR.FeH[0] + EG_STAR.FeH[1] * randn(), SiH = EG_STAR.SiH[0] + EG_STAR.SiH[1] * randn(), MgH = EG_STAR.MgH[0] + EG_STAR.MgH[1] * randn();
+    const FeH = ST.FeH[0] + ST.FeH[1] * randn(), SiH = ST.SiH[0] + ST.SiH[1] * randn(), MgH = ST.MgH[0] + ST.MgH[1] * randn();
     let SiFe = EG_SUN.SiFe * Math.pow(10, SiH - FeH), MgFe = EG_SUN.MgFe * Math.pow(10, MgH - FeH);
-    const age = Math.min(13, Math.max(0.5, EG_STAR.age[0] + EG_STAR.age[1] * randn()));
+    const age = Math.min(13, Math.max(0.5, ST.age[0] + ST.age[1] * randn()));
     // planet mass from the observed distribution
     const M = pl.M + pl.sM * randn(); if (M <= 0.5) continue;
     // solid composition on the simplex (case A) or core/mantle only (case B)
@@ -5421,6 +5639,295 @@ $("btn-pn4clear").addEventListener("click", pn4Clear);
 escSegWire("seg-pn5", v => PN.w5 = v, pnDraw5);
 escSegWire("seg-pn6", v => PN.mode6 = v, pnDraw6);
 $("in-pn6s").addEventListener("input", () => { PN.sR6 = +$("in-pn6s").value; pnDraw6(); });
+
+/* ================= Leleu 2021: TOI-178 =================
+   Real ephemerides (Tables 3-4). §1 synthetic sector + BLS. §2 N-body (heliocentric splitting, exact Kepler
+   drift) for the Laplace angles. §3 TTVs from the same integrator. §4 densities + toy interiors (egRun with
+   overrides). §5 coplanarity fit and chain continuation (eq. C.7). Prefix tl/TL.                          */
+const TL_PL = {
+  b: { P: 1.914558, T0: 2458741.6365, M: 1.50, sM: 0.42, R: 1.152, sR: 0.072, rho: 0.98, rhoE: [0.35, 0.31], Teq: 1040, dep: 263, t14: 1.692, b: 0.17, sb: 0.19, a: 0.02607, col: "#7B6FD6" },
+  c: { P: 3.238450, T0: 2458741.4783, M: 4.77, sM: 0.62, R: 1.669, sR: 0.107, rho: 1.02, rhoE: [0.28, 0.23], Teq: 873, dep: 551, t14: 1.95, b: 0.34, sb: 0.30, a: 0.0370, col: "#E5A468" },
+  d: { P: 6.557700, T0: 2458747.14623, M: 3.01, sM: 0.92, R: 2.572, sR: 0.077, rho: 0.177, rhoE: [0.055, 0.061], Teq: 690, dep: 1313, t14: 2.346, b: 0.485, sb: 0.056, a: 0.0592, col: "#3D9BD9" },
+  e: { P: 9.961881, T0: 2458751.4658, M: 3.86, sM: 1.10, R: 2.207, sR: 0.089, rho: 0.360, rhoE: [0.143, 0.097], Teq: 600, dep: 968, t14: 2.501, b: 0.583, sb: 0.056, a: 0.0783, col: "#E58AB8" },
+  f: { P: 15.231915, T0: 2458745.7178, M: 7.72, sM: 1.60, R: 2.287, sR: 0.109, rho: 0.65, rhoE: [0.21, 0.15], Teq: 521, dep: 1037, t14: 2.348, b: 0.765, sb: 0.029, a: 0.1039, col: "#6ECD93" },
+  g: { P: 20.70950, T0: 2458748.0302, M: 3.94, sM: 1.47, R: 2.87, sR: 0.135, rho: 0.166, rhoE: [0.064, 0.068], Teq: 470, dep: 1633, t14: 2.167, b: 0.866, sb: 0.018, a: 0.1275, col: "#E06565" },
+};
+const TL_N = ["b", "c", "d", "e", "f", "g"], TL_MS = 0.650, TL_T0 = 2458350.0, TL_DEG = Math.PI / 180;
+const TL_G = 2.959122082855911e-4, TL_ME = 3.003e-6;
+const TL = { noise: 900, fold: 6.5577, present: { b: true, c: true, d: true, e: true, f: true, g: true }, dPf: 0, ef: 0, mf: 7.7, years: 50, md: 1, mf3: 1, show: { b: false, c: true, d: true, e: true, f: true, g: true }, sp: 260 };
+const tlWrap = a => ((a % 360) + 360) % 360;
+const tlLam = (k, t) => tlWrap(90 + 360 * (t - TL_PL[k].T0) / TL_PL[k].P);
+const tlSuper = (P1, P2, k, q) => 1 / Math.abs((k + q) / P2 - k / P1);
+const tlPairs = [["b", "c", 3, 2, "5:3"], ["c", "d", 1, 1, "2:1"], ["d", "e", 2, 1, "3:2"], ["e", "f", 2, 1, "3:2"], ["f", "g", 3, 1, "4:3"]];
+/* ---- §1 synthetic sector and BLS ---- */
+const TL1 = { tStart: 2458354.1, tEnd: 2458380.0, cad: 2 / 1440, gapA: 2458367.2, gapB: 2458368.6, data: null, bls: null };
+function tl1Synth() {
+  const act = TL_N.filter(k => TL.present[k]), t = [], y = [], who = [];
+  let sd = 4242; const r = () => { sd = (sd * 1664525 + 1013904223) >>> 0; return sd / 4294967296; }, rn = () => Math.sqrt(-2 * Math.log(Math.max(r(), 1e-9))) * Math.cos(2 * Math.PI * r());
+  for (let tt = TL1.tStart; tt < TL1.tEnd; tt += TL1.cad) {
+    if (tt > TL1.gapA && tt < TL1.gapB) continue;
+    let f = 0, w = "";
+    act.forEach(k => { const p = TL_PL[k]; let ph = (tt - p.T0) / p.P; ph -= Math.round(ph); const dtr = Math.abs(ph * p.P) * 24, half = p.t14 / 2; if (dtr < half) { f -= p.dep * 1e-6 * (dtr < half * 0.8 ? 1 : (half - dtr) / (half * 0.2)); w = k; } });
+    t.push(tt); y.push(f + TL.noise * 1e-6 * rn()); who.push(w);
+  }
+  TL1.data = { t, y, who, act };
+}
+function tl1Bls() {
+  const { t, y } = TL1.data, sig = TL.noise * 1e-6, nP = 2400, nbin = 300, lg0 = Math.log(1), lg1 = Math.log(13), out = [];
+  const sum = new Float64Array(nbin), cnt = new Int32Array(nbin);
+  for (let i = 0; i < nP; i++) {
+    const P = Math.exp(lg0 + (lg1 - lg0) * i / (nP - 1)); sum.fill(0); cnt.fill(0);
+    for (let j = 0; j < t.length; j++) { const b = Math.floor((((t[j] - t[0]) / P) % 1) * nbin); sum[b] += y[j]; cnt[b]++; }
+    const w = Math.max(1, Math.round(2.3 / 24 / P * nbin)); let best = 0, bph = 0, bdep = 0;
+    for (let b = 0; b < nbin; b++) { let s = 0, c = 0; for (let q = 0; q < w; q++) { const bb = (b + q) % nbin; s += sum[bb]; c += cnt[bb]; } if (c < 5) continue; const dep = -s / c; const pw = dep > 0 ? dep * dep * c / (sig * sig) : 0; if (pw > best) { best = pw; bph = b / nbin; bdep = dep; } }
+    out.push([P, best, bph, bdep]);
+  }
+  const pk = []; for (let i = 1; i < out.length - 1; i++) if (out[i][1] > out[i - 1][1] && out[i][1] >= out[i + 1][1]) pk.push(out[i]);
+  pk.sort((a, b) => b[1] - a[1]); const top = []; pk.forEach(p => { if (top.every(o => Math.abs(o[0] - p[0]) / p[0] > 0.03)) top.push(p); });
+  TL1.bls = { pw: out, top: top.slice(0, 5) };
+}
+function tlDraw1() {
+  tl1Synth(); tl1Bls();
+  const { t, y, who } = TL1.data;
+  // light curve, 30-min bins
+  let svg = $("tlch1a"); svg.innerHTML = "";
+  const s = makeScales(TL1.tStart - 0.3, TL1.tEnd + 0.3, -3.2, 2.2, 920, 260, 56, 14, 22, 40);
+  axes(svg, s, [2458355, 2458360, 2458365, 2458370, 2458375, 2458380], [-2, 0, 2], "BJD − 2458000", "flux, mmag", v => Math.round(v - 2458000), v => fmt(v, 0));
+  const bw = 30 / 1440, nb = Math.ceil((TL1.tEnd - TL1.tStart) / bw), bs = new Float64Array(nb), bc = new Int32Array(nb);
+  for (let j = 0; j < t.length; j++) { const k = Math.floor((t[j] - TL1.tStart) / bw); bs[k] += y[j]; bc[k]++; }
+  const marks = [];
+  TL1.data.act.forEach(k => { const p = TL_PL[k]; for (let n = -300; n < 300; n++) { const tc = p.T0 + n * p.P; if (tc > TL1.tStart && tc < TL1.tEnd && !(tc > TL1.gapA && tc < TL1.gapB)) { el("line", { x1: fmt(s.x(tc), 1), x2: fmt(s.x(tc), 1), y1: s.padT, y2: s.H - s.padB, stroke: p.col, "stroke-width": 1.6, opacity: 0.85 }, svg); marks.push([s.x(tc), k, tc]); } } });
+  for (let k = 0; k < nb; k++) if (bc[k] > 3) el("circle", { cx: fmt(s.x(TL1.tStart + (k + 0.5) * bw), 1), cy: fmt(s.y(bs[k] / bc[k] * 1000), 1), r: 1.8, fill: C.ink, opacity: 0.7 }, svg);
+  egCharts["tlch1a"] = { scale: s, marks };
+  // periodogram
+  svg = $("tlch1b"); svg.innerHTML = "";
+  const pw = TL1.bls.pw, pmax = Math.max(...pw.map(p => p[1]), 1);
+  const s2 = makeScales(0, Math.log10(13), 0, pmax * 1.15, 460, 340, 46, 12, 22, 40);
+  axes(svg, s2, [1, 2, 3, 5, 8, 13].map(Math.log10), [], "period, d (log)", "BLS power", v => Math.round(Math.pow(10, v)), v => "");
+  el("path", { d: linePath(pw.map(p => [s2.x(Math.log10(p[0])), s2.y(p[1])])), stroke: C.ice, "stroke-width": 1.2, fill: "none" }, svg);
+  TL1.bls.top.forEach((p, i) => { const ghost = Math.abs(p[0] - 10.35) < 0.1; el("text", { x: fmt(s2.x(Math.log10(p[0])), 1), y: fmt(s2.y(p[1]) - 6, 1), "text-anchor": "middle", class: "serieslabel", fill: ghost ? C.rock : C.ink }, svg).textContent = fmt(p[0], 2) + " d"; });
+  egCharts["tlch1b"] = { scale: s2, pw };
+  // fold
+  svg = $("tlch1c"); svg.innerHTML = "";
+  const Pf = TL.fold, nbf = 120, fs = new Float64Array(nbf), fc = new Int32Array(nbf), fw = {};
+  const t0f = TL1.bls.top.find(p => Math.abs(p[0] - Pf) / Pf < 0.02);
+  const phase0 = t0f ? t0f[2] : 0;
+  for (let j = 0; j < t.length; j++) { let ph = ((t[j] - t[0]) / Pf - phase0) % 1; if (ph < 0) ph += 1; if (ph > 0.5) ph -= 1; const k = Math.floor((ph + 0.5) * nbf); fs[k] += y[j]; fc[k]++; if (who[j]) { fw[k] = fw[k] || {}; fw[k][who[j]] = (fw[k][who[j]] || 0) + 1; } }
+  const s3 = makeScales(-0.5, 0.5, -3.2, 2.2, 460, 340, 46, 12, 22, 40);
+  axes(svg, s3, [-0.4, -0.2, 0, 0.2, 0.4], [-2, 0, 2], "phase at " + fmt(Pf, 2) + " d", "flux, mmag", v => fmt(v, 1), v => fmt(v, 0));
+  const fpts = [];
+  for (let k = 0; k < nbf; k++) if (fc[k] > 3) { let col = C.ink, lab = "noise"; if (fw[k]) { const best = Object.keys(fw[k]).sort((a, b) => fw[k][b] - fw[k][a])[0]; col = TL_PL[best].col; lab = "planet " + best; } const px = s3.x(-0.5 + (k + 0.5) / nbf), py = s3.y(fs[k] / fc[k] * 1000); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 2.6, fill: col, opacity: 0.85 }, svg); fpts.push([px, py, lab]); }
+  egCharts["tlch1c"] = { scale: s3, pts: fpts };
+  // chips
+  $("tl1peaks").innerHTML = (TL1.data.act.length ? "" : "<small>noise only: </small>") + TL1.bls.top.slice(0, 4).map(p => fmt(p[0], 2) + " d").join(" · ");
+  const ghostEvents = []; ["f", "g"].forEach(k => { if (!TL.present[k]) return; const p = TL_PL[k]; for (let n = -300; n < 300; n++) { const tc = p.T0 + n * p.P; if (tc > TL1.tStart && tc < TL1.tEnd) ghostEvents.push([tc, k]); } });
+  ghostEvents.sort((a, b) => a[0] - b[0]);
+  $("tl1ghost").innerHTML = ghostEvents.length ? ghostEvents.map(e => "<b style='color:" + TL_PL[e[1]].col + "'>" + e[1] + "</b> at " + fmt(e[0] - 2458000, 2)).join(" · ") + "<small><br>spacings " + ghostEvents.slice(1).map((e, i) => fmt(e[0] - ghostEvents[i][0], 2) + " d").join(", ") + "</small>" : "f and g switched off";
+  $("tl1n").innerHTML = TL_N.map(k => { if (!TL.present[k]) return "–"; const p = TL_PL[k]; let n = 0; for (let m = -300; m < 300; m++) { const tc = p.T0 + m * p.P; if (tc > TL1.tStart && tc < TL1.tEnd && !(tc > TL1.gapA && tc < TL1.gapB)) n++; } return n; }).join(" · ");
+}
+/* ---- N-body ---- */
+function tlKep(mu, b, dt) {   // advance body b in place on its Kepler orbit
+  const r0x = b.x, r0y = b.y, v0x = b.vx, v0y = b.vy;
+  const rr = Math.hypot(r0x, r0y), vv2 = v0x * v0x + v0y * v0y, rv = r0x * v0x + r0y * v0y;
+  const a = 1 / (2 / rr - vv2 / mu), n = Math.sqrt(mu / (a * a * a));
+  const ecosE = 1 - rr / a, esinE = rv / Math.sqrt(mu * a), e = Math.hypot(ecosE, esinE);
+  const E0 = Math.atan2(esinE, ecosE), M = E0 - esinE + n * dt;
+  let E = M + e * Math.sin(M); for (let i = 0; i < 7; i++) { const f = E - e * Math.sin(E) - M; E -= f / (1 - e * Math.cos(E)); }
+  const dE = E - E0, cd = Math.cos(dE), sd = Math.sin(dE), f_ = 1 + a / rr * (cd - 1), g_ = dt + (sd - dE) / n;
+  const rx = f_ * r0x + g_ * v0x, ry = f_ * r0y + g_ * v0y, rn_ = Math.hypot(rx, ry);
+  const fd = -a * a / (rr * rn_) * n * sd, gd = 1 + a / rn_ * (cd - 1);
+  b.x = rx; b.y = ry; b.vx = fd * r0x + gd * v0x; b.vy = fd * r0y + gd * v0y;
+}
+function tlSetup(opt) {
+  return TL_N.map(k => {
+    const p = TL_PL[k]; let P = p.P, m = p.M, e = 0;
+    if (k === "f") { P += opt.dPf || 0; m = opt.mf !== undefined ? opt.mf : m; e = opt.ef || 0; }
+    if (k === "d" && opt.md) m *= opt.md; if (k === "f" && opt.mf3) m *= opt.mf3;
+    const mu = TL_G * (TL_MS + m * TL_ME), a = Math.cbrt(mu * P * P / (4 * Math.PI * Math.PI)), l = tlLam(k, TL_T0) * TL_DEG, vc = Math.sqrt(mu / a) * Math.sqrt(1 + e);
+    return { k, m: m * TL_ME, mu, x: a * Math.cos(l), y: a * Math.sin(l), vx: -vc * Math.sin(l), vy: vc * Math.cos(l) };
+  });
+}
+function tlKick(bod, h) {
+  const n = bod.length, ax = new Float64Array(n), ay = new Float64Array(n);
+  for (let j = 0; j < n; j++) { const bj = bod[j], rj = Math.hypot(bj.x, bj.y), rj3 = rj * rj * rj, gm = TL_G * bj.m; for (let i = 0; i < n; i++) if (i !== j) { const dx = bj.x - bod[i].x, dy = bj.y - bod[i].y, d = Math.hypot(dx, dy), d3 = d * d * d; ax[i] += gm * (dx / d3 - bj.x / rj3); ay[i] += gm * (dy / d3 - bj.y / rj3); } }
+  for (let i = 0; i < n; i++) { bod[i].vx += h * ax[i]; bod[i].vy += h * ay[i]; }
+}
+function tlIntegrate(bod, days, dt, every, wantTT) {
+  const nsteps = Math.round(days / dt), series = [], tt = TL_N.map(() => []), prev = bod.map(b => Math.atan2(b.y, b.x));
+  const nf = []; let thF = 0, prevF = Math.atan2(bod[4].y, bod[4].x), half = Math.floor(nsteps / 2);
+  for (let s = 0; s <= nsteps; s++) {
+    const t = s * dt;
+    if (every && s % every === 0) { const L = bod.map(b => tlWrap(Math.atan2(b.y, b.x) / TL_DEG)); series.push([t / 365.25, tlWrap(L[1] - 4 * L[2] + 3 * L[3]), tlWrap(2 * L[2] - 5 * L[3] + 3 * L[4]), tlWrap(L[3] - 3 * L[4] + 2 * L[5])]); }
+    tlKick(bod, 0.5 * dt); bod.forEach(b => tlKep(b.mu, b, dt)); tlKick(bod, 0.5 * dt);
+    if (wantTT) bod.forEach((b, i) => { const ang = Math.atan2(b.y, b.x); if (b.y > 0 && prev[i] < Math.PI / 2 && ang >= Math.PI / 2) { const frac = (Math.PI / 2 - prev[i]) / (ang - prev[i]); tt[i].push(t - dt + frac * dt); } prev[i] = ang; });
+    { const ang = Math.atan2(bod[4].y, bod[4].x); let d = ang - prevF; if (d < -Math.PI) d += 2 * Math.PI; if (d > Math.PI) d -= 2 * Math.PI; thF += d; prevF = ang; }
+    if (s === half) nf.push(thF / (half * dt)); if (s === nsteps) nf.push((thF - nf[0] * half * dt) / ((nsteps - half) * dt));
+  }
+  return { series, tt, nf };
+}
+let tl2res = null;
+function tlDraw2() {
+  $("o-tl2dp").textContent = (TL.dPf >= 0 ? "+" : "") + fmt(TL.dPf, 3) + " d"; $("o-tl2e").textContent = fmt(TL.ef, 3); $("o-tl2m").textContent = fmt(TL.mf, 1) + " M⊕";
+  const t0 = performance.now();
+  const res = tlIntegrate(tlSetup({ dPf: TL.dPf, ef: TL.ef, mf: TL.mf }), TL.years * 365.25, 0.1, 60, false);
+  tl2res = res; const ms = performance.now() - t0;
+  const svg = $("tlch2"); svg.innerHTML = "";
+  const s = makeScales(0, TL.years, 0, 360, 920, 380, 56, 20, 22, 42);
+  axes(svg, s, niceTicks(0, TL.years, 5), [0, 90, 180, 270, 360], "time since TESS Sector 2, years", "angle, deg", v => Math.round(v), v => v);
+  [[180, C.ice], [168.94, C.rock], [78.9, "#6ECD93"]].forEach(([e, col]) => el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(e), 1), y2: fmt(s.y(e), 1), stroke: col, "stroke-dasharray": "4 4", opacity: 0.6 }, svg));
+  [[1, C.ice], [2, C.rock], [3, "#6ECD93"]].forEach(([c, col]) => {
+    let d = "", pen = false, last = null;
+    res.series.forEach(r => { const v = r[c]; if (last !== null && Math.abs(v - last) > 180) pen = false; d += (pen ? "L" : "M") + fmt(s.x(r[0]), 1) + " " + fmt(s.y(v), 1); pen = true; last = v; });
+    el("path", { d, stroke: col, "stroke-width": 1.8, fill: "none" }, svg);
+  });
+  egCharts["tlch2"] = { scale: s, series: res.series };
+  const amp = c => { const v = res.series.map(r => r[c]); const circ = v.some((x, i) => i > 0 && Math.abs(x - v[i - 1]) > 180); if (circ) return null; return (Math.max(...v) - Math.min(...v)) / 2; };
+  const A = [amp(1), amp(2), amp(3)];
+  const L0 = TL_N.map(k => tlLam(k, TL_T0));
+  $("tl2ep").innerHTML = "ψ₁ " + fmt(tlWrap(L0[1] - 4 * L0[2] + 3 * L0[3]), 1) + "° / 166.7° · ψ₂ " + fmt(tlWrap(2 * L0[2] - 5 * L0[3] + 3 * L0[4]), 1) + "° / 157.6° · ψ₃ " + fmt(tlWrap(L0[3] - 3 * L0[4] + 2 * L0[5]), 1) + "° / 72.0°";
+  const nLib = A.filter(a => a !== null).length;
+  $("tl2v").innerHTML = nLib === 3 ? "all three angles librate: the chain holds" : nLib === 0 ? "every angle circulates: the chain is broken" : nLib + " of 3 librate · partial chain";
+  $("tl2amp").innerHTML = A.map(a => a === null ? "circ." : "±" + Math.round(a) + "°").join(" · ");
+  const diff = Math.log10(Math.max(Math.abs(res.nf[0] - res.nf[1]) / Math.abs(res.nf[0]), 1e-12));
+  $("tl2diff").innerHTML = fmt(diff, 1) + "<small> · " + (diff < -5 ? "regular" : diff < -3.5 ? "slow diffusion" : "chaotic") + "</small>";
+  $("tl2ms").innerHTML = Math.round(ms) + "<small> ms · " + Math.round(TL.years * 365.25 / 0.1).toLocaleString("en-US") + " steps</small>";
+  // ladder
+  $("tl-ladder").innerHTML = tlPairs.map(([a, b, k, q, lab]) => { const r = TL_PL[b].P / TL_PL[a].P, sp = tlSuper(TL_PL[a].P, TL_PL[b].P, k, q); return "<div class='rung'>" + a + " – " + b + "<br><b>" + fmt(r, 4) + "</b> <span class='res'>≈ " + lab + "</span><br>super-period <b>" + fmt(sp, 1) + "</b> d</div>"; }).join("");
+}
+let tl3res = null;
+function tlDraw3() {
+  $("o-tl3md").textContent = fmt(TL.md, 2); $("o-tl3mf").textContent = fmt(TL.mf3, 2);
+  const res = tlIntegrate(tlSetup({ md: TL.md, mf3: TL.mf3 }), 6 * 365.25, 0.05, 0, true);
+  const rows = TL_N.map((k, i) => { const T = res.tt[i], n = T.length; if (n < 3) return { k, oc: [] }; let sx = 0, sy = 0, sxx = 0, sxy = 0; for (let j = 0; j < n; j++) { sx += j; sy += T[j]; sxx += j * j; sxy += j * T[j]; } const sl = (n * sxy - sx * sy) / (n * sxx - sx * sx), ic = (sy - sl * sx) / n; return { k, P: sl, oc: T.map((t, j) => [t / 365.25, (t - ic - sl * j) * 1440]) }; });
+  tl3res = rows;
+  const svg = $("tlch3"); svg.innerHTML = "";
+  let mx = 5; rows.forEach(r => { if (TL.show[r.k]) r.oc.forEach(p => { if (Math.abs(p[1]) > mx) mx = Math.abs(p[1]); }); }); mx *= 1.1;
+  const s = makeScales(0, 6, -mx, mx, 920, 380, 56, 20, 22, 42);
+  axes(svg, s, [0, 1, 2, 3, 4, 5, 6], niceTicks(-mx, mx, 6), "years since TESS Sector 2", "O − C, minutes", v => v, v => Math.round(v));
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(0), 1), y2: fmt(s.y(0), 1), stroke: C.line }, svg);
+  rows.forEach(r => { if (!TL.show[r.k] || !r.oc.length) return; el("path", { d: linePath(r.oc.map(p => [s.x(p[0]), s.y(p[1])])), stroke: TL_PL[r.k].col, "stroke-width": 1.6, fill: "none", opacity: 0.9 }, svg); });
+  egCharts["tlch3"] = { scale: s, rows };
+  $("tl3amps").innerHTML = rows.map(r => { const a = r.oc.length ? Math.max(...r.oc.map(p => Math.abs(p[1]))) : 0; return "<div class='chip'><div class='k' style='color:" + TL_PL[r.k].col + "'>" + r.k + " · max |O−C|</div><div class='v'>" + fmt(a, 1) + "<small> min · " + r.oc.length + " transits</small></div></div>"; }).join("");
+}
+/* ---- §4 densities and toy interiors ---- */
+const TL_STAR = { FeH: [-0.23, 0.05], SiH: [-0.23, 0.05], MgH: [-0.23, 0.05], age: [7.1, 4.0] };
+let tl4res = null;
+function tlDraw4() {
+  let svg = $("tlch4a"); svg.innerHTML = "";
+  const s = makeScales(400, 1100, Math.log10(0.08), Math.log10(2.5), 460, 360, 46, 12, 22, 40);
+  axes(svg, s, [400, 600, 800, 1000], [0.1, 0.2, 0.5, 1, 2].map(Math.log10), "equilibrium temperature, K", "density, ρ⊕ (log)", v => v, v => fmt(Math.pow(10, v), 1));
+  const pts = [];
+  TL_N.forEach(k => { const p = TL_PL[k], px = s.x(p.Teq), py = s.y(Math.log10(p.rho));
+    el("line", { x1: fmt(px, 1), x2: fmt(px, 1), y1: fmt(s.y(Math.log10(p.rho + p.rhoE[0])), 1), y2: fmt(s.y(Math.log10(Math.max(p.rho - p.rhoE[1], 0.02))), 1), stroke: p.col, "stroke-width": 1.5 }, svg);
+    const rE = egRsolid(p.M, 0.325, 0), rhoE = p.M / Math.pow(rE, 3);
+    el("circle", { cx: fmt(px, 1), cy: fmt(s.y(Math.log10(rhoE)), 1), r: 3.5, fill: "none", stroke: C.muted, "stroke-dasharray": "2 2" }, svg);
+    el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: p.col, stroke: "#0C111E", "stroke-width": 2 }, svg);
+    el("text", { x: fmt(px + 9, 1), y: fmt(py + 4, 1), class: "serieslabel", fill: p.col }, svg).textContent = k;
+    pts.push([px, py, k]); });
+  el("path", { d: linePath(TL_N.slice().sort((a, b) => TL_PL[b].Teq - TL_PL[a].Teq).map(k => [s.x(TL_PL[k].Teq), s.y(Math.log10(TL_PL[k].rho))])), stroke: C.muted, "stroke-width": 1, fill: "none", opacity: 0.5 }, svg);
+  egCharts["tlch4a"] = { scale: s, pts };
+  svg = $("tlch4b"); svg.innerHTML = "";
+  const s2 = makeScales(Math.log10(0.8), Math.log10(12), Math.log10(0.9), Math.log10(3.5), 460, 360, 46, 12, 22, 40);
+  axes(svg, s2, [1, 2, 3, 5, 10].map(Math.log10), [1, 1.5, 2, 3].map(Math.log10), "mass, M⊕ (log)", "radius, R⊕ (log)", v => Math.round(Math.pow(10, v)), v => fmt(Math.pow(10, v), 1));
+  const ms = []; for (let lg = Math.log10(0.8); lg <= Math.log10(12) + 1e-9; lg += 0.03) ms.push(Math.pow(10, lg));
+  const line = (f, col, dash, lab) => { const pts2 = ms.map(m => [m, f(m)]).filter(p => p[1] >= 0.9 && p[1] <= 3.5); if (pts2.length < 2) return; el("path", { d: linePath(pts2.map(p => [s2.x(Math.log10(p[0])), s2.y(Math.log10(p[1]))])), stroke: col, "stroke-width": 1.3, fill: "none", "stroke-dasharray": dash }, svg); const l = pts2[pts2.length - 1]; el("text", { x: fmt(s2.x(Math.log10(l[0])) - 4, 1), y: fmt(s2.y(Math.log10(l[1])) - 5, 1), "text-anchor": "end", fill: col, style: "font-family:var(--sans);font-size:10px" }, svg).textContent = lab; };
+  line(m => egRsolid(m, 0.325, 0), C.rock, "", "Earth-like"); line(m => egRsolid(m, 0.325, 0.5), C.ice, "6 4", "50 % water");
+  [0.005, 0.02, 0.05].forEach(f => line(m => egRsolid(m * (1 - f), 0.325, 0) + egRenv(m, f, 20, 7), C.rock, "2 4", (f * 100).toFixed(1).replace(".0", "") + " % H/He"));
+  const pts2 = [];
+  TL_N.forEach(k => { const p = TL_PL[k], px = s2.x(Math.log10(p.M)), py = s2.y(Math.log10(p.R));
+    el("line", { x1: fmt(s2.x(Math.log10(Math.max(p.M - p.sM, 0.5))), 1), x2: fmt(s2.x(Math.log10(p.M + p.sM)), 1), y1: fmt(py, 1), y2: fmt(py, 1), stroke: p.col, "stroke-width": 1.5 }, svg);
+    el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: p.col, stroke: "#0C111E", "stroke-width": 2 }, svg);
+    el("text", { x: fmt(px + 9, 1), y: fmt(py - 6, 1), class: "serieslabel", fill: p.col }, svg).textContent = k; pts2.push([px, py, k]); });
+  egCharts["tlch4b"] = { scale: s2, pts: pts2 };
+  tlDraw4c();
+}
+function tlDraw4c() {
+  const svg = $("tlch4c"); svg.innerHTML = "";
+  const s = makeScales(400, 1100, -6, Math.log10(0.6), 920, 340, 64, 20, 22, 42);
+  axes(svg, s, [400, 600, 800, 1000], [-6, -4, -2, 0], "equilibrium temperature, K", "mass fraction (log)", v => v, v => "1e" + v);
+  if (!tl4res) { el("text", { x: fmt(s.x(750), 1), y: fmt(s.y(-3), 1), "text-anchor": "middle", class: "serieslabel", fill: C.muted }, svg).textContent = "press the button to run the sampler on all six planets"; egCharts["tlch4c"] = null; return; }
+  const pts = [];
+  TL_N.forEach((k, i) => { const r = tl4res[k], p = TL_PL[k], px = s.x(p.Teq);
+    const q = (vals, f) => { const a = r.acc.map(j => vals[j]).sort((x, y) => x - y); return a.length ? a[Math.min(a.length - 1, Math.floor(f * a.length))] : NaN; };
+    [["fg", C.rock, -6], ["fv", C.ice, 6]].forEach(([key, col, dx]) => { const m = q(r[key], 0.5), lo = q(r[key], 0.16), hi = q(r[key], 0.84); if (!isFinite(m)) return; const ly = v => s.y(Math.max(Math.log10(Math.max(v, 1e-6)), -6));
+      el("line", { x1: fmt(px + dx, 1), x2: fmt(px + dx, 1), y1: fmt(ly(hi), 1), y2: fmt(ly(lo), 1), stroke: col, "stroke-width": 1.5 }, svg);
+      el("circle", { cx: fmt(px + dx, 1), cy: fmt(ly(m), 1), r: 5, fill: col, stroke: "#0C111E", "stroke-width": 1.5 }, svg); pts.push([px + dx, ly(m), k, key, m, lo, hi]); });
+    el("text", { x: fmt(px, 1), y: fmt(s.H - s.padB - 6, 1), "text-anchor": "middle", class: "serieslabel", fill: p.col }, svg).textContent = k; });
+  egCharts["tlch4c"] = { scale: s, pts };
+}
+function tl4Run() {
+  tl4res = {};
+  TL_N.forEach(k => { const p = TL_PL[k]; const pl = { name: "TOI-178 " + k, M: p.M, sM: p.sM, R: p.R, sR: p.sR, F: Math.pow(p.Teq / 278.6, 4) }; tl4res[k] = egRun(k, "A", "1", 20000, pl, TL_STAR); });
+  const d = tl4res.d, e = tl4res.e; let win = 0, tot = 0;
+  for (let i = 0; i < 4000; i++) { const a = d.acc.length ? d.fg[d.acc[Math.floor(rand() * d.acc.length)]] : NaN, b = e.acc.length ? e.fg[e.acc[Math.floor(rand() * e.acc.length)]] : NaN; if (isFinite(a) && isFinite(b)) { tot++; if (a > b) win++; } }
+  $("tl4pde").innerHTML = tot ? Math.round(win / tot * 100) + " %<small> · paper 92 %</small>" : "–";
+  tlDraw4c();
+}
+/* ---- §5 coplanarity and continuation ---- */
+function tlDraw5() {
+  $("o-tl5sp").textContent = TL.sp + " d";
+  let svg = $("tlch5a"); svg.innerHTML = "";
+  const xs = TL_N.map(k => Math.pow(TL_PL[k].P, 2 / 3)), ys = TL_N.map(k => TL_PL[k].b), ws = TL_N.map(k => 1 / (TL_PL[k].sb * TL_PL[k].sb));
+  let Sw = 0, Sx = 0, Sy = 0, Sxx = 0, Sxy = 0; for (let i = 0; i < 6; i++) { Sw += ws[i]; Sx += ws[i] * xs[i]; Sy += ws[i] * ys[i]; Sxx += ws[i] * xs[i] * xs[i]; Sxy += ws[i] * xs[i] * ys[i]; }
+  const slope = (Sw * Sxy - Sx * Sy) / (Sw * Sxx - Sx * Sx), icpt = (Sy - slope * Sx) / Sw, xlim = (1 - icpt) / slope, Plim = Math.pow(xlim, 1.5);
+  const s = makeScales(0, 10, 0, 1.05, 460, 340, 46, 12, 22, 40);
+  axes(svg, s, [0, 2, 4, 6, 8, 10], [0, 0.25, 0.5, 0.75, 1], "(P / day)^(2/3)", "impact parameter", v => v, v => fmt(v, 2));
+  el("path", { d: linePath([[s.x(0), s.y(icpt)], [s.x(10), s.y(icpt + slope * 10)]]), stroke: C.ink2, "stroke-width": 1.5 }, svg);
+  el("line", { x1: fmt(s.x(xlim), 1), x2: fmt(s.x(xlim), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.rock, "stroke-dasharray": "5 4" }, svg);
+  el("text", { x: fmt(s.x(xlim) - 6, 1), y: s.padT + 14, "text-anchor": "end", class: "serieslabel", fill: C.rock }, svg).textContent = "b = 1 at P ≈ " + fmt(Plim, 1) + " d";
+  const pts = [];
+  TL_N.forEach((k, i) => { const p = TL_PL[k]; el("line", { x1: fmt(s.x(xs[i]), 1), x2: fmt(s.x(xs[i]), 1), y1: fmt(s.y(Math.min(1.05, ys[i] + p.sb)), 1), y2: fmt(s.y(Math.max(0, ys[i] - p.sb)), 1), stroke: p.col, "stroke-width": 1.5 }, svg); el("circle", { cx: fmt(s.x(xs[i]), 1), cy: fmt(s.y(ys[i]), 1), r: 5.5, fill: p.col, stroke: "#0C111E", "stroke-width": 2 }, svg); pts.push([s.x(xs[i]), s.y(ys[i]), k]); });
+  egCharts["tlch5a"] = { scale: s, pts };
+  $("tl5plim").innerHTML = fmt(Plim, 1) + "<small> d · inclination " + fmt(Math.atan2(icpt + slope * Math.pow(20.7, 2 / 3), 42.1) / TL_DEG, 2) + "° off edge-on at g</small>";
+  svg = $("tlch5b"); svg.innerHTML = "";
+  const s2 = makeScales(20, 50, 0, 1, 460, 340, 46, 12, 22, 40);
+  axes(svg, s2, [20, 25, 30, 35, 40, 45, 50], [], "orbital period, d", "", v => v, v => "");
+  el("rect", { x: fmt(s2.x(Math.max(20, Plim)), 1), y: s2.padT, width: fmt(s2.x(50) - s2.x(Math.max(20, Plim)), 1), height: s2.H - s2.padT - s2.padB, fill: "rgba(201,118,51,.10)" }, svg);
+  el("text", { x: fmt(s2.x(Plim) + 6, 1), y: s2.padT + 14, class: "serieslabel", fill: C.rock }, svg).textContent = "no transits";
+  el("rect", { x: fmt(s2.x(40), 1), y: s2.padT, width: fmt(s2.x(50) - s2.x(40), 1), height: s2.H - s2.padT - s2.padB, fill: "rgba(76,187,120,.12)" }, svg);
+  el("text", { x: fmt(s2.x(41), 1), y: s2.H - s2.padB - 10, class: "serieslabel", fill: "#6ECD93" }, svg).textContent = "habitable zone";
+  const cont = [[1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [3, 2], [5, 2], [7, 2]].map(([k, q]) => ({ k, q, P: (k + q) / (k / TL_PL.g.P - q / TL.sp) }));
+  const pts2 = [];
+  cont.forEach((c, i) => { const px = s2.x(c.P), py = s2.y(0.5 - (c.q === 1 ? 0.12 : -0.12) + (i % 2 ? 0.08 : -0.08)); el("line", { x1: fmt(px, 1), x2: fmt(px, 1), y1: fmt(py - 26, 1), y2: fmt(py + 26, 1), stroke: c.q === 1 ? C.ice : C.muted, "stroke-width": c.q === 1 ? 2.5 : 1.5 }, svg); el("text", { x: fmt(px, 1), y: fmt(py + 40, 1), "text-anchor": "middle", fill: c.q === 1 ? C.ice : C.muted, style: "font-family:var(--mono);font-size:10.5px" }, svg).textContent = (c.k + c.q) + ":" + c.k; pts2.push([px, py, c]); });
+  el("circle", { cx: fmt(s2.x(TL_PL.g.P), 1), cy: fmt(s2.y(0.5), 1), r: 6, fill: TL_PL.g.col, stroke: "#0C111E", "stroke-width": 2 }, svg);
+  el("text", { x: fmt(s2.x(TL_PL.g.P), 1), y: fmt(s2.y(0.5) - 12, 1), "text-anchor": "middle", class: "serieslabel", fill: TL_PL.g.col }, svg).textContent = "g";
+  egCharts["tlch5b"] = { scale: s2, pts: pts2 };
+  $("tl5cont").innerHTML = cont.filter(c => c.q === 1).slice(0, 3).map(c => fmt(c.P, 1) + " d <small>(" + (c.k + 1) + ":" + c.k + ")</small>").join(" · ");
+}
+function tlDrawAll() { tlDraw1(); tlDraw2(); tlDraw3(); tlDraw4(); tlDraw5(); }
+/* ---- hovers ---- */
+attachHover($("cb-tl1a"), $("tlch1a"), { padL: 56, padR: 14, W: 920, H: 260 },
+  (px, py, cx, cy) => { const c = egCharts["tlch1a"]; let best = null, bd = 1e9; c.marks.forEach(m => { const d = Math.abs(m[0] - px); if (d < bd) { bd = d; best = m; } }); if (!best || bd > 8) { $("tip-tl1a").hidden = true; return; } setTip($("tip-tl1a"), cx, cy, "<b>planet " + best[1] + "</b><br><span class='mono'>transit at BJD " + fmt(best[2], 2) + " · depth " + TL_PL[best[1]].dep + " ppm · " + fmt(TL_PL[best[1]].t14, 2) + " h</span>", $("cb-tl1a").clientWidth); }, () => $("tip-tl1a").hidden = true);
+attachHover($("cb-tl1b"), $("tlch1b"), { padL: 46, padR: 12, W: 460, H: 340 },
+  (px, py, cx, cy) => { const c = egCharts["tlch1b"], P = Math.pow(10, c.scale.inv(px)); let b = c.pw[0]; c.pw.forEach(p => { if (Math.abs(p[0] - P) < Math.abs(b[0] - P)) b = p; }); setTip($("tip-tl1b"), cx, cy, "<b>" + fmt(b[0], 3) + " d</b><br><span class='mono'>power " + fmt(b[1], 0) + " · box depth " + fmt(b[3] * 1e6, 0) + " ppm</span>", $("cb-tl1b").clientWidth); }, () => $("tip-tl1b").hidden = true);
+attachHover($("cb-tl1c"), $("tlch1c"), { padL: 46, padR: 12, W: 460, H: 340 },
+  (px, py, cx, cy) => { const c = egCharts["tlch1c"]; let best = null, bd = 1e9; c.pts.forEach(p => { const d = Math.hypot(p[0] - px, p[1] - py); if (d < bd) { bd = d; best = p; } }); if (!best || bd > 10) { $("tip-tl1c").hidden = true; return; } setTip($("tip-tl1c"), cx, cy, "<b>" + best[2] + "</b>", $("cb-tl1c").clientWidth); }, () => $("tip-tl1c").hidden = true);
+attachHover($("cb-tl2"), $("tlch2"), { padL: 56, padR: 20, W: 920, H: 380 },
+  (px, py, cx, cy) => { const c = egCharts["tlch2"]; if (!c) return; const t = c.scale.inv(px); let b = c.series[0]; c.series.forEach(r => { if (Math.abs(r[0] - t) < Math.abs(b[0] - t)) b = r; }); setTip($("tip-tl2"), cx, cy, "<b>" + fmt(b[0], 1) + " yr</b><br><span class='mono'>ψ₁ " + Math.round(b[1]) + "° · ψ₂ " + Math.round(b[2]) + "° · ψ₃ " + Math.round(b[3]) + "°</span>", $("cb-tl2").clientWidth); }, () => $("tip-tl2").hidden = true);
+attachHover($("cb-tl3"), $("tlch3"), { padL: 56, padR: 20, W: 920, H: 380 },
+  (px, py, cx, cy) => { const c = egCharts["tlch3"]; if (!c) return; let best = null, bd = 1e9; c.rows.forEach(r => { if (!TL.show[r.k]) return; r.oc.forEach(p => { const d = Math.hypot(c.scale.x(p[0]) - px, c.scale.y(p[1]) - py); if (d < bd) { bd = d; best = [r.k, p]; } }); }); if (!best || bd > 14) { $("tip-tl3").hidden = true; return; } setTip($("tip-tl3"), cx, cy, "<b>planet " + best[0] + "</b><br><span class='mono'>" + fmt(best[1][0], 2) + " yr · O−C " + fmt(best[1][1], 1) + " min</span>", $("cb-tl3").clientWidth); }, () => $("tip-tl3").hidden = true);
+function tlPtHover(boxId, svgId, tipId, pad, html) { attachHover($(boxId), $(svgId), pad, (px, py, cx, cy) => { const c = egCharts[svgId]; if (!c) return; let best = null, bd = 1e9; c.pts.forEach(p => { const d = Math.hypot(p[0] - px, p[1] - py); if (d < bd) { bd = d; best = p; } }); if (!best || bd > 14) { $(tipId).hidden = true; return; } setTip($(tipId), cx, cy, html(best), $(boxId).clientWidth); }, () => $(tipId).hidden = true); }
+const tlPlanetHtml = p => { const q = TL_PL[p[2]]; return "<b>TOI-178 " + p[2] + "</b><br><span class='mono'>P " + fmt(q.P, 2) + " d · M " + fmt(q.M, 2) + " ± " + fmt(q.sM, 2) + " M⊕ · R " + fmt(q.R, 2) + " R⊕</span><br><span class='mono'>ρ " + fmt(q.rho, 2) + " ρ⊕ · T_eq " + q.Teq + " K</span>"; };
+tlPtHover("cb-tl4a", "tlch4a", "tip-tl4a", { padL: 46, padR: 12, W: 460, H: 360 }, tlPlanetHtml);
+tlPtHover("cb-tl4b", "tlch4b", "tip-tl4b", { padL: 46, padR: 12, W: 460, H: 360 }, tlPlanetHtml);
+tlPtHover("cb-tl4c", "tlch4c", "tip-tl4c", { padL: 64, padR: 20, W: 920, H: 340 }, p => "<b>TOI-178 " + p[2] + " · " + (p[3] === "fg" ? "H/He" : "water of solid") + "</b><br><span class='mono'>median " + egPctF(p[4]) + " % · 68 %: " + egPctF(p[5]) + " – " + egPctF(p[6]) + " %</span>");
+tlPtHover("cb-tl5a", "tlch5a", "tip-tl5a", { padL: 46, padR: 12, W: 460, H: 340 }, p => "<b>TOI-178 " + p[2] + "</b><br><span class='mono'>b = " + fmt(TL_PL[p[2]].b, 3) + " ± " + fmt(TL_PL[p[2]].sb, 3) + " · P " + fmt(TL_PL[p[2]].P, 2) + " d</span>");
+tlPtHover("cb-tl5b", "tlch5b", "tip-tl5b", { padL: 46, padR: 12, W: 460, H: 340 }, p => "<b>" + (p[2].k + p[2].q) + ":" + p[2].k + " with g</b><br><span class='mono'>P = " + fmt(p[2].P, 2) + " d · " + (p[2].q === 1 ? "first" : "second") + "-order</span>");
+/* ---- wiring ---- */
+$("tog-tl1").querySelectorAll("button").forEach(b => b.addEventListener("click", () => { const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", on); TL.present[b.dataset.v] = on; tlDraw1(); }));
+escSegWire("seg-tl1n", v => TL.noise = +v, tlDraw1);
+escSegWire("seg-tl1f", v => TL.fold = +v, tlDraw1);
+$("in-tl2dp").addEventListener("input", () => { TL.dPf = +$("in-tl2dp").value; $("o-tl2dp").textContent = (TL.dPf >= 0 ? "+" : "") + fmt(TL.dPf, 3) + " d"; });
+$("in-tl2e").addEventListener("input", () => { TL.ef = +$("in-tl2e").value; $("o-tl2e").textContent = fmt(TL.ef, 3); });
+$("in-tl2m").addEventListener("input", () => { TL.mf = +$("in-tl2m").value; $("o-tl2m").textContent = fmt(TL.mf, 1) + " M⊕"; });
+escSegWire("seg-tl2y", v => TL.years = +v, () => {});
+$("btn-tl2").addEventListener("click", tlDraw2);
+$("in-tl3md").addEventListener("input", () => { TL.md = +$("in-tl3md").value; $("o-tl3md").textContent = fmt(TL.md, 2); });
+$("in-tl3mf").addEventListener("input", () => { TL.mf3 = +$("in-tl3mf").value; $("o-tl3mf").textContent = fmt(TL.mf3, 2); });
+$("tog-tl3").querySelectorAll("button").forEach(b => b.addEventListener("click", () => { const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", on); TL.show[b.dataset.v] = on; tlDraw3(); }));
+$("btn-tl3").addEventListener("click", tlDraw3);
+$("btn-tl4").addEventListener("click", tl4Run);
+$("in-tl5sp").addEventListener("input", () => { TL.sp = +$("in-tl5sp").value; tlDraw5(); });
 
 /* ================= Photobombing -> interiors (concept tab) =================
    Transcribes the target-confusion (Sect. 2.2.3) and cancellation (2.2.4) criteria of
@@ -6416,7 +6923,7 @@ function ppInit() {
 }
 
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "val", "pp", "pnet"];
+const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "val", "pp", "pnet"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -6436,6 +6943,7 @@ cfDrawAll();
 egDrawAll();
 rvDrawAll();
 pnDrawAll();
+tlDrawAll();
 drawB1(); b2Reset(); b3Reset();
 mInitData(); m1SetVel(); m1Render(); m2Reset(); mnInit(); ppInit(); showTab(tab0);
 </script>
