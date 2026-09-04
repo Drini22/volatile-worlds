@@ -2620,9 +2620,9 @@
     <div class="controls">
       <div class="ctl" style="flex:none;"><label>Population</label>
         <div class="seg" id="seg-dv1p" role="group" aria-label="Population">
-          <button aria-pressed="true" data-v="G">G · 1 M☉</button>
-          <button aria-pressed="false" data-v="eM">early M · 0.5 M☉</button>
-          <button aria-pressed="false" data-v="lM">late M · 0.2 M☉</button>
+          <button aria-pressed="true" data-v="G">G star</button>
+          <button aria-pressed="false" data-v="eM">early M</button>
+          <button aria-pressed="false" data-v="lM">late M</button>
         </div></div>
       <div class="ctl"><label>Heaviest "Earth" <output id="o-dv1m">3.0 M⊕</output></label>
         <input type="range" id="in-dv1m" min="1" max="10" step="0.5" value="3" aria-label="Maximum Earth-like mass"></div>
@@ -2700,9 +2700,9 @@
     <div class="controls">
       <div class="ctl" style="flex:none;"><label>Population</label>
         <div class="seg" id="seg-dv3p" role="group" aria-label="Population">
-          <button aria-pressed="true" data-v="G">G · 1 M☉</button>
-          <button aria-pressed="false" data-v="eM">early M · 0.5 M☉</button>
-          <button aria-pressed="false" data-v="lM">late M · 0.2 M☉</button>
+          <button aria-pressed="true" data-v="G">G star</button>
+          <button aria-pressed="false" data-v="eM">early M</button>
+          <button aria-pressed="false" data-v="lM">late M</button>
         </div></div>
     </div>
     <div class="census-grid">
@@ -7061,8 +7061,8 @@ function dvDraw1() {
   $("o-dv1m").textContent = fmt(DV1.Mmax, 1) + " M⊕"; $("o-dv1th").textContent = DV1.Th + " K"; $("o-dv1tc").textContent = DV1.Tc + " K";
   const P = DV_POP[DV1.pop], zone = dvZone(P.L, DV1.Th, DV1.Tc), thr = dvK(zone[0], DV1.Mmax, P.Ms);
   const svg = $("dvch1"); svg.innerHTML = "";
-  const s = makeScales(-2, 1.5, PV_LOG(0.3), PV_LOG(3000), 920, 360, 60, 20, 22, 42);
-  axes(svg, s, [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5], [0.3, 1, 3, 10, 30, 100, 300, 1000, 3000].map(PV_LOG), "distance, AU (log)", "mass, M⊕ (log)", v => fmt(Math.pow(10, v), Math.pow(10, v) < 0.1 ? 2 : Math.pow(10, v) < 1 ? 1 : 0), v => Math.pow(10, v) < 1 ? fmt(Math.pow(10, v), 1) : Math.round(Math.pow(10, v)));
+  const s = makeScales(-2, 1.5, PV_LOG(0.03), PV_LOG(3000), 920, 360, 60, 20, 22, 42);
+  axes(svg, s, [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5], [0.03, 0.1, 0.3, 1, 3, 10, 30, 100, 300, 1000, 3000].map(PV_LOG), "distance, AU (log)", "mass, M⊕ (log)", v => fmt(Math.pow(10, v), Math.pow(10, v) < 0.1 ? 2 : Math.pow(10, v) < 1 ? 1 : 0), v => Math.pow(10, v) < 1 ? fmt(Math.pow(10, v), 1) : Math.round(Math.pow(10, v)));
   el("rect", { x: fmt(s.x(PV_LOG(zone[0])), 1), y: fmt(s.y(PV_LOG(DV1.Mmax)), 1), width: fmt(s.x(PV_LOG(zone[1])) - s.x(PV_LOG(zone[0])), 1), height: fmt(s.y(PV_LOG(0.5)) - s.y(PV_LOG(DV1.Mmax)), 1), fill: "rgba(76,187,120,.18)", stroke: "#6ECD93", "stroke-width": 1.2 }, svg);
   el("text", { x: fmt(s.x(PV_LOG(zone[0])) + 6, 1), y: fmt(s.y(PV_LOG(DV1.Mmax)) - 6, 1), class: "serieslabel", fill: "#6ECD93" }, svg).textContent = "Earth-like planets";
   const curve = []; for (let lg = -2; lg <= 1.5 + 1e-9; lg += 0.05) { const a = Math.pow(10, lg); curve.push([s.x(lg), s.y(PV_LOG(thr / dvK(a, 1, P.Ms)))]); }
@@ -7152,7 +7152,7 @@ function dvDraw4() {
   const s = makeScales(Math.min(PV_LOG(S.a[0]), PV_LOG(zone[0])) - 0.3, Math.max(PV_LOG(S.a[n - 1]), PV_LOG(zone[1])) + 0.3, -1.6, 3.5, 920, 360, 60, 20, 22, 42);
   axes(svg, s, niceTicks(s.x0, s.x1, 5).filter(v => v >= s.x0 && v <= s.x1), [-1, 0, 1, 2, 3], "distance, AU (log)", "mass, M⊕ (log)", v => fmt(Math.pow(10, v), Math.pow(10, v) < 0.1 ? 2 : 1), v => Math.pow(10, v) < 1 ? fmt(Math.pow(10, v), 1) : Math.round(Math.pow(10, v)));
   el("rect", { x: fmt(s.x(PV_LOG(zone[0])), 1), y: fmt(s.y(PV_LOG(3)), 1), width: fmt(s.x(PV_LOG(zone[1])) - s.x(PV_LOG(zone[0])), 1), height: fmt(s.y(PV_LOG(0.5)) - s.y(PV_LOG(3)), 1), fill: "rgba(76,187,120,.18)", stroke: "#6ECD93", "stroke-width": 1.2 }, svg);
-  el("text", { x: fmt(s.x(PV_LOG(zone[0])) + 6, 1), y: fmt(s.y(PV_LOG(3)) - 6, 1), class: "serieslabel", fill: "#6ECD93" }, svg).textContent = "Earth-like box for L = " + pvSci(L) + " L☉";
+  el("text", { x: fmt(s.x(PV_LOG(zone[1])) - 4, 1), y: fmt(s.y(PV_LOG(0.5)) + 14, 1), "text-anchor": "end", class: "serieslabel", fill: "#6ECD93" }, svg).textContent = "Earth-like box for L = " + pvSci(L) + " L☉";
   const curve = []; for (let lg = s.x0; lg <= s.x1 + 1e-9; lg += 0.05) { const a = Math.pow(10, lg); curve.push([s.x(lg), s.y(PV_LOG(thr / dvK(a, 1, S.Ms)))]); }
   el("path", { d: linePath(curve.filter(c => c[1] > s.padT && c[1] < s.H - s.padB)), stroke: C.rock, "stroke-width": 1.3, fill: "none", "stroke-dasharray": "6 4" }, svg);
   const pts = [];
