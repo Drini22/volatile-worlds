@@ -6468,7 +6468,7 @@ function pvDraw1() {
   const svg = $("pvch1"); svg.innerHTML = "";
   const s = makeScales(-2, 0, PV_LOG(0.3), PV_LOG(400), 920, 320, 56, 20, 22, 42);
   axes(svg, s, [-2, -1.5, -1, -0.5, 0], [1, 3, 10, 30, 100, 365].map(PV_LOG), "semi-major axis, AU (log)", "period, days (log)", v => fmt(Math.pow(10, v), 2), v => Math.round(Math.pow(10, v)));
-  [[0.3, C.muted], [1, C.ink2], [2, C.muted]].forEach(([m, col]) => { const pts = []; for (let lg = -2; lg <= 0; lg += 0.05) pts.push([s.x(lg), s.y(PV_LOG(pvPeriod(Math.pow(10, lg), m)))]); el("path", { d: linePath(pts), stroke: col, "stroke-width": 1.2, fill: "none", "stroke-dasharray": m === 1 ? "" : "4 4" }, svg); el("text", { x: fmt(pts[pts.length - 1][0] - 4, 1), y: fmt(pts[pts.length - 1][1] - 6, 1), "text-anchor": "end", class: "serieslabel", fill: col }, svg).textContent = m + " M☉"; });
+  [[0.3, C.muted], [1, C.ink2], [2, C.muted]].forEach(([m, col]) => { const pts = []; for (let lg = -2; lg <= 0; lg += 0.05) pts.push([s.x(lg), s.y(PV_LOG(pvPeriod(Math.pow(10, lg), m)))]); el("path", { d: linePath(pts), stroke: col, "stroke-width": 1.2, fill: "none", "stroke-dasharray": m === 1 ? "" : "4 4" }, svg); el("text", { x: fmt(pts[0][0] + 6, 1), y: fmt(pts[0][1] - 6, 1), "text-anchor": "start", class: "serieslabel", fill: col }, svg).textContent = m + " M☉"; });
   const pts = [];
   TL_N.forEach(k => { const p = TL_PL[k], px = s.x(PV_LOG(p.a)), py = s.y(PV_LOG(p.P)); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 4, fill: p.col }, svg); pts.push([px, py, "TOI-178 " + k, p.P, p.a]); });
   const P = pvPeriod(PV1.a, PV1.Ms), px = s.x(PV_LOG(PV1.a)), py = s.y(PV_LOG(P));
@@ -6577,9 +6577,10 @@ function pvDraw3() {
   const a1 = amp(rows[0]), a2 = amp(rows[1]);
   $("pv3res").innerHTML = (best.j + 1) + ":" + best.j + "<small> · Δ = " + (best.D >= 0 ? "+" : "") + fmt(best.D * 100, 2) + " %</small>";
   $("pv3sp").innerHTML = (Psuper > 1e4 ? "∞" : fmt(Psuper, 0)) + "<small> d</small>";
-  $("pv3amp").innerHTML = fmt(a1, 1) + " / " + fmt(a2, 1) + "<small> min · analytic " + fmt(Vin, 1) + " / " + fmt(Vout, 1) + "</small>";
+  const lost = a1 > 1e4 || a2 > 1e4 || !isFinite(a1) || !isFinite(a2), exact = Math.abs(best.D) < 1e-4;
+  $("pv3amp").innerHTML = lost ? "off scale<small> · orbits scattered</small>" : fmt(a1, 1) + " / " + fmt(a2, 1) + "<small> min · analytic " + (exact ? "– (in resonance)" : fmt(Vin, 1) + " / " + fmt(Vout, 1)) + "</small>";
   const wob = (A, P) => 2 * Math.PI * A * P / Psuper;
-  $("pv3dp").innerHTML = "± " + fmt(wob(a1, PV3.P1), 1) + " / " + fmt(wob(a2, PV3.P1 * PV3.ratio), 1) + "<small> min</small>";
+  $("pv3dp").innerHTML = lost ? "no period<small> · the system is not periodic</small>" : exact ? "libration<small> · no super-period</small>" : "± " + fmt(wob(a1, PV3.P1), 1) + " / " + fmt(wob(a2, PV3.P1 * PV3.ratio), 1) + "<small> min</small>";
   const a1AU = pvAxis(PV3.P1, 1), a2AU = pvAxis(PV3.P1 * PV3.ratio, 1), RH = Math.cbrt((mu1 + mu2) / 3) * (a1AU + a2AU) / 2, sep = (a2AU - a1AU) / RH;
   $("pv3hill").innerHTML = fmt(sep, 1) + "<small> R_H · " + (sep < 3.5 ? "below 2√3, Hill-unstable" : sep < 10 ? "stable if not resonant-overlapped" : "wide") + "</small>";
   const diff = PV_LOG(Math.max(Math.abs(res.nf[0] - res.nf[1]) / Math.abs(res.nf[0]), 1e-12));
@@ -6657,8 +6658,8 @@ function pvRun6() {
     if (a1 <= aEdge) { a1 = aEdge; edge = true; }
     if (!locked) {
       const ratio = Math.pow(a2 / a1, 1.5);
-      resList.forEach(R => { if (!locked && lastRatio > R && ratio <= R) { const conv = 1 / Math.max(Math.abs(r2 - r1), 1e-12), Pout = pvPeriod(a2, 1) / 365.25, mu = (PV6.m1 + PV6.m2) * TL_ME; if (conv > 30 * Pout / Math.pow(mu / 3e-5, 2 / 3)) { locked = R; a2 = a1 * Math.pow(R, 2 / 3); } } });
-      if (ratio <= 1.08 && !locked) { locked = -1; }
+      resList.forEach(R => { if (!locked && lastRatio > R && ratio <= R) { const conv = 1 / Math.max(Math.abs(r2 - r1), 1e-12), Pout = pvPeriod(a2, 1) / 365.25, mu = (PV6.m1 + PV6.m2) * TL_ME; const jj = Math.round(1 / (R - 1)) + 1, tcrit = 0.085 * Pout * Math.pow(mu, -4 / 3) * Math.pow(2 / jj, 3); if (conv > tcrit) { locked = R; a2 = a1 * Math.pow(R, 2 / 3); } } });
+      if (ratio <= 1.12 && !locked) { locked = -1; }
       lastRatio = Math.pow(a2 / a1, 1.5);
     }
     if (rows.length < 4000 && (t - rows[rows.length - 1][0] > tEnd / 1500 || Math.abs(Math.log(a1 / rows[rows.length - 1][1])) > 0.01)) rows.push([t, a1, a2]);
