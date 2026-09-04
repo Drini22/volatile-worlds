@@ -2059,12 +2059,12 @@
           <button aria-pressed="true" data-v="900">900 ppm</button>
           <button aria-pressed="false" data-v="1300">1300 ppm</button>
         </div></div>
-      <div class="ctl" style="flex:none;"><label>Fold the data at</label>
+      <div class="ctl" style="flex:none;"><label>Fold the data at, days</label>
         <div class="seg" id="seg-tl1f" role="group" aria-label="Fold period">
-          <button aria-pressed="true" data-v="6.5577">6.56 d</button>
-          <button aria-pressed="false" data-v="10.35">10.35 d</button>
-          <button aria-pressed="false" data-v="9.961881">9.96 d</button>
-          <button aria-pressed="false" data-v="3.23845">3.24 d</button>
+          <button aria-pressed="true" data-v="6.5577">6.56</button>
+          <button aria-pressed="false" data-v="10.35">10.35</button>
+          <button aria-pressed="false" data-v="9.961881">9.96</button>
+          <button aria-pressed="false" data-v="3.23845">3.24</button>
         </div></div>
     </div>
     <div class="chart-box" id="cb-tl1a">
@@ -5705,7 +5705,7 @@ function tlDraw1() {
   const s2 = makeScales(0, Math.log10(13), 0, pmax * 1.15, 460, 340, 46, 12, 22, 40);
   axes(svg, s2, [1, 2, 3, 5, 8, 13].map(Math.log10), [], "period, d (log)", "BLS power", v => Math.round(Math.pow(10, v)), v => "");
   el("path", { d: linePath(pw.map(p => [s2.x(Math.log10(p[0])), s2.y(p[1])])), stroke: C.ice, "stroke-width": 1.2, fill: "none" }, svg);
-  TL1.bls.top.forEach((p, i) => { const ghost = Math.abs(p[0] - 10.35) < 0.1; el("text", { x: fmt(s2.x(Math.log10(p[0])), 1), y: fmt(s2.y(p[1]) - 6, 1), "text-anchor": "middle", class: "serieslabel", fill: ghost ? C.rock : C.ink }, svg).textContent = fmt(p[0], 2) + " d"; });
+  TL1.bls.top.forEach((p, i) => { const ghost = Math.abs(p[0] - 10.35) < 0.1, lx = s2.x(Math.log10(p[0])); el("text", { x: fmt(Math.min(Math.max(lx, s2.padL + 22), s2.W - s2.padR - 22), 1), y: fmt(s2.y(p[1]) - 6, 1), "text-anchor": "middle", class: "serieslabel", fill: ghost ? C.rock : C.ink }, svg).textContent = fmt(p[0], 2) + " d"; });
   egCharts["tlch1b"] = { scale: s2, pw };
   // fold
   svg = $("tlch1c"); svg.innerHTML = "";
@@ -5821,6 +5821,7 @@ function tlDraw4() {
     el("line", { x1: fmt(px, 1), x2: fmt(px, 1), y1: fmt(s.y(Math.log10(p.rho + p.rhoE[0])), 1), y2: fmt(s.y(Math.log10(Math.max(p.rho - p.rhoE[1], 0.02))), 1), stroke: p.col, "stroke-width": 1.5 }, svg);
     const rE = egRsolid(p.M, 0.325, 0), rhoE = p.M / Math.pow(rE, 3);
     el("circle", { cx: fmt(px, 1), cy: fmt(s.y(Math.log10(rhoE)), 1), r: 3.5, fill: "none", stroke: C.muted, "stroke-dasharray": "2 2" }, svg);
+    if (k === "g") el("text", { x: fmt(px + 8, 1), y: fmt(s.y(Math.log10(rhoE)) - 6, 1), class: "serieslabel", fill: C.muted }, svg).textContent = "Earth-like at this mass";
     el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: p.col, stroke: "#0C111E", "stroke-width": 2 }, svg);
     el("text", { x: fmt(px + 9, 1), y: fmt(py + 4, 1), class: "serieslabel", fill: p.col }, svg).textContent = k;
     pts.push([px, py, k]); });
@@ -5830,8 +5831,8 @@ function tlDraw4() {
   const s2 = makeScales(Math.log10(0.8), Math.log10(12), Math.log10(0.9), Math.log10(3.5), 460, 360, 46, 12, 22, 40);
   axes(svg, s2, [1, 2, 3, 5, 10].map(Math.log10), [1, 1.5, 2, 3].map(Math.log10), "mass, M⊕ (log)", "radius, R⊕ (log)", v => Math.round(Math.pow(10, v)), v => fmt(Math.pow(10, v), 1));
   const ms = []; for (let lg = Math.log10(0.8); lg <= Math.log10(12) + 1e-9; lg += 0.03) ms.push(Math.pow(10, lg));
-  const line = (f, col, dash, lab) => { const pts2 = ms.map(m => [m, f(m)]).filter(p => p[1] >= 0.9 && p[1] <= 3.5); if (pts2.length < 2) return; el("path", { d: linePath(pts2.map(p => [s2.x(Math.log10(p[0])), s2.y(Math.log10(p[1]))])), stroke: col, "stroke-width": 1.3, fill: "none", "stroke-dasharray": dash }, svg); const l = pts2[pts2.length - 1]; el("text", { x: fmt(s2.x(Math.log10(l[0])) - 4, 1), y: fmt(s2.y(Math.log10(l[1])) - 5, 1), "text-anchor": "end", fill: col, style: "font-family:var(--sans);font-size:10px" }, svg).textContent = lab; };
-  line(m => egRsolid(m, 0.325, 0), C.rock, "", "Earth-like"); line(m => egRsolid(m, 0.325, 0.5), C.ice, "6 4", "50 % water");
+  const line = (f, col, dash, lab, atStart) => { const pts2 = ms.map(m => [m, f(m)]).filter(p => p[1] >= 0.9 && p[1] <= 3.5); if (pts2.length < 2) return; el("path", { d: linePath(pts2.map(p => [s2.x(Math.log10(p[0])), s2.y(Math.log10(p[1]))])), stroke: col, "stroke-width": 1.3, fill: "none", "stroke-dasharray": dash }, svg); const l = atStart ? pts2[0] : pts2[pts2.length - 1]; el("text", { x: fmt(s2.x(Math.log10(l[0])) + (atStart ? 4 : -4), 1), y: fmt(s2.y(Math.log10(l[1])) - 5, 1), "text-anchor": atStart ? "start" : "end", fill: col, style: "font-family:var(--sans);font-size:10px" }, svg).textContent = lab; };
+  line(m => egRsolid(m, 0.325, 0), C.rock, "", "Earth-like"); line(m => egRsolid(m, 0.325, 0.5), C.ice, "6 4", "50 % water", true);
   [0.005, 0.02, 0.05].forEach(f => line(m => egRsolid(m * (1 - f), 0.325, 0) + egRenv(m, f, 20, 7), C.rock, "2 4", (f * 100).toFixed(1).replace(".0", "") + " % H/He"));
   const pts2 = [];
   TL_N.forEach(k => { const p = TL_PL[k], px = s2.x(Math.log10(p.M)), py = s2.y(Math.log10(p.R));
