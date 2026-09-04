@@ -6697,24 +6697,24 @@ function pvDraw7() {
   const s = makeScales(PV_LOG(30), PV_LOG(1.4e10), -6, 8, 920, 400, 64, 24, 22, 44);
   axes(svg, s, [PV_LOG(30), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(v => v).filter(v => v >= PV_LOG(30) && (v % 1 === 0 || v === PV_LOG(30))), [-6, -4, -2, 0, 2, 4, 6, 8], "timescale of the mechanism (log years)", "change of the period (log seconds)", v => v === 0 ? "1 yr" : v === 3 ? "1 kyr" : v === 6 ? "1 Myr" : v === 9 ? "1 Gyr" : v % 1 === 0 ? "" : "1 month", v => v === -6 ? "1 µs" : v === -4 ? "0.1 ms" : v === -2 ? "10 ms" : v === 0 ? "1 s" : v === 2 ? "100 s" : v === 4 ? "3 h" : v === 6 ? "12 d" : "3 yr");
   el("rect", { x: s.padL, y: fmt(s.y(1), 1), width: s.W - s.padL - s.padR, height: fmt(s.y(-6) - s.y(1), 1), fill: "rgba(107,118,144,.12)" }, svg);
-  el("text", { x: s.padL + 6, y: fmt(s.y(1) + 14, 1), class: "serieslabel", fill: C.muted }, svg).textContent = "below 10 s: under the timing precision of a single transit";
+  el("text", { x: s.W - s.padR - 6, y: fmt(s.y(-5.6), 1), "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = "grey: below the timing precision of a single transit";
   const Pd = TL_PL.d.P * PV_DAY;
   el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(PV_LOG(Pd)), 1), y2: fmt(s.y(PV_LOG(Pd)), 1), stroke: C.muted, "stroke-dasharray": "3 4" }, svg);
   el("text", { x: s.W - s.padR - 4, y: fmt(s.y(PV_LOG(Pd)) - 5, 1), "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = "one orbit of d";
-  const pts = [
-    ["near-resonant wobble", 260 / 365.25, 8 * 60, C.ice, "reversible, every 260 d, the §3 swing"],
-    ["Laplace libration", 20, 120, C.ice, "reversible, decades"],
-    ["precession by neighbours", 150, 4, C.ice, "if e = 0.02; sinusoid over ~150 yr"],
-    ["precession by relativity", 5.5e4, 8e-3, C.ice, "if e = 0.02; a 55 kyr cycle"],
-    ["light-travel time, Jupiter at 5 AU", 12, 0.024, C.muted, "apparent only; hypothetical companion"],
-    ["hot-Jupiter tidal decay per decade", 10, 0.3, C.rock, "WASP-12b, not TOI-178: −29 ms/yr"],
-    ["resonant repulsion, planet b", 7e9, 2400, C.rock, "one-way; the 1.5 % offset from 5:3"],
-    ["stellar wind mass loss", 7e9, 80, C.rock, "one-way; P grows as the star lightens"],
-    ["planet evaporation", 7e9, 1e-5, C.rock, "one-way; negligible"],
-    ["disk migration", 1e6, 3e7, "#6ECD93", "one-way; before 5 Myr; orders of magnitude"],
+  const pts = [   // label, timescale yr, dP s, colour, note, label side, label dy
+    ["near-resonant wobble", 260 / 365.25, 8 * 60, C.ice, "reversible, every 260 d, the §3 swing", 1, -9],
+    ["Laplace libration", 20, 120, C.ice, "reversible, decades", 1, 15],
+    ["precession by neighbours", 150, 4, C.ice, "if e = 0.02; sinusoid over ~150 yr", 1, -9],
+    ["precession by relativity", 5.5e4, 8e-3, C.ice, "if e = 0.02; a 55 kyr cycle", 1, 15],
+    ["light-travel time, Jupiter at 5 AU", 12, 0.024, C.muted, "apparent only; hypothetical companion", 1, 16],
+    ["hot-Jupiter tidal decay, per decade", 10, 0.3, C.rock, "WASP-12b, not TOI-178: −29 ms/yr", 1, -9],
+    ["resonant repulsion, planet b", 7e9, 2400, C.rock, "one-way; the 1.5 % offset from 5:3", -1, -9],
+    ["stellar wind mass loss", 7e9, 80, C.rock, "one-way; P grows as the star lightens", -1, 16],
+    ["planet evaporation", 7e9, 1e-5, C.rock, "one-way; negligible", -1, -9],
+    ["disk migration", 1e6, 3e7, "#6ECD93", "one-way; before 5 Myr; orders of magnitude", 1, 16],
   ];
   const hp = [];
-  pts.forEach(([lab, T, dP, col, note], i) => { const px = s.x(PV_LOG(T)), py = s.y(PV_LOG(dP)); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: col, stroke: "#0C111E", "stroke-width": 2 }, svg); const right = px < s.W - 260; el("text", { x: fmt(px + (right ? 10 : -10), 1), y: fmt(py + (i % 2 ? 14 : -8), 1), "text-anchor": right ? "start" : "end", class: "serieslabel", fill: col }, svg).textContent = lab; hp.push([px, py, lab, T, dP, note]); });
+  pts.forEach(([lab, T, dP, col, note, side, dy]) => { const px = s.x(PV_LOG(T)), py = s.y(PV_LOG(dP)); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: col, stroke: "#0C111E", "stroke-width": 2 }, svg); el("text", { x: fmt(px + 10 * side, 1), y: fmt(py + dy, 1), "text-anchor": side > 0 ? "start" : "end", class: "serieslabel", fill: col }, svg).textContent = lab; hp.push([px, py, lab, T, dP, note]); });
   egCharts["pvch7"] = { scale: s, pts: hp };
 }
 function pvDrawAll() { pvDraw1(); pvDraw2(); pvDraw3(); pvDraw4(); pvDraw5(); pvDraw6(); pvDraw7(); }
