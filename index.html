@@ -2506,7 +2506,7 @@
       <div class="chip"><div class="k">points beyond the tolerance limits</div><div class="v" id="ar2out">–</div></div>
     </div>
   </div>
-  <p class="takeaway"><em>Similarity is not the default of chance.</em> Draw masses at random over four decades and almost no system lands in the similar class; ordered and anti-ordered come out in equal numbers, by symmetry. The Bern model gives 80 percent similar, 8 percent mixed, 8 percent anti-ordered and 1.5 percent ordered. That asymmetry is physics, not statistics: planets that grow side by side from the same disk end up alike, and the rarer classes need something to have broken the symmetry, a giant, a scattering, a migration. The tolerance sampler shows the other half of the appendix: once every mass is within t of the others, no system can cross the dashed lines, which is how the paper turns "peas in a pod" into a testable bound.</p>
+  <p class="takeaway"><em>Similarity is not the default of chance.</em> Draw masses at random over four decades and almost no system lands in the similar class; ordered and anti-ordered come out in equal numbers, by symmetry. The Bern model gives 80 percent similar, 8 percent mixed, 8 percent anti-ordered and 1.5 percent ordered. That asymmetry is physics, not statistics: planets that grow side by side from the same disk end up alike, and the rarer classes need something to have broken the symmetry, a giant, a scattering, a migration. The tolerance sampler shows the other half of the appendix: once every mass is within t of the others, no system can cross the dashed lines, which is how the paper turns "peas in a pod" into a testable bound. One footnote the sampler exposes: the paper's cap on the variation coefficient assumes one heavy planet and the rest light, and from six planets upward two heavy planets give a larger value, so a few random systems cross the paper's line; the rust line is the exact cap, computed over all corner cases, and nothing crosses it.</p>
 </section>
 
 <!-- ================= AR3 ================= -->
@@ -2567,7 +2567,7 @@
       <div class="chip"><div class="k">planets detected</div><div class="v" id="ar4n">–</div></div>
     </div>
   </div>
-  <p class="takeaway"><em>Read the two chips together.</em> The synthetic anti-ordered system loses its outer half at any realistic floor and is catalogued as similar or ordered; the Solar System, seen with a 1 m/s floor over 15 years, is Jupiter alone, and with a 20 cm/s floor becomes a two-planet system of Jupiter and Saturn, which the framework calls anti-ordered rather than ordered. Detection does not merely hide planets, it can flip the class. This is the argument for the Davoult paper that follows: if the biased architecture still carries information about the unbiased one, you can use what you see to predict what you have not found.</p>
+  <p class="takeaway"><em>Read the two chips together.</em> The synthetic anti-ordered system loses its outer half at a 1 m/s floor and is catalogued as similar; the Solar System, seen with a 1 m/s floor over 15 years, is Jupiter alone, and with a 20 cm/s floor over thirty years becomes a two-planet system of Jupiter and Saturn, which the framework calls anti-ordered rather than ordered. Detection does not merely hide planets, it can flip the class. This is the argument for the Davoult paper that follows: if the biased architecture still carries information about the unbiased one, you can use what you see to predict what you have not found.</p>
 </section>
 
 <!-- ================= AR5 ================= -->
@@ -6658,7 +6658,7 @@ const AR_SYS = {
   cnc:   { name: "55 Cnc", Ms: 0.905, pl: ["e", "b", "c", "f", "d"], M: [7.99, 264, 54.5, 44.8, 1232], R: null, a: [0.01544, 0.1134, 0.2373, 0.7708, 5.957], paper: [0.52, 1.37, "ordered"] },
   gj876: { name: "GJ 876", Ms: 0.37, pl: ["d", "c", "b", "e"], M: [6.8, 226, 725, 15], R: null, a: [0.0208, 0.1296, 0.2083, 0.334], paper: [0.12, 1.20, "mixed"] },
   k89:   { name: "Kepler-89", Ms: 1.28, pl: ["b", "c", "d", "e"], M: [10.5, 15.6, 106, 35], R: [1.71, 4.32, 11.27, 6.56], a: [0.0508, 0.1013, 0.1684, 0.3046], paper: [0.17, 0.91, "mixed"] },
-  anti:  { name: "synthetic anti-ordered", Ms: 1, pl: ["1", "2", "3", "4", "5", "6"], M: [40, 20, 8, 3, 1.5, 0.8], R: null, a: [0.05, 0.12, 0.3, 0.8, 2, 5], paper: null },
+  anti:  { name: "synthetic anti-ordered", Ms: 1, pl: ["1", "2", "3", "4", "5", "6"], M: [12, 15, 9, 3, 1.2, 0.5], R: null, a: [0.05, 0.12, 0.3, 0.8, 2, 5], paper: null },
 };
 AR_SYS.inner = { name: "inner Solar System", Ms: 1, pl: AR_SYS.sun.pl.slice(0, 4), M: AR_SYS.sun.M.slice(0, 4), R: AR_SYS.sun.R.slice(0, 4), a: AR_SYS.sun.a.slice(0, 4), paper: [0.10, 0.85, "similar"] };
 AR_SYS.outer = { name: "outer Solar System", Ms: 1, pl: AR_SYS.sun.pl.slice(4), M: AR_SYS.sun.M.slice(4), R: AR_SYS.sun.R.slice(4), a: AR_SYS.sun.a.slice(4), paper: [-0.42, 1.11, "anti-ordered"] };
@@ -6689,7 +6689,7 @@ function ar1Load() {
   AR1.q = q; AR1.names = S.pl.slice(); AR1.a = S.a.slice(); AR1.Ms = S.Ms;
   const box = $("ar1sl"); box.innerHTML = "";
   q.forEach((v, i) => {
-    const d = el("div", { class: "ctl" }, box); d.innerHTML = "<label>" + AR1.names[i] + " · <output id='o-ar1v" + i + "'>" + fmt(v, v < 1 ? 3 : 2) + "</output></label><input type='range' id='in-ar1v" + i + "' min='-1.5' max='3.5' step='0.02' value='" + fmt(Math.log10(v), 2) + "' aria-label='value of planet " + AR1.names[i] + "'>";
+    const d = document.createElement("div"); d.className = "ctl"; box.appendChild(d); d.innerHTML = "<label>" + AR1.names[i] + " · <output id='o-ar1v" + i + "'>" + fmt(v, v < 1 ? 3 : 2) + "</output></label><input type='range' id='in-ar1v" + i + "' min='-1.5' max='3.5' step='0.02' value='" + fmt(Math.log10(v), 2) + "' aria-label='value of planet " + AR1.names[i] + "'>";
     $("in-ar1v" + i).addEventListener("input", () => { AR1.q[i] = Math.pow(10, +$("in-ar1v" + i).value); $("o-ar1v" + i).textContent = fmt(AR1.q[i], AR1.q[i] < 1 ? 3 : 2); arDraw1(); });
   });
 }
@@ -6727,10 +6727,11 @@ function arDraw2() {
   $("o-ar2t").textContent = fmt(AR2.t, 2);
   const n = AR2.n, t = AR2.t, N = 3000, pts = [], cnt = { similar: 0, mixed: 0, ordered: 0, "anti-ordered": 0 };
   let sd = 20230106; const r = () => { sd = (sd * 1664525 + 1013904223) >>> 0; return sd / 4294967296; };
-  const csMax = Math.log10((1 + t) / (1 - t)), cvMax = 2 * t * Math.sqrt(n - 1) / (n * (1 - t) + 2 * t); let out = 0;
+  const csMax = Math.log10((1 + t) / (1 - t)), cvMax = 2 * t * Math.sqrt(n - 1) / (n * (1 - t) + 2 * t); let out = 0, outEx = 0;
+  let cvExact = 0; for (let k = 1; k < n; k++) { const q = []; for (let i = 0; i < n; i++) q.push(i < k ? 1 + t : 1 - t); cvExact = Math.max(cvExact, arCV(q)); }
   for (let k = 0; k < N; k++) {
     const q = []; for (let i = 0; i < n; i++) q.push(AR2.mode === "wide" ? Math.pow(10, -1 + 4 * r()) : 10 * (1 + t * (2 * r() - 1)));
-    const cs = arCS(q), cv = arCV(q), cl = arClass(cs, cv, n); cnt[cl]++; if (Math.abs(cs) > csMax + 1e-9 || cv > cvMax + 1e-9) out++; pts.push([cv, cs, cl]);
+    const cs = arCS(q), cv = arCV(q), cl = arClass(cs, cv, n); cnt[cl]++; if (Math.abs(cs) > csMax + 1e-9 || cv > cvMax + 1e-9) out++; if (Math.abs(cs) > csMax + 1e-9 || cv > cvExact + 1e-9) outEx++; pts.push([cv, cs, cl]);
   }
   const svg = $("arch2"); svg.innerHTML = "";
   const s = makeScales(0, 3, -1.5, 1.5, 920, 380, 60, 20, 22, 42);
@@ -6740,20 +6741,21 @@ function arDraw2() {
   pts.forEach(p => { const px = s.x(Math.min(3, p[0])), py = s.y(Math.max(-1.5, Math.min(1.5, p[1]))); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 1.8, fill: AR_COL[p[2]], opacity: 0.55 }, svg); if (hp.length < 600) hp.push([px, py, p[0], p[1], p[2]]); });
   [csMax, -csMax].forEach(v => { if (Math.abs(v) <= 1.5) el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(v), 1), y2: fmt(s.y(v), 1), stroke: C.ink, "stroke-dasharray": "5 4", opacity: 0.7 }, svg); });
   if (cvMax <= 3) el("line", { x1: fmt(s.x(cvMax), 1), x2: fmt(s.x(cvMax), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.ink, "stroke-dasharray": "5 4", opacity: 0.7 }, svg);
+  if (cvExact > cvMax + 1e-6 && cvExact <= 3) { el("line", { x1: fmt(s.x(cvExact), 1), x2: fmt(s.x(cvExact), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.rock, "stroke-dasharray": "5 4", opacity: 0.9 }, svg); el("text", { x: fmt(s.x(cvExact) + 4, 1), y: s.H - s.padB - 8, class: "serieslabel", fill: C.rock }, svg).textContent = "exact cap, two heavy planets"; }
   const cap = Math.sqrt(n - 1); if (cap <= 3) { el("line", { x1: fmt(s.x(cap), 1), x2: fmt(s.x(cap), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.muted, "stroke-dasharray": "2 4" }, svg); el("text", { x: fmt(s.x(cap) + 4, 1), y: s.padT + 14, class: "serieslabel", fill: C.muted }, svg).textContent = "√(n−1)"; }
   egCharts["arch2"] = { scale: s, pts: hp };
   const pc = k => fmt(cnt[k] / N * 100, 1) + " %";
   $("ar2sim").innerHTML = pc("similar") + "<small> / " + AR_BERN.similar + " %</small>"; $("ar2mix").innerHTML = pc("mixed") + "<small> / " + AR_BERN.mixed + " %</small>"; $("ar2ord").innerHTML = pc("ordered") + "<small> / " + AR_BERN.ordered + " %</small>"; $("ar2ant").innerHTML = pc("anti-ordered") + "<small> / " + AR_BERN["anti-ordered"] + " %</small>";
-  $("ar2out").innerHTML = out + "<small> of " + N + (AR2.mode === "tol" ? " · must be zero" : " · the wide sampler ignores t") + "</small>";
+  $("ar2out").innerHTML = (AR2.mode === "tol" ? outEx + "<small> of " + N + " beyond the exact cap · must be zero" + (cvExact > cvMax + 1e-6 ? " · " + out + " beyond the paper's C.18 line" : "") : out + "<small> of " + N + " · the wide sampler ignores t") + "</small>";
 }
 /* ---- §3 observed ---- */
 function arDraw3() {
   let svg = $("arch3a"); svg.innerHTML = "";
-  const s = makeScales(0, 2, -0.3, 1, 460, 360, 56, 16, 22, 42);
+  const s = makeScales(0, 2.2, -0.3, 1, 460, 360, 56, 16, 22, 42);
   axes(svg, s, [0, 0.5, 1, 1.5, 2], [-0.2, 0, 0.2, 0.4, 0.6, 0.8, 1], "coefficient of variation", "coefficient of similarity", v => fmt(v, 1), v => fmt(v, 1));
   arPlane(svg, s, 4, true);
   const pts = [];
-  AR_OBS.forEach(o => { const cl = arClass(o[2], o[3], o[1]), px = s.x(o[3]), py = s.y(o[2]), big = /Solar|TOI-178|Trappist/.test(o[0]); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: big ? 6 : 4, fill: AR_COL[cl], stroke: "#0C111E", "stroke-width": 1.5 }, svg); if (big) el("text", { x: fmt(px + 8, 1), y: fmt(py + 4, 1), class: "serieslabel", fill: AR_COL[cl] }, svg).textContent = o[0]; pts.push([px, py, o[0], o[2], o[3], cl, o[1]]); });
+  AR_OBS.forEach(o => { const cl = arClass(o[2], o[3], o[1]), px = s.x(o[3]), py = s.y(o[2]), big = /Solar|TOI-178|Trappist/.test(o[0]); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: big ? 6 : 4, fill: AR_COL[cl], stroke: "#0C111E", "stroke-width": 1.5 }, svg); if (big) { const left = o[3] > 1.5; el("text", { x: fmt(px + (left ? -9 : 8), 1), y: fmt(py + 4, 1), "text-anchor": left ? "end" : "start", class: "serieslabel", fill: AR_COL[cl] }, svg).textContent = o[0]; } pts.push([px, py, o[0], o[2], o[3], cl, o[1]]); });
   egCharts["arch3a"] = { scale: s, pts };
   svg = $("arch3b"); svg.innerHTML = "";
   const s2 = makeScales(-0.5, 3.5, 0, 90, 460, 360, 56, 16, 22, 42);
@@ -6799,7 +6801,8 @@ function arDraw5() {
   el("line", { x1: fmt(s.x(-0.5), 1), y1: fmt(s.y(-0.5 * 0.23), 1), x2: fmt(s.x(0.6), 1), y2: fmt(s.y(0.6 * 0.23), 1), stroke: C.muted, "stroke-dasharray": "5 4" }, svg);
   el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(0), 1), y2: fmt(s.y(0), 1), stroke: C.line }, svg); el("line", { y1: s.padT, y2: s.H - s.padB, x1: fmt(s.x(0), 1), x2: fmt(s.x(0), 1), stroke: C.line }, svg);
   const pts = [];
-  ["sun", "inner", "outer", "toi", "trap", "k11", "k89"].forEach(k => { const S = AR_SYS[k]; if (!S.R) return; const cm = arCS(S.M), cr = arCS(S.R), cl = arClass(cm, arCV(S.M), S.M.length), px = s.x(cm), py = s.y(cr); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: AR_COL[cl], stroke: "#0C111E", "stroke-width": 1.5 }, svg); el("text", { x: fmt(px + 9, 1), y: fmt(py + 4, 1), class: "serieslabel", fill: C.ink2 }, svg).textContent = S.name; pts.push([px, py, S.name, cm, cr]); });
+  const dy = { sun: 4, inner: 16, outer: 4, toi: -8, trap: 4, k11: 4, k89: 4 }, dx = { inner: -9, toi: 0 };
+  ["sun", "inner", "outer", "toi", "trap", "k11", "k89"].forEach(k => { const S = AR_SYS[k]; if (!S.R) return; const cm = arCS(S.M), cr = arCS(S.R), cl = arClass(cm, arCV(S.M), S.M.length), px = s.x(cm), py = s.y(cr); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: AR_COL[cl], stroke: "#0C111E", "stroke-width": 1.5 }, svg); const ddx = dx[k] === undefined ? 9 : dx[k]; el("text", { x: fmt(px + ddx, 1), y: fmt(py + dy[k], 1), "text-anchor": ddx < 0 ? "end" : ddx === 0 ? "middle" : "start", class: "serieslabel", fill: C.ink2 }, svg).textContent = S.name; pts.push([px, py, S.name, cm, cr]); });
   egCharts["arch5a"] = { scale: s, pts };
   svg = $("arch5b"); svg.innerHTML = "";
   const s2 = makeScales(-0.5, 3.5, 0, 90, 460, 340, 56, 16, 22, 42);
