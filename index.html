@@ -127,6 +127,11 @@
   .pn-tern{display:grid;grid-template-columns:3fr 2fr;gap:20px;align-items:start;}
   @media (max-width:760px){.pn-tern{grid-template-columns:1fr;}}
 
+  /* ---------- mishra tab ---------- */
+  .ar-sliders{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 18px;margin-top:6px;}
+  @media (max-width:760px){.ar-sliders{grid-template-columns:repeat(2,1fr);}}
+  .ar-sliders .ctl{max-width:none;}
+
   /* ---------- changing periods tab ---------- */
   .pv-table{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.45;margin-top:18px;}
   .pv-table th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 14px 10px 0;border-bottom:1px solid var(--line);font-weight:500;}
@@ -276,6 +281,7 @@
         <button class="tabbtn" id="tab-mos" role="tab" aria-selected="false">Moseley 2020 <small>emulate the simulator</small></button>
         <button class="tabbtn" id="tab-egg" role="tab" aria-selected="false">Egger 2024 <small>infer the system</small></button>
         <button class="tabbtn" id="tab-lel" role="tab" aria-selected="false">Leleu 2021 <small>read the architecture</small></button>
+        <button class="tabbtn" id="tab-mis" role="tab" aria-selected="false">Mishra 2023 <small>classify the system</small></button>
       </div>
     </div>
     <div class="tabgroup">
@@ -2407,6 +2413,197 @@
   <p>A. Leleu et al. (2021), “Six transiting planets and a chain of Laplace resonances in TOI-178”, A&amp;A 649, A26 · <a href="https://arxiv.org/abs/2101.09260">arXiv:2101.09260</a> · Lithwick, Xie &amp; Wu (2012), ApJ 761, 122 (super-periods and TTVs) · Delisle (2017), A&amp;A 605, A96 (Laplace equilibria)</p>
 </footer>
 </div><!-- /page-lel -->
+
+<div id="page-mis" role="tabpanel" aria-labelledby="tab-mis" hidden>
+<section class="pagehero">
+  <p class="eyebrow">L. Mishra, Y. Alibert, S. Udry, C. Mordasini (2023) · A&amp;A 670, A68 · arXiv:2301.02374</p>
+  <p class="standfirst">The Leleu tab ended on a system whose densities were "out of order". This paper asks what "in order" would even mean, and answers with two numbers that can be computed for any system from any quantity: a coefficient of similarity that says whether the quantity grows or shrinks outward, and a coefficient of variation that says how much it varies at all. Together they cut the space of architectures into four classes, similar, ordered, anti-ordered and mixed. Applied to the Bern population synthesis and to 41 observed systems, the framework says that similar systems are the normal outcome of formation, that we live in a rare one, and that the class you observe is not always the class that exists.</p>
+</section>
+
+<!-- ================= AR1 ================= -->
+<section id="mis1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>Two numbers for a whole system</h2></div>
+  <p class="prose">Take the masses of the planets from the inside out. The coefficient of similarity is the average of the logarithmic step from each planet to the next; the coefficient of variation is the standard deviation of the masses divided by their mean. Load a real system, or drag the sliders to build your own, and watch the point move across the plane on the right. The dividing lines are the paper's: ±0.2 in similarity, and half the largest possible variation for that many planets.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;max-width:none;"><label>Load a system</label>
+        <div class="seg" id="seg-ar1s" role="group" aria-label="System preset">
+          <button aria-pressed="false" data-v="sun">Solar System</button>
+          <button aria-pressed="false" data-v="inner">inner four</button>
+          <button aria-pressed="false" data-v="outer">outer four</button>
+          <button aria-pressed="true" data-v="toi">TOI-178</button>
+          <button aria-pressed="false" data-v="trap">Trappist-1</button>
+          <button aria-pressed="false" data-v="k11">Kepler-11</button>
+          <button aria-pressed="false" data-v="cnc">55 Cnc</button>
+          <button aria-pressed="false" data-v="gj876">GJ 876</button>
+          <button aria-pressed="false" data-v="k89">Kepler-89</button>
+          <button aria-pressed="false" data-v="anti">synthetic anti-ordered</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Quantity</label>
+        <div class="seg" id="seg-ar1q" role="group" aria-label="Quantity">
+          <button aria-pressed="true" data-v="M">mass</button>
+          <button aria-pressed="false" data-v="R">radius</button>
+          <button aria-pressed="false" data-v="rho">density</button>
+        </div></div>
+    </div>
+    <div class="ar-sliders" id="ar1sl"></div>
+    <div class="census-grid" style="margin-top:14px;">
+      <div class="chart-box" id="cb-ar1a">
+        <p class="chart-title">The system, inside out</p>
+        <p class="chart-sub">Bubble area grows with the quantity · dashed line joins neighbours, its average slope is the similarity coefficient · hover</p>
+        <svg id="arch1a" viewBox="0 0 460 340" aria-label="Quantity against distance for the loaded system"></svg>
+        <div class="tip" id="tip-ar1a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-ar1b">
+        <p class="chart-title">The architecture plane</p>
+        <p class="chart-sub">Similarity against variation · tinted regions are the four classes for this number of planets · faint dots: the other presets</p>
+        <svg id="arch1b" viewBox="0 0 460 340" aria-label="Architecture plane"></svg>
+        <div class="tip" id="tip-ar1b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">coefficient of similarity C<sub>S</sub></div><div class="v" id="ar1cs">–</div></div>
+      <div class="chip"><div class="k">coefficient of variation C<sub>V</sub></div><div class="v" id="ar1cv">–</div></div>
+      <div class="chip answer"><div class="k">class</div><div class="v" id="ar1cl">–</div></div>
+      <div class="chip"><div class="k">similar–mixed boundary √(n−1)/2</div><div class="v" id="ar1bd">–</div></div>
+      <div class="chip"><div class="k">the telescoping identity</div><div class="v" id="ar1tel" style="font-size:14px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">paper's value</div><div class="v" id="ar1pap" style="font-size:14px;line-height:1.5">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>A property the paper states in passing and this slider makes obvious.</em> The logarithmic steps telescope: their average is the log of the outermost mass over the innermost, divided by the number of steps. Drag any interior planet and the similarity coefficient does not move; only the two end planets set it. That is precisely why a second number is needed: a system whose masses go up and down wildly can still have a similarity coefficient of zero, and the variation coefficient is what separates that "mixed" case from a genuinely "similar" one. Try the outer four solar planets, anti-ordered because Jupiter sits inside Neptune, or switch TOI-178 to density: the disorder the Leleu tab dwelt on still lands in the similar class, because the classes are coarse by design.</p>
+</section>
+
+<!-- ================= AR2 ================= -->
+<section id="mis2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>The plane and where nothing can live</h2></div>
+  <p class="prose">Not every point of the plane is reachable. With n planets the variation coefficient cannot exceed √(n−1), and if all masses lie within a tolerance t of a common value, both coefficients are capped by simple formulas from the paper's Appendix C. The cloud below is thousands of random systems; the sampler on the left draws masses over four decades, the one on the right keeps them within the tolerance. Compare the class fractions in the chips with what the Bern model produces.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Planets per system</label>
+        <div class="seg" id="seg-ar2n" role="group" aria-label="Multiplicity">
+          <button aria-pressed="false" data-v="2">2</button><button aria-pressed="false" data-v="3">3</button>
+          <button aria-pressed="true" data-v="4">4</button><button aria-pressed="false" data-v="6">6</button><button aria-pressed="false" data-v="8">8</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>Masses drawn</label>
+        <div class="seg" id="seg-ar2d" role="group" aria-label="Sampler">
+          <button aria-pressed="true" data-v="wide">log-uniform, 0.1 to 1000 M⊕</button>
+          <button aria-pressed="false" data-v="tol">all within tolerance t</button>
+        </div></div>
+      <div class="ctl"><label>Tolerance t <output id="o-ar2t">0.50</output></label>
+        <input type="range" id="in-ar2t" min="0.05" max="0.95" step="0.05" value="0.5" aria-label="Tolerance"></div>
+    </div>
+    <div class="chart-box" id="cb-ar2">
+      <p class="chart-title">Three thousand random systems on the plane</p>
+      <p class="chart-sub">Dashed: the analytic limits for tolerance t, C<sub>S</sub> = ±log[(1+t)/(1−t)] and C<sub>V</sub> = 2t√(n−1) / [n(1−t)+2t] · dotted: the absolute cap √(n−1) · hover a dot</p>
+      <svg id="arch2" viewBox="0 0 920 380" aria-label="Random systems on the architecture plane"></svg>
+      <div class="tip" id="tip-ar2" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">similar · random draw / Bern model</div><div class="v" id="ar2sim">–</div></div>
+      <div class="chip"><div class="k">mixed</div><div class="v" id="ar2mix">–</div></div>
+      <div class="chip"><div class="k">ordered</div><div class="v" id="ar2ord">–</div></div>
+      <div class="chip"><div class="k">anti-ordered</div><div class="v" id="ar2ant">–</div></div>
+      <div class="chip"><div class="k">points beyond the tolerance limits</div><div class="v" id="ar2out">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Similarity is not the default of chance.</em> Draw masses at random over four decades and almost no system lands in the similar class; ordered and anti-ordered come out in equal numbers, by symmetry. The Bern model gives 80 percent similar, 8 percent mixed, 8 percent anti-ordered and 1.5 percent ordered. That asymmetry is physics, not statistics: planets that grow side by side from the same disk end up alike, and the rarer classes need something to have broken the symmetry, a giant, a scattering, a migration. The tolerance sampler shows the other half of the appendix: once every mass is within t of the others, no system can cross the dashed lines, which is how the paper turns "peas in a pod" into a testable bound.</p>
+</section>
+
+<!-- ================= AR3 ================= -->
+<section id="mis3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Forty-one real systems</h2></div>
+  <p class="prose">The paper's catalogue: every known system with at least four planets and at least four measured masses, as of 2021. Here they are on the plane with the paper's own coefficients, and beside them the class frequencies against the Bern model. Two features stand out. The observed sample has many more ordered systems than the model, and not a single anti-ordered one.</p>
+  <div class="panel">
+    <div class="census-grid">
+      <div class="chart-box" id="cb-ar3a">
+        <p class="chart-title">The observed catalogue on the plane</p>
+        <p class="chart-sub">Table 2 of the paper · boundaries drawn for the median multiplicity of four · hover for the name</p>
+        <svg id="arch3a" viewBox="0 0 460 360" aria-label="Observed systems on the architecture plane"></svg>
+        <div class="tip" id="tip-ar3a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-ar3b">
+        <p class="chart-title">Class frequencies</p>
+        <p class="chart-sub">Bern model, one thousand synthetic systems, against the 41 observed</p>
+        <svg id="arch3b" viewBox="0 0 460 360" aria-label="Class frequencies"></svg>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">observed · similar / ordered / mixed / anti</div><div class="v" style="font-size:15px">24 / 15 / 2 / 0</div></div>
+      <div class="chip"><div class="k">Bern model · similar / ordered / mixed / anti</div><div class="v" style="font-size:15px">80 % / 1.5 % / 8 % / 8 %</div></div>
+      <div class="chip"><div class="k">most ordered observed system</div><div class="v" style="font-size:15px">GJ 676 A<small> · C<sub>S</sub> = 0.90</small></div></div>
+      <div class="chip"><div class="k">TOI-178</div><div class="v" style="font-size:15px">similar<small> · 0.08, 0.46</small></div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Where the ordered systems come from.</em> Radial-velocity and transit surveys both lose small planets at large distances, so a system whose outer planets are light is seen without them and looks like it ends where the detectable planets end. Anti-ordered systems, heavy inside and light outside, are the hardest to recognise, and ordered ones the easiest to manufacture. The paper's estimate is that if even one percent of real systems were anti-ordered we should already own thirty or forty of them; finding none is either a bias or a clue. The next station lets you make the bias yourself.</p>
+</section>
+
+<!-- ================= AR4 ================= -->
+<section id="mis4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>What a survey does to a class</h2></div>
+  <p class="prose">A radial-velocity survey sees a planet only if the velocity it induces on the star exceeds the survey's floor and its period fits within the survey's span. Both cut against light, distant planets. Pick a system, set the floor and the span, and compare the architecture that exists with the architecture that gets catalogued. The paper's synthetic surveys apply the same logic, with a 20 cm/s floor and a 15-year span for radial velocities, and a Kepler-like transit model for the others.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>System</label>
+        <div class="seg" id="seg-ar4s" role="group" aria-label="System">
+          <button aria-pressed="true" data-v="anti">synthetic anti-ordered</button>
+          <button aria-pressed="false" data-v="sun">Solar System</button>
+          <button aria-pressed="false" data-v="cnc">55 Cnc</button>
+          <button aria-pressed="false" data-v="toi">TOI-178</button>
+        </div></div>
+      <div class="ctl"><label>Velocity floor <output id="o-ar4k">1.0 m/s</output></label>
+        <input type="range" id="in-ar4k" min="-1" max="1.3" step="0.05" value="0" aria-label="Velocity floor"></div>
+      <div class="ctl"><label>Survey span <output id="o-ar4p">15 yr</output></label>
+        <input type="range" id="in-ar4p" min="0.5" max="40" step="0.5" value="15" aria-label="Survey span"></div>
+    </div>
+    <div class="chart-box" id="cb-ar4">
+      <p class="chart-title">Detected and missed</p>
+      <p class="chart-sub">Filled: above the floor and inside the span · hollow: missed · the curve is the mass that just reaches the floor at each distance · hover</p>
+      <svg id="arch4" viewBox="0 0 920 360" aria-label="Detected and undetected planets"></svg>
+      <div class="tip" id="tip-ar4" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">true architecture</div><div class="v" id="ar4true" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip answer"><div class="k">catalogued architecture</div><div class="v" id="ar4obs" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">planets detected</div><div class="v" id="ar4n">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Read the two chips together.</em> The synthetic anti-ordered system loses its outer half at any realistic floor and is catalogued as similar or ordered; the Solar System, seen with a 1 m/s floor over 15 years, is Jupiter alone, and with a 20 cm/s floor becomes a two-planet system of Jupiter and Saturn, which the framework calls anti-ordered rather than ordered. Detection does not merely hide planets, it can flip the class. This is the argument for the Davoult paper that follows: if the biased architecture still carries information about the unbiased one, you can use what you see to predict what you have not found.</p>
+</section>
+
+<!-- ================= AR5 ================= -->
+<section id="mis5">
+  <div class="sec-head"><span class="sec-num">§5</span><h2>What the class predicts</h2></div>
+  <p class="prose">The second half of the paper is model-dependent: it runs the framework on the Bern synthetic planets, where core masses, water fractions and habitable-zone membership are known, and asks what the mass architecture correlates with. Three results: radius architecture follows mass architecture; mass architecture is inherited from the cores, with gas accretion exaggerating it; and habitable-zone planets live almost exclusively in similar systems.</p>
+  <div class="panel">
+    <div class="census-grid">
+      <div class="chart-box" id="cb-ar5a">
+        <p class="chart-title">Radius architecture against mass architecture</p>
+        <p class="chart-sub">The presets with measured radii · dashed: the paper's fit to the Bern population, slope 0.23 · hover</p>
+        <svg id="arch5a" viewBox="0 0 460 340" aria-label="Radius similarity against mass similarity"></svg>
+        <div class="tip" id="tip-ar5a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-ar5b">
+        <p class="chart-title">Systems with a planet in the empirical habitable zone</p>
+        <p class="chart-sub">Fraction of systems per class · Bern model against the observed catalogue</p>
+        <svg id="arch5b" viewBox="0 0 460 340" aria-label="Habitable zone hosting by class"></svg>
+      </div>
+    </div>
+    <table class="pv-table">
+      <tr><th>class</th><th>Bern model says</th><th>composition prediction</th><th>example</th></tr>
+      <tr><td>Similar</td><td>80 % of systems; low-mass planets; most formed in place inside the ice line</td><td>many dry planets around metal-poor stars, wet and dry alike around metal-rich ones; 77 % host a habitable-zone planet</td><td>TOI-178, Trappist-1, Kepler-20</td></tr>
+      <tr><td>Ordered</td><td>1.5 % of systems; usually a giant outside; lowest multiplicity</td><td>rich in dry planets, more moist than wet; none host a habitable-zone planet in the model, which is the Solar System problem</td><td>Solar System, 55 Cnc, Kepler-11</td></tr>
+      <tr><td>Anti-ordered</td><td>8 % of systems; giants inside, light planets outside; hardest to detect</td><td>rich in wet planets, no dry ones in the synthetic surveys; the paper's main prediction for when one is found</td><td>none observed yet</td></tr>
+      <tr><td>Mixed</td><td>8 % of systems; large swings in mass; heavy gas accretion</td><td>many wet planets except in compact systems around metal-rich stars; 10 % host a habitable-zone planet</td><td>GJ 876, Kepler-89</td></tr>
+    </table>
+  </div>
+  <p class="takeaway"><em>The claim and its caveat.</em> The framework itself is model-free: two numbers from a list of masses. Everything in this station is the Bern model's opinion filtered through those numbers, and the paper is careful to say so. The strongest prediction is the composition of anti-ordered systems, wet, because their planets started beyond the ice line and migrated in. The most uncomfortable result is the last row of the chart: the model puts no habitable-zone planets in ordered systems, and the only inhabited planet we know sits in one. Either ordered systems are misclassified by incompleteness, or the model is missing the physics that makes a Solar System.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The coefficients, the class boundaries and the limits for a given tolerance are the paper's equations 1, 2, 3, C.10 and C.18, evaluated exactly; the coefficient of variation uses the population standard deviation, which reproduces the paper's 1.85 for the Solar System. The 41 observed systems in §3 carry the paper's Table 2 values. The presets in §1 and §4 use published masses, radii and semi-major axes: the Solar System, TOI-178 (Leleu 2021), Trappist-1 (Agol 2021), Kepler-11 (Lissauer 2013, with the upper limit for g), 55 Cnc (Bourrier 2018), GJ 876 (Trifonov 2018), Kepler-89 (Weiss 2013); the synthetic anti-ordered system is invented. The class frequencies and habitable-zone fractions are read from the paper's Figs. 5 and 14. The random clouds of §2 are this page's own Monte Carlo. The survey of §4 is a toy: a circular-orbit radial-velocity amplitude against a floor and a span, with no noise model, no transit geometry and no vetting; the paper's KOBE pipeline is far more careful. The composition table paraphrases §5 of the paper and is only as good as the Bern model behind it.</p>
+  <p>L. Mishra et al. (2023), “Framework for the architecture of exoplanetary systems. I. Four classes of planetary system architecture?”, A&amp;A 670, A68 · <a href="https://arxiv.org/abs/2301.02374">arXiv:2301.02374</a> · Weiss et al. (2018), AJ 155, 48 (peas in a pod) · Emsenhuber et al. (2021), A&amp;A 656, A69 (Bern model)</p>
+</footer>
+</div><!-- /page-mis -->
 
 <div id="page-val" role="tabpanel" aria-labelledby="tab-val" hidden>
 <section class="pagehero">
@@ -6451,6 +6648,192 @@ $("btn-tl3").addEventListener("click", tlDraw3);
 $("btn-tl4").addEventListener("click", tl4Run);
 $("in-tl5sp").addEventListener("input", () => { TL.sp = +$("in-tl5sp").value; tlDraw5(); });
 
+/* ================= Mishra 2023: architecture framework =================
+   C_S = mean log10 step (telescopes to log10(q_n/q_1)/(n-1)), C_V = population sigma / mean. Prefix ar/AR.  */
+const AR_SYS = {
+  sun:   { name: "Solar System", Ms: 1, pl: ["Me", "V", "E", "Ma", "J", "S", "U", "N"], M: [0.0553, 0.815, 1, 0.107, 317.8, 95.16, 14.54, 17.15], R: [0.383, 0.949, 1, 0.532, 11.21, 9.45, 4.01, 3.88], a: [0.387, 0.723, 1, 1.524, 5.203, 9.537, 19.19, 30.07], paper: [0.36, 1.85, "ordered"] },
+  toi:   { name: "TOI-178", Ms: 0.65, pl: ["b", "c", "d", "e", "f", "g"], M: [1.5, 4.77, 3.01, 3.86, 7.72, 3.94], R: [1.152, 1.669, 2.572, 2.207, 2.287, 2.87], a: [0.02607, 0.0370, 0.0592, 0.0783, 0.1039, 0.1275], paper: [0.08, 0.46, "similar"] },
+  trap:  { name: "Trappist-1", Ms: 0.0898, pl: ["b", "c", "d", "e", "f", "g", "h"], M: [1.374, 1.308, 0.388, 0.692, 1.039, 1.321, 0.326], R: [1.116, 1.097, 0.788, 0.920, 1.045, 1.129, 0.755], a: [0.01154, 0.01580, 0.02227, 0.02925, 0.03849, 0.04683, 0.06189], paper: [-0.10, 0.45, "similar"] },
+  k11:   { name: "Kepler-11", Ms: 0.96, pl: ["b", "c", "d", "e", "f", "g"], M: [1.9, 2.9, 7.3, 8.0, 2.0, 24], R: [1.80, 2.87, 3.12, 4.19, 2.49, 3.33], a: [0.091, 0.107, 0.155, 0.195, 0.250, 0.466], paper: [0.22, 1.03, "ordered"] },
+  cnc:   { name: "55 Cnc", Ms: 0.905, pl: ["e", "b", "c", "f", "d"], M: [7.99, 264, 54.5, 44.8, 1232], R: null, a: [0.01544, 0.1134, 0.2373, 0.7708, 5.957], paper: [0.52, 1.37, "ordered"] },
+  gj876: { name: "GJ 876", Ms: 0.37, pl: ["d", "c", "b", "e"], M: [6.8, 226, 725, 15], R: null, a: [0.0208, 0.1296, 0.2083, 0.334], paper: [0.12, 1.20, "mixed"] },
+  k89:   { name: "Kepler-89", Ms: 1.28, pl: ["b", "c", "d", "e"], M: [10.5, 15.6, 106, 35], R: [1.71, 4.32, 11.27, 6.56], a: [0.0508, 0.1013, 0.1684, 0.3046], paper: [0.17, 0.91, "mixed"] },
+  anti:  { name: "synthetic anti-ordered", Ms: 1, pl: ["1", "2", "3", "4", "5", "6"], M: [40, 20, 8, 3, 1.5, 0.8], R: null, a: [0.05, 0.12, 0.3, 0.8, 2, 5], paper: null },
+};
+AR_SYS.inner = { name: "inner Solar System", Ms: 1, pl: AR_SYS.sun.pl.slice(0, 4), M: AR_SYS.sun.M.slice(0, 4), R: AR_SYS.sun.R.slice(0, 4), a: AR_SYS.sun.a.slice(0, 4), paper: [0.10, 0.85, "similar"] };
+AR_SYS.outer = { name: "outer Solar System", Ms: 1, pl: AR_SYS.sun.pl.slice(4), M: AR_SYS.sun.M.slice(4), R: AR_SYS.sun.R.slice(4), a: AR_SYS.sun.a.slice(4), paper: [-0.42, 1.11, "anti-ordered"] };
+const AR_OBS = [["Solar System", 8, 0.36, 1.85], ["Trappist-1", 7, -0.10, 0.45], ["TOI-178", 6, 0.08, 0.46], ["HD 10180", 6, 0.14, 0.66], ["HD 219134", 6, 0.27, 1.49], ["HD 34445", 6, 0.17, 0.84], ["Kepler-11", 6, 0.22, 1.03], ["Kepler-20", 6, 0.00, 0.44], ["Kepler-80", 6, -0.00, 0.19], ["K2-138", 6, 0.03, 0.61], ["55 Cnc", 5, 0.52, 1.37], ["GJ 667 C", 5, -0.02, 0.29], ["HD 158259", 5, 0.11, 0.29], ["HD 40307", 5, 0.07, 0.33], ["Kepler-102", 5, 0.02, 0.41], ["Kepler-33", 5, 0.46, 0.67], ["Kepler-62", 5, 0.15, 0.68], ["HD 20781", 4, 0.29, 0.59], ["TOI-561", 4, 0.33, 0.64], ["DMPP-1", 4, 0.29, 0.81], ["GJ 3293", 4, 0.27, 0.62], ["GJ 676 A", 4, 0.90, 0.99], ["GJ 876", 4, 0.12, 1.20], ["HD 141399", 4, 0.06, 0.40], ["HD 160691", 4, 0.63, 0.82], ["HD 20794", 4, 0.08, 0.25], ["HD 215152", 4, 0.07, 0.23], ["HR 8799", 4, -0.07, 0.17], ["K2-266", 4, 0.03, 0.60], ["K2-285", 4, 0.01, 0.31], ["Kepler-89", 4, 0.17, 0.91], ["Kepler-106", 4, 0.11, 0.26], ["Kepler-107", 4, 0.13, 0.42], ["Kepler-223", 4, -0.06, 0.22], ["Kepler-411", 4, -0.08, 0.34], ["Kepler-48", 4, 0.74, 1.64], ["Kepler-65", 4, 0.68, 1.63], ["Kepler-79", 4, -0.10, 0.24], ["WASP-47", 4, 0.59, 0.95], ["tau Cet", 4, 0.12, 0.37], ["HD 164922", 4, 0.49, 1.29]];
+const AR_COL = { similar: "#3D9BD9", ordered: "#C97633", "anti-ordered": "#6ECD93", mixed: "#7B6FD6" };
+const AR_BERN = { similar: 80.2, mixed: 8.2, "anti-ordered": 8.4, ordered: 1.5 };
+const arCS = q => Math.log10(q[q.length - 1] / q[0]) / (q.length - 1);
+const arCV = q => { const n = q.length, m = q.reduce((a, b) => a + b, 0) / n; let v = 0; q.forEach(x => v += (x - m) * (x - m)); return Math.sqrt(v / n) / m; };
+const arClass = (cs, cv, n) => cs < -0.2 ? "anti-ordered" : cs > 0.2 ? "ordered" : cv <= Math.sqrt(n - 1) / 2 ? "similar" : "mixed";
+const arQ = (S, key) => key === "M" ? S.M.slice() : key === "R" ? (S.R ? S.R.slice() : null) : (S.R ? S.M.map((m, i) => m / Math.pow(S.R[i], 3)) : null);
+const AR_QLAB = { M: "mass, M⊕", R: "radius, R⊕", rho: "density, ρ⊕" };
+function arPlane(svg, s, n, faint) {
+  const yb = 0.2, xb = Math.sqrt(n - 1) / 2, X0 = s.x(s.x0), X1 = s.x(s.x1), Y0 = s.y(s.y0), Y1 = s.y(s.y1);
+  const rect = (x0, x1, y0, y1, col) => el("rect", { x: fmt(Math.min(x0, x1), 1), y: fmt(Math.min(y0, y1), 1), width: fmt(Math.abs(x1 - x0), 1), height: fmt(Math.abs(y1 - y0), 1), fill: col, opacity: faint ? 0.08 : 0.13 }, svg);
+  rect(X0, X1, Y1, s.y(yb), AR_COL.ordered); rect(X0, X1, s.y(-yb), Y0, AR_COL["anti-ordered"]);
+  rect(X0, s.x(Math.min(xb, s.x1)), s.y(yb), s.y(-yb), AR_COL.similar); if (xb < s.x1) rect(s.x(xb), X1, s.y(yb), s.y(-yb), AR_COL.mixed);
+  [yb, -yb].forEach(v => el("line", { x1: X0, x2: X1, y1: fmt(s.y(v), 1), y2: fmt(s.y(v), 1), stroke: C.muted, "stroke-width": 1 }, svg));
+  if (xb < s.x1) el("line", { x1: fmt(s.x(xb), 1), x2: fmt(s.x(xb), 1), y1: fmt(s.y(yb), 1), y2: fmt(s.y(-yb), 1), stroke: C.muted, "stroke-width": 1 }, svg);
+  const lab = (x, y, t, col) => el("text", { x: fmt(x, 1), y: fmt(y, 1), class: "serieslabel", fill: col, opacity: 0.9 }, svg).textContent = t;
+  lab(X0 + 6, Y1 + 14, "ordered", AR_COL.ordered); lab(X0 + 6, Y0 - 8, "anti-ordered", AR_COL["anti-ordered"]);
+  lab(X0 + 6, s.y(0) + 4, "similar", AR_COL.similar); if (xb < s.x1 - 0.4) lab(s.x(xb) + 6, s.y(0) + 4, "mixed", AR_COL.mixed);
+}
+/* ---- §1 ---- */
+const AR1 = { sys: "toi", key: "M", q: null, names: null, a: null, Ms: 1 };
+function ar1Load() {
+  const S = AR_SYS[AR1.sys]; let q = arQ(S, AR1.key);
+  if (!q) { AR1.key = "M"; q = arQ(S, "M"); $("seg-ar1q").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === "M")); }
+  AR1.q = q; AR1.names = S.pl.slice(); AR1.a = S.a.slice(); AR1.Ms = S.Ms;
+  const box = $("ar1sl"); box.innerHTML = "";
+  q.forEach((v, i) => {
+    const d = el("div", { class: "ctl" }, box); d.innerHTML = "<label>" + AR1.names[i] + " · <output id='o-ar1v" + i + "'>" + fmt(v, v < 1 ? 3 : 2) + "</output></label><input type='range' id='in-ar1v" + i + "' min='-1.5' max='3.5' step='0.02' value='" + fmt(Math.log10(v), 2) + "' aria-label='value of planet " + AR1.names[i] + "'>";
+    $("in-ar1v" + i).addEventListener("input", () => { AR1.q[i] = Math.pow(10, +$("in-ar1v" + i).value); $("o-ar1v" + i).textContent = fmt(AR1.q[i], AR1.q[i] < 1 ? 3 : 2); arDraw1(); });
+  });
+}
+function arDraw1() {
+  const q = AR1.q, n = q.length, cs = arCS(q), cv = arCV(q), cl = arClass(cs, cv, n), S = AR_SYS[AR1.sys];
+  let svg = $("arch1a"); svg.innerHTML = "";
+  const lo = Math.min(...q), hi = Math.max(...q), pad = Math.max(0.3, (Math.log10(hi) - Math.log10(lo)) * 0.25);
+  const s = makeScales(Math.log10(AR1.a[0]) - 0.25, Math.log10(AR1.a[n - 1]) + 0.25, Math.log10(lo) - pad, Math.log10(hi) + pad, 460, 340, 56, 16, 22, 42);
+  const xt = niceTicks(s.x0, s.x1, 4).filter(v => v >= s.x0 && v <= s.x1), yt = niceTicks(s.y0, s.y1, 4).filter(v => v >= s.y0 && v <= s.y1);
+  axes(svg, s, xt, yt, "distance, AU (log)", AR_QLAB[AR1.key] + " (log)", v => fmt(Math.pow(10, v), Math.pow(10, v) < 0.1 ? 3 : Math.pow(10, v) < 1 ? 2 : 1), v => fmt(Math.pow(10, v), Math.pow(10, v) < 1 ? 2 : 0));
+  const pts = q.map((v, i) => [s.x(Math.log10(AR1.a[i])), s.y(Math.log10(v))]);
+  el("path", { d: linePath(pts), stroke: AR_COL[cl], "stroke-width": 1.2, fill: "none", "stroke-dasharray": "5 4", opacity: 0.8 }, svg);
+  const rmax = Math.sqrt(hi);
+  pts.forEach((p, i) => { const r = Math.max(4, 22 * Math.sqrt(q[i]) / rmax); el("circle", { cx: fmt(p[0], 1), cy: fmt(p[1], 1), r: fmt(r, 1), fill: AR_COL[cl], stroke: "#0C111E", "stroke-width": 1.5, opacity: 0.9 }, svg); el("text", { x: fmt(p[0], 1), y: fmt(p[1] - r - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: C.ink2 }, svg).textContent = AR1.names[i]; });
+  egCharts["arch1a"] = { scale: s, pts: pts.map((p, i) => [p[0], p[1], AR1.names[i], q[i], AR1.a[i]]) };
+  svg = $("arch1b"); svg.innerHTML = "";
+  const s2 = makeScales(0, 3, -1.5, 1.5, 460, 340, 56, 16, 22, 42);
+  axes(svg, s2, [0, 0.5, 1, 1.5, 2, 2.5, 3], [-1.5, -1, -0.5, 0, 0.5, 1, 1.5], "coefficient of variation", "coefficient of similarity", v => fmt(v, 1), v => fmt(v, 1));
+  arPlane(svg, s2, n, false);
+  const others = [];
+  Object.keys(AR_SYS).forEach(k => { if (k === AR1.sys) return; const S2 = AR_SYS[k], q2 = arQ(S2, AR1.key); if (!q2) return; const c2 = arCS(q2), v2 = arCV(q2); el("circle", { cx: fmt(s2.x(Math.min(3, v2)), 1), cy: fmt(s2.y(Math.max(-1.5, Math.min(1.5, c2))), 1), r: 3.5, fill: C.muted, opacity: 0.6 }, svg); others.push([s2.x(Math.min(3, v2)), s2.y(Math.max(-1.5, Math.min(1.5, c2))), S2.name, c2, v2, arClass(c2, v2, q2.length)]); });
+  el("circle", { cx: fmt(s2.x(Math.min(3, cv)), 1), cy: fmt(s2.y(Math.max(-1.5, Math.min(1.5, cs))), 1), r: 8, fill: AR_COL[cl], stroke: "#0C111E", "stroke-width": 2 }, svg);
+  others.push([s2.x(Math.min(3, cv)), s2.y(Math.max(-1.5, Math.min(1.5, cs))), S.name + " (loaded)", cs, cv, cl]);
+  egCharts["arch1b"] = { scale: s2, pts: others };
+  $("ar1cs").innerHTML = (cs >= 0 ? "+" : "") + fmt(cs, 2);
+  $("ar1cv").innerHTML = fmt(cv, 2) + "<small> · cap √(n−1) = " + fmt(Math.sqrt(n - 1), 2) + "</small>";
+  $("ar1cl").innerHTML = "<span style='color:" + AR_COL[cl] + "'>" + cl + "</span>";
+  $("ar1bd").innerHTML = fmt(Math.sqrt(n - 1) / 2, 2) + "<small> · n = " + n + "</small>";
+  $("ar1tel").innerHTML = "log₁₀(" + fmt(q[n - 1], 2) + " / " + fmt(q[0], 2) + ") / " + (n - 1) + " = " + (cs >= 0 ? "+" : "") + fmt(cs, 2) + "<br><small>only the first and last planet enter</small>";
+  $("ar1pap").innerHTML = S.paper && AR1.key === "M" ? "C<sub>S</sub> " + (S.paper[0] >= 0 ? "+" : "") + fmt(S.paper[0], 2) + " · C<sub>V</sub> " + fmt(S.paper[1], 2) + " · " + S.paper[2] : "<small>" + (AR1.key === "M" ? "not in the paper's catalogue" : "paper classifies on mass only") + "</small>";
+}
+/* ---- §2 Monte Carlo ---- */
+const AR2 = { n: 4, mode: "wide", t: 0.5 };
+function arDraw2() {
+  $("o-ar2t").textContent = fmt(AR2.t, 2);
+  const n = AR2.n, t = AR2.t, N = 3000, pts = [], cnt = { similar: 0, mixed: 0, ordered: 0, "anti-ordered": 0 };
+  let sd = 20230106; const r = () => { sd = (sd * 1664525 + 1013904223) >>> 0; return sd / 4294967296; };
+  const csMax = Math.log10((1 + t) / (1 - t)), cvMax = 2 * t * Math.sqrt(n - 1) / (n * (1 - t) + 2 * t); let out = 0;
+  for (let k = 0; k < N; k++) {
+    const q = []; for (let i = 0; i < n; i++) q.push(AR2.mode === "wide" ? Math.pow(10, -1 + 4 * r()) : 10 * (1 + t * (2 * r() - 1)));
+    const cs = arCS(q), cv = arCV(q), cl = arClass(cs, cv, n); cnt[cl]++; if (Math.abs(cs) > csMax + 1e-9 || cv > cvMax + 1e-9) out++; pts.push([cv, cs, cl]);
+  }
+  const svg = $("arch2"); svg.innerHTML = "";
+  const s = makeScales(0, 3, -1.5, 1.5, 920, 380, 60, 20, 22, 42);
+  axes(svg, s, [0, 0.5, 1, 1.5, 2, 2.5, 3], [-1.5, -1, -0.5, 0, 0.5, 1, 1.5], "coefficient of variation", "coefficient of similarity", v => fmt(v, 1), v => fmt(v, 1));
+  arPlane(svg, s, n, true);
+  const hp = [];
+  pts.forEach(p => { const px = s.x(Math.min(3, p[0])), py = s.y(Math.max(-1.5, Math.min(1.5, p[1]))); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 1.8, fill: AR_COL[p[2]], opacity: 0.55 }, svg); if (hp.length < 600) hp.push([px, py, p[0], p[1], p[2]]); });
+  [csMax, -csMax].forEach(v => { if (Math.abs(v) <= 1.5) el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(v), 1), y2: fmt(s.y(v), 1), stroke: C.ink, "stroke-dasharray": "5 4", opacity: 0.7 }, svg); });
+  if (cvMax <= 3) el("line", { x1: fmt(s.x(cvMax), 1), x2: fmt(s.x(cvMax), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.ink, "stroke-dasharray": "5 4", opacity: 0.7 }, svg);
+  const cap = Math.sqrt(n - 1); if (cap <= 3) { el("line", { x1: fmt(s.x(cap), 1), x2: fmt(s.x(cap), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.muted, "stroke-dasharray": "2 4" }, svg); el("text", { x: fmt(s.x(cap) + 4, 1), y: s.padT + 14, class: "serieslabel", fill: C.muted }, svg).textContent = "√(n−1)"; }
+  egCharts["arch2"] = { scale: s, pts: hp };
+  const pc = k => fmt(cnt[k] / N * 100, 1) + " %";
+  $("ar2sim").innerHTML = pc("similar") + "<small> / " + AR_BERN.similar + " %</small>"; $("ar2mix").innerHTML = pc("mixed") + "<small> / " + AR_BERN.mixed + " %</small>"; $("ar2ord").innerHTML = pc("ordered") + "<small> / " + AR_BERN.ordered + " %</small>"; $("ar2ant").innerHTML = pc("anti-ordered") + "<small> / " + AR_BERN["anti-ordered"] + " %</small>";
+  $("ar2out").innerHTML = out + "<small> of " + N + (AR2.mode === "tol" ? " · must be zero" : " · the wide sampler ignores t") + "</small>";
+}
+/* ---- §3 observed ---- */
+function arDraw3() {
+  let svg = $("arch3a"); svg.innerHTML = "";
+  const s = makeScales(0, 2, -0.3, 1, 460, 360, 56, 16, 22, 42);
+  axes(svg, s, [0, 0.5, 1, 1.5, 2], [-0.2, 0, 0.2, 0.4, 0.6, 0.8, 1], "coefficient of variation", "coefficient of similarity", v => fmt(v, 1), v => fmt(v, 1));
+  arPlane(svg, s, 4, true);
+  const pts = [];
+  AR_OBS.forEach(o => { const cl = arClass(o[2], o[3], o[1]), px = s.x(o[3]), py = s.y(o[2]), big = /Solar|TOI-178|Trappist/.test(o[0]); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: big ? 6 : 4, fill: AR_COL[cl], stroke: "#0C111E", "stroke-width": 1.5 }, svg); if (big) el("text", { x: fmt(px + 8, 1), y: fmt(py + 4, 1), class: "serieslabel", fill: AR_COL[cl] }, svg).textContent = o[0]; pts.push([px, py, o[0], o[2], o[3], cl, o[1]]); });
+  egCharts["arch3a"] = { scale: s, pts };
+  svg = $("arch3b"); svg.innerHTML = "";
+  const s2 = makeScales(-0.5, 3.5, 0, 90, 460, 360, 56, 16, 22, 42);
+  axes(svg, s2, [], [0, 20, 40, 60, 80], "class", "percent of systems", v => v, v => v);
+  const obs = { similar: 24 / 41 * 100, ordered: 15 / 41 * 100, mixed: 2 / 41 * 100, "anti-ordered": 0 };
+  ["similar", "ordered", "mixed", "anti-ordered"].forEach((k, i) => {
+    const w = s2.x(0.36) - s2.x(0);
+    el("rect", { x: fmt(s2.x(i - 0.38), 1), y: fmt(s2.y(AR_BERN[k]), 1), width: fmt(w, 1), height: fmt(s2.y(0) - s2.y(AR_BERN[k]), 1), fill: AR_COL[k], opacity: 0.45 }, svg);
+    el("rect", { x: fmt(s2.x(i + 0.02), 1), y: fmt(s2.y(obs[k]), 1), width: fmt(w, 1), height: fmt(s2.y(0) - s2.y(obs[k]), 1), fill: AR_COL[k] }, svg);
+    el("text", { x: fmt(s2.x(i), 1), y: s2.H - s2.padB + 18, "text-anchor": "middle", class: "serieslabel", fill: C.ink2 }, svg).textContent = k;
+    el("text", { x: fmt(s2.x(i - 0.2), 1), y: fmt(s2.y(AR_BERN[k]) - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: C.muted }, svg).textContent = AR_BERN[k] + " %";
+    el("text", { x: fmt(s2.x(i + 0.2), 1), y: fmt(s2.y(obs[k]) - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: C.ink }, svg).textContent = Math.round(obs[k]) + " %";
+  });
+  el("text", { x: s2.W - s2.padR, y: s2.padT + 14, "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = "faint: Bern model · solid: observed";
+}
+/* ---- §4 survey ---- */
+const AR4 = { sys: "anti", K: 1, span: 15 };
+function arDraw4() {
+  $("o-ar4k").textContent = fmt(AR4.K, 2) + " m/s"; $("o-ar4p").textContent = AR4.span + " yr";
+  const S = AR_SYS[AR4.sys], n = S.M.length, det = [], K = [], P = [];
+  S.M.forEach((m, i) => { const k = 0.0894 * m / Math.sqrt(S.a[i] * S.Ms), p = Math.sqrt(Math.pow(S.a[i], 3) / S.Ms); K.push(k); P.push(p); det.push(k >= AR4.K && p <= AR4.span); });
+  const svg = $("arch4"); svg.innerHTML = "";
+  const s = makeScales(Math.log10(S.a[0]) - 0.3, Math.log10(S.a[n - 1]) + 0.3, -1.6, 3.5, 920, 360, 60, 20, 22, 42);
+  axes(svg, s, niceTicks(s.x0, s.x1, 5).filter(v => v >= s.x0 && v <= s.x1), [-1, 0, 1, 2, 3], "distance, AU (log)", "mass, M⊕ (log)", v => fmt(Math.pow(10, v), Math.pow(10, v) < 0.1 ? 2 : 1), v => Math.pow(10, v) < 1 ? fmt(Math.pow(10, v), 1) : Math.round(Math.pow(10, v)));
+  const curve = []; for (let lg = s.x0; lg <= s.x1 + 1e-9; lg += 0.05) { const a = Math.pow(10, lg); curve.push([s.x(lg), s.y(Math.log10(AR4.K * Math.sqrt(a * S.Ms) / 0.0894))]); }
+  el("path", { d: linePath(curve), stroke: C.rock, "stroke-width": 1.3, fill: "none", "stroke-dasharray": "5 4" }, svg);
+  const aSpan = Math.cbrt(AR4.span * AR4.span * S.Ms); if (Math.log10(aSpan) < s.x1) { el("line", { x1: fmt(s.x(Math.log10(aSpan)), 1), x2: fmt(s.x(Math.log10(aSpan)), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.rock, "stroke-dasharray": "2 4" }, svg); el("text", { x: fmt(s.x(Math.log10(aSpan)) + 5, 1), y: s.padT + 14, class: "serieslabel", fill: C.rock }, svg).textContent = "period = span"; }
+  const pts = [];
+  S.M.forEach((m, i) => { const px = s.x(Math.log10(S.a[i])), py = s.y(Math.log10(m)); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 7, fill: det[i] ? C.ice : "none", stroke: det[i] ? "#0C111E" : C.ice, "stroke-width": 2 }, svg); el("text", { x: fmt(px, 1), y: fmt(py - 12, 1), "text-anchor": "middle", class: "serieslabel", fill: C.ink2 }, svg).textContent = S.pl[i]; pts.push([px, py, S.pl[i], m, K[i], P[i], det[i]]); });
+  egCharts["arch4"] = { scale: s, pts };
+  const csT = arCS(S.M), cvT = arCV(S.M), clT = arClass(csT, cvT, n);
+  $("ar4true").innerHTML = "<span style='color:" + AR_COL[clT] + "'>" + clT + "</span><br><small>C<sub>S</sub> " + (csT >= 0 ? "+" : "") + fmt(csT, 2) + " · C<sub>V</sub> " + fmt(cvT, 2) + " · n = " + n + "</small>";
+  const dm = S.M.filter((m, i) => det[i]);
+  if (dm.length >= 2) { const cs = arCS(dm), cv = arCV(dm), cl = arClass(cs, cv, dm.length); $("ar4obs").innerHTML = "<span style='color:" + AR_COL[cl] + "'>" + cl + "</span>" + (cl !== clT ? " <small>· class flipped</small>" : "") + "<br><small>C<sub>S</sub> " + (cs >= 0 ? "+" : "") + fmt(cs, 2) + " · C<sub>V</sub> " + fmt(cv, 2) + " · n = " + dm.length + "</small>"; }
+  else $("ar4obs").innerHTML = dm.length === 1 ? "single planet<br><small>no architecture to speak of</small>" : "nothing detected";
+  $("ar4n").innerHTML = dm.length + "<small> of " + n + " · " + S.pl.filter((p, i) => det[i]).join(", ") + "</small>";
+}
+/* ---- §5 ---- */
+function arDraw5() {
+  let svg = $("arch5a"); svg.innerHTML = "";
+  const s = makeScales(-0.5, 0.6, -0.2, 0.3, 460, 340, 56, 16, 22, 42);
+  axes(svg, s, [-0.4, -0.2, 0, 0.2, 0.4, 0.6], [-0.2, -0.1, 0, 0.1, 0.2, 0.3], "C_S of mass", "C_S of radius", v => fmt(v, 1), v => fmt(v, 1));
+  el("line", { x1: fmt(s.x(-0.5), 1), y1: fmt(s.y(-0.5 * 0.23), 1), x2: fmt(s.x(0.6), 1), y2: fmt(s.y(0.6 * 0.23), 1), stroke: C.muted, "stroke-dasharray": "5 4" }, svg);
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(0), 1), y2: fmt(s.y(0), 1), stroke: C.line }, svg); el("line", { y1: s.padT, y2: s.H - s.padB, x1: fmt(s.x(0), 1), x2: fmt(s.x(0), 1), stroke: C.line }, svg);
+  const pts = [];
+  ["sun", "inner", "outer", "toi", "trap", "k11", "k89"].forEach(k => { const S = AR_SYS[k]; if (!S.R) return; const cm = arCS(S.M), cr = arCS(S.R), cl = arClass(cm, arCV(S.M), S.M.length), px = s.x(cm), py = s.y(cr); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: AR_COL[cl], stroke: "#0C111E", "stroke-width": 1.5 }, svg); el("text", { x: fmt(px + 9, 1), y: fmt(py + 4, 1), class: "serieslabel", fill: C.ink2 }, svg).textContent = S.name; pts.push([px, py, S.name, cm, cr]); });
+  egCharts["arch5a"] = { scale: s, pts };
+  svg = $("arch5b"); svg.innerHTML = "";
+  const s2 = makeScales(-0.5, 3.5, 0, 90, 460, 340, 56, 16, 22, 42);
+  axes(svg, s2, [], [0, 20, 40, 60, 80], "class", "percent hosting an EHZ planet", v => v, v => v);
+  const bern = { similar: 76.7, mixed: 9.8, "anti-ordered": 1.2, ordered: 0 }, obs = { similar: 12.5, ordered: 6.7, mixed: 0, "anti-ordered": NaN };
+  ["similar", "ordered", "mixed", "anti-ordered"].forEach((k, i) => {
+    const w = s2.x(0.36) - s2.x(0);
+    el("rect", { x: fmt(s2.x(i - 0.38), 1), y: fmt(s2.y(bern[k]), 1), width: fmt(w, 1), height: fmt(s2.y(0) - s2.y(bern[k]), 1), fill: AR_COL[k], opacity: 0.45 }, svg);
+    el("text", { x: fmt(s2.x(i - 0.2), 1), y: fmt(s2.y(bern[k]) - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: C.muted }, svg).textContent = bern[k] + " %";
+    if (isFinite(obs[k])) { el("rect", { x: fmt(s2.x(i + 0.02), 1), y: fmt(s2.y(obs[k]), 1), width: fmt(w, 1), height: fmt(s2.y(0) - s2.y(obs[k]), 1), fill: AR_COL[k] }, svg); el("text", { x: fmt(s2.x(i + 0.2), 1), y: fmt(s2.y(obs[k]) - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: C.ink }, svg).textContent = obs[k] + " %"; }
+    else el("text", { x: fmt(s2.x(i + 0.2), 1), y: fmt(s2.y(0) - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: C.muted }, svg).textContent = "none known";
+    el("text", { x: fmt(s2.x(i), 1), y: s2.H - s2.padB + 18, "text-anchor": "middle", class: "serieslabel", fill: C.ink2 }, svg).textContent = k;
+  });
+  el("text", { x: s2.W - s2.padR, y: s2.padT + 14, "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = "faint: Bern model · solid: observed";
+}
+function arDrawAll() { ar1Load(); arDraw1(); arDraw2(); arDraw3(); arDraw4(); arDraw5(); }
+/* ---- hovers ---- */
+function arPtHover(boxId, svgId, tipId, pad, html, rad) { attachHover($(boxId), $(svgId), pad, (px, py, cx, cy) => { const c = egCharts[svgId]; if (!c || !c.pts) return; let best = null, bd = 1e9; c.pts.forEach(p => { const d = Math.hypot(p[0] - px, p[1] - py); if (d < bd) { bd = d; best = p; } }); if (!best || bd > (rad || 14)) { $(tipId).hidden = true; return; } setTip($(tipId), cx, cy, html(best), $(boxId).clientWidth); }, () => $(tipId).hidden = true); }
+arPtHover("cb-ar1a", "arch1a", "tip-ar1a", { padL: 56, padR: 16, W: 460, H: 340 }, p => "<b>" + p[2] + "</b><br><span class='mono'>" + fmt(p[3], p[3] < 1 ? 3 : 2) + " · " + fmt(p[4], 3) + " AU</span>", 24);
+arPtHover("cb-ar1b", "arch1b", "tip-ar1b", { padL: 56, padR: 16, W: 460, H: 340 }, p => "<b>" + p[2] + "</b><br><span class='mono'>C_S " + fmt(p[3], 2) + " · C_V " + fmt(p[4], 2) + " · " + p[5] + "</span>");
+arPtHover("cb-ar2", "arch2", "tip-ar2", { padL: 60, padR: 20, W: 920, H: 380 }, p => "<b>" + p[4] + "</b><br><span class='mono'>C_S " + fmt(p[3], 2) + " · C_V " + fmt(p[2], 2) + "</span>", 8);
+arPtHover("cb-ar3a", "arch3a", "tip-ar3a", { padL: 56, padR: 16, W: 460, H: 360 }, p => "<b>" + p[2] + "</b><br><span class='mono'>" + p[6] + " planets · C_S " + fmt(p[3], 2) + " · C_V " + fmt(p[4], 2) + " · " + p[5] + "</span>", 10);
+arPtHover("cb-ar4", "arch4", "tip-ar4", { padL: 60, padR: 20, W: 920, H: 360 }, p => "<b>planet " + p[2] + "</b><br><span class='mono'>" + fmt(p[3], p[3] < 1 ? 3 : 1) + " M⊕ · K = " + fmt(p[4], 2) + " m/s · P = " + (p[5] < 1 ? fmt(p[5] * 365.25, 1) + " d" : fmt(p[5], 1) + " yr") + " · " + (p[6] ? "detected" : "missed") + "</span>");
+arPtHover("cb-ar5a", "arch5a", "tip-ar5a", { padL: 56, padR: 16, W: 460, H: 340 }, p => "<b>" + p[2] + "</b><br><span class='mono'>C_S(M) " + fmt(p[3], 2) + " · C_S(R) " + fmt(p[4], 2) + "</span>");
+/* ---- wiring ---- */
+escSegWire("seg-ar1s", v => { AR1.sys = v; ar1Load(); }, arDraw1);
+escSegWire("seg-ar1q", v => { AR1.key = v; ar1Load(); }, arDraw1);
+escSegWire("seg-ar2n", v => AR2.n = +v, arDraw2);
+escSegWire("seg-ar2d", v => AR2.mode = v, arDraw2);
+$("in-ar2t").addEventListener("input", () => { AR2.t = +$("in-ar2t").value; arDraw2(); });
+escSegWire("seg-ar4s", v => AR4.sys = v, arDraw4);
+$("in-ar4k").addEventListener("input", () => { AR4.K = Math.pow(10, +$("in-ar4k").value); arDraw4(); });
+$("in-ar4p").addEventListener("input", () => { AR4.span = +$("in-ar4p").value; arDraw4(); });
+
 /* ================= Changing periods (concept tab) =================
    Fidelity ladder for the orbital period. Prefix pv/PV. Uses tlKep/tlKick from the Leleu tab for §3.   */
 const PV_AU = 1.495978707e13, PV_MSUN = 1.989e33, PV_MEG = 5.972e27, PV_RSUN = 6.957e10, PV_RE = 6.371e8, PV_GG = 6.674e-8, PV_C = 2.998e10, PV_DAY = 86400, PV_YR = 3.15576e7, PV_MJ = 1.898e30, PV_RJ = 7.149e9;
@@ -7950,7 +8333,7 @@ $("btn-fl-now").addEventListener("click", () => { FL.tcur = 4570; $("in-fl-t").v
 $("btn-fl-disk").addEventListener("click", () => { FL.tcur = 1; $("in-fl-t").value = 0; flDrawAll(); });
 
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "val", "pp", "pnet", "frost", "per"];
+const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "mis", "val", "pp", "pnet", "frost", "per"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -7973,6 +8356,7 @@ flDrawAll();
 pnDrawAll();
 tlDrawAll();
 pvDrawAll();
+arDrawAll();
 drawB1(); b2Reset(); b3Reset();
 mInitData(); m1SetVel(); m1Render(); m2Reset(); mnInit(); ppInit(); showTab(tab0);
 </script>
