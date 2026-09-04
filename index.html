@@ -127,6 +127,13 @@
   .pn-tern{display:grid;grid-template-columns:3fr 2fr;gap:20px;align-items:start;}
   @media (max-width:760px){.pn-tern{grid-template-columns:1fr;}}
 
+  /* ---------- changing periods tab ---------- */
+  .pv-table{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.45;margin-top:18px;}
+  .pv-table th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 14px 10px 0;border-bottom:1px solid var(--line);font-weight:500;}
+  .pv-table td{padding:8px 14px 8px 0;border-bottom:1px solid var(--line-soft);vertical-align:top;color:var(--ink2);}
+  .pv-table td:first-child{color:var(--ink);}
+  .pv-table td.yes{color:#6ECD93;} .pv-table td.no{color:var(--muted);}
+
   /* ---------- leleu tab ---------- */
   .tl-toggles{display:flex;gap:6px;flex-wrap:wrap;}
   .tl-toggles button{background:none;border:1px solid var(--line);border-radius:8px;color:var(--ink2);font-family:var(--mono);font-size:12.5px;padding:6px 12px;cursor:pointer;}
@@ -280,6 +287,7 @@
         <button class="tabbtn concept" id="tab-pp" role="tab" aria-selected="false">PINN playground <small>after Baty · learn the tricks</small></button>
         <button class="tabbtn concept" id="tab-val" role="tab" aria-selected="false">Radius valley <small>after Egger · two peaks and a gap</small></button>
         <button class="tabbtn concept" id="tab-pnet" role="tab" aria-selected="false">plaNETic <small>after Egger · inside the machine</small></button>
+        <button class="tabbtn concept" id="tab-per" role="tab" aria-selected="false">Changing periods <small>after Leleu · the fidelity ladder</small></button>
       </div>
     </div>
   </div>
@@ -2884,6 +2892,289 @@
   <p>J. A. Egger et al. (2024), arXiv:2406.18653 · <a href="https://github.com/joannegger/plaNETic">github.com/joannegger/plaNETic</a> · Leleu et al. (2021), A&amp;A 649, A26 · Alibert &amp; Venturini (2019), A&amp;A 626, A21 · Haldemann et al. (2024), A&amp;A 681, A96 (BICEPS) · Baumeister et al. (2020), ApJ 889, 42 · Haldemann et al. (2023), A&amp;A 672, A180</p>
 </footer>
 </div><!-- /page-pnet -->
+
+<div id="page-per" role="tabpanel" aria-labelledby="tab-per" hidden>
+<section class="pagehero">
+  <p class="eyebrow">Concept tab · changing periods · not a paper</p>
+  <p class="standfirst">Kepler's planet has one period and keeps it forever. Every real planet has a period that wobbles, drifts, decays or once changed by orders of magnitude, and each of those is a term that a more faithful model adds. This tab climbs that ladder one rung at a time: a point star and a circle, then an ellipse that precesses, then a second planet, then dissipation, then a distant companion, then the disk the planets were born in. Each station says what the new term does to the period, how big it is for a real system, and lets you turn it up. TOI-178 is the recurring example.</p>
+</section>
+
+<!-- ================= PV1 ================= -->
+<section id="per1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>Rung 0 · Kepler: nothing changes</h2></div>
+  <p class="prose">One planet, a point-mass star, a circular orbit. The period is set by the semi-major axis and the stellar mass and by nothing else, and it stays fixed for the age of the universe. This is the baseline every other station perturbs. Move the sliders to see what sets the number; then note the last chip.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Semi-major axis <output id="o-pv1a">0.050 AU</output></label>
+        <input type="range" id="in-pv1a" min="-2" max="0" step="0.01" value="-1.301" aria-label="Semi-major axis"></div>
+      <div class="ctl"><label>Stellar mass <output id="o-pv1m">1.00 M☉</output></label>
+        <input type="range" id="in-pv1m" min="0.1" max="2" step="0.05" value="1" aria-label="Stellar mass"></div>
+    </div>
+    <div class="chart-box" id="cb-pv1">
+      <p class="chart-title">Period against semi-major axis, Kepler's third law</p>
+      <p class="chart-sub">Lines for 0.3, 1 and 2 solar masses · dots: TOI-178 b to g around their 0.65 M☉ star · hover</p>
+      <svg id="pvch1" viewBox="0 0 920 320" aria-label="Period versus semi-major axis"></svg>
+      <div class="tip" id="tip-pv1" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">period</div><div class="v" id="pv1p">–</div></div>
+      <div class="chip"><div class="k">orbital speed</div><div class="v" id="pv1v">–</div></div>
+      <div class="chip"><div class="k">mean motion</div><div class="v" id="pv1n">–</div></div>
+      <div class="chip answer"><div class="k">change over 10 Gyr</div><div class="v">0.000 s<small> · exactly</small></div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Why this rung matters.</em> Everything that follows is measured against it. Observers fit a linear ephemeris, a constant period and a reference epoch, and plot observed minus computed transit times. On this rung that plot is a flat line at zero. Every mechanism below has a signature in that plot: a sinusoid, a parabola, a slow bend, and the ladder is a catalogue of those shapes.</p>
+</section>
+
+<!-- ================= PV2 ================= -->
+<section id="per2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>Rung 1 · the ellipse, and three periods instead of one</h2></div>
+  <p class="prose">An eccentric orbit on its own still has one constant period. But real ellipses turn: their long axis precesses, pushed by general relativity, by the star's equatorial bulge, by the tidal bulge the star raises on the planet, and by other planets. Once the ellipse turns, three periods separate. The sidereal period is the time to come back to the same direction in space. The anomalistic period is periastron to periastron. The transit period is what a telescope measures, and it oscillates around the sidereal value with the precession period, by an amount set by the eccentricity.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Load</label>
+        <div class="seg" id="seg-pv2s" role="group" aria-label="Preset">
+          <button aria-pressed="true" data-v="se">hot super-Earth</button>
+          <button aria-pressed="false" data-v="hj">hot Jupiter</button>
+          <button aria-pressed="false" data-v="toi">TOI-178 d</button>
+        </div></div>
+      <div class="ctl"><label>Period <output id="o-pv2p">3.0 d</output></label>
+        <input type="range" id="in-pv2p" min="0.5" max="30" step="0.1" value="3" aria-label="Period"></div>
+      <div class="ctl"><label>Eccentricity <output id="o-pv2e">0.050</output></label>
+        <input type="range" id="in-pv2e" min="0" max="0.3" step="0.005" value="0.05" aria-label="Eccentricity"></div>
+      <div class="ctl"><label>Stellar oblateness J₂ <output id="o-pv2j">10⁻⁶</output></label>
+        <input type="range" id="in-pv2j" min="-7" max="-3" step="0.1" value="-6" aria-label="Stellar J2"></div>
+      <div class="ctl"><label>Outer perturber <output id="o-pv2m">0 M⊕</output></label>
+        <input type="range" id="in-pv2m" min="0" max="30" step="0.5" value="0" aria-label="Perturber mass"></div>
+      <div class="ctl"><label>Perturber period ratio <output id="o-pv2r">2.00</output></label>
+        <input type="range" id="in-pv2r" min="1.3" max="4" step="0.01" value="2" aria-label="Perturber period ratio"></div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pv2a">
+        <p class="chart-title">The ellipse turning</p>
+        <p class="chart-sub">Solid: now · faint: the same orbit later in the precession cycle · the transit happens on the line to Earth</p>
+        <svg id="pvch2a" viewBox="0 0 460 340" aria-label="Precessing ellipse"></svg>
+      </div>
+      <div class="chart-box" id="cb-pv2b">
+        <p class="chart-title">Transit times against a linear ephemeris</p>
+        <p class="chart-sub">One full precession cycle · amplitude e P / π · hover</p>
+        <svg id="pvch2b" viewBox="0 0 460 340" aria-label="Transit timing from precession"></svg>
+        <div class="tip" id="tip-pv2b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">sidereal · anomalistic · transit</div><div class="v" id="pv2per" style="font-size:14px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">precession rate by source · °/yr</div><div class="v" id="pv2src" style="font-size:13.5px;line-height:1.5">–</div></div>
+      <div class="chip answer"><div class="k">precession period</div><div class="v" id="pv2T">–</div></div>
+      <div class="chip"><div class="k">timing amplitude e P / π</div><div class="v" id="pv2A">–</div></div>
+      <div class="chip"><div class="k">transit period, max deviation</div><div class="v" id="pv2dP">–</div></div>
+      <div class="chip"><div class="k">shift in 10 years of monitoring</div><div class="v" id="pv2ten">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What to take from this rung.</em> Precession changes the transit period in a purely periodic way, and only when the eccentricity is not zero: at e = 0 the ellipse has no long axis to turn. For a lone planet the rates are slow, general relativity gives cycles of thousands of years and the stellar bulge is slower still, so over a decade of monitoring the signature is a gentle bend of a few seconds. Add a neighbour and the rate jumps by orders of magnitude: that is the bridge to the next rung. The hot-Jupiter preset shows the one case where the planet's own tidal bulge wins.</p>
+</section>
+
+<!-- ================= PV3 ================= -->
+<section id="per3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Rung 2 · a second planet</h2></div>
+  <p class="prose">With two planets the problem has no closed solution, so this station integrates it: the same N-body engine as the Leleu tab, with eccentric starting orbits. Two things appear. Near a first-order resonance the planets pull in step and the transit times swing with the super-period, by an amount that grows with the neighbour's mass and with closeness to exact resonance. Inside the resonance the swing becomes a libration. And if the planets are massive and close enough that resonances overlap, the motion turns chaotic and the period never settles.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Load</label>
+        <div class="seg" id="seg-pv3s" role="group" aria-label="Preset">
+          <button aria-pressed="true" data-v="near">near 2:1</button>
+          <button aria-pressed="false" data-v="toi">TOI-178 d–e</button>
+          <button aria-pressed="false" data-v="lock">3:2 lock</button>
+          <button aria-pressed="false" data-v="chaos">packed</button>
+        </div></div>
+      <div class="ctl"><label>Inner period <output id="o-pv3p">5.0 d</output></label>
+        <input type="range" id="in-pv3p" min="1" max="20" step="0.1" value="5" aria-label="Inner period"></div>
+      <div class="ctl"><label>Period ratio <output id="o-pv3r">2.030</output></label>
+        <input type="range" id="in-pv3r" min="1.1" max="2.6" step="0.005" value="2.03" aria-label="Period ratio"></div>
+      <div class="ctl"><label>Inner mass <output id="o-pv3m1">5.0 M⊕</output></label>
+        <input type="range" id="in-pv3m1" min="0.5" max="30" step="0.5" value="5" aria-label="Inner mass"></div>
+      <div class="ctl"><label>Outer mass <output id="o-pv3m2">5.0 M⊕</output></label>
+        <input type="range" id="in-pv3m2" min="0.5" max="30" step="0.5" value="5" aria-label="Outer mass"></div>
+      <div class="ctl"><label>Outer eccentricity <output id="o-pv3e">0.020</output></label>
+        <input type="range" id="in-pv3e" min="0" max="0.15" step="0.005" value="0.02" aria-label="Outer eccentricity"></div>
+      <div class="ctl" style="flex:none;justify-content:flex-end;"><button class="btn" id="btn-pv3">▶ Integrate 20 years</button></div>
+    </div>
+    <div class="chart-box" id="cb-pv3">
+      <p class="chart-title">Observed minus computed transit times, both planets</p>
+      <p class="chart-sub">Star 1 M☉ · a linear ephemeris removed per planet · dashed: the analytic near-resonance amplitude for the inner planet · hover</p>
+      <svg id="pvch3" viewBox="0 0 920 360" aria-label="Two-planet transit timing variations"></svg>
+      <div class="tip" id="tip-pv3" hidden></div>
+    </div>
+    <div class="legend"><span><i style="border-color:var(--ice)"></i>inner</span><span><i style="border-color:var(--rock)"></i>outer</span></div>
+    <div class="readouts">
+      <div class="chip"><div class="k">nearest first-order resonance</div><div class="v" id="pv3res">–</div></div>
+      <div class="chip"><div class="k">super-period</div><div class="v" id="pv3sp">–</div></div>
+      <div class="chip"><div class="k">timing swing · inner / outer</div><div class="v" id="pv3amp" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">period wobble · inner / outer</div><div class="v" id="pv3dp" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">mutual Hill spacing</div><div class="v" id="pv3hill">–</div></div>
+      <div class="chip answer"><div class="k">diffusion index · verdict</div><div class="v" id="pv3diff" style="font-size:15px">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Reading the swing.</em> The analytic formula of Lithwick, Xie and Wu says the inner planet's timing swing is the outer planet's mass ratio times the period, divided by the fractional distance from resonance. Halve the distance and the swing doubles, which is why chains like TOI-178, with every pair within one or two percent of resonance, have timing swings of tens of minutes from planets of a few Earth masses. The period itself wobbles by the swing times two pi times the period over the super-period: minutes, reversing every few months. The packed preset shows the other regime: no super-period, no repeating pattern, a diffusion index that says the period is random-walking.</p>
+</section>
+
+<!-- ================= PV4 ================= -->
+<section id="per4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>Rung 3 · dissipation: tides and mass loss</h2></div>
+  <p class="prose">Everything so far conserves energy, so every change reverses. Tides do not. The bulge a planet raises on its star lags, and the lag drains orbital energy: for a hot Jupiter the orbit shrinks and the period decreases steadily, which shows in the timing plot as a parabola. WASP-12b is the measured case, 29 milliseconds per year. For small planets in a chain the same dissipation, acting through the planets' eccentricities, pushes each pair slowly away from exact resonance, which is why every pair in TOI-178 sits slightly wide of it. Mass loss, from the star or the planet, is the third dissipative term and the smallest.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>System</label>
+        <div class="seg" id="seg-pv4s" role="group" aria-label="System">
+          <button aria-pressed="true" data-v="w12">WASP-12b</button>
+          <button aria-pressed="false" data-v="hse">1-day super-Earth</button>
+          <button aria-pressed="false" data-v="toib">TOI-178 b</button>
+        </div></div>
+      <div class="ctl"><label>Stellar tidal quality Q′<sub>★</sub> <output id="o-pv4q">1.8×10⁵</output></label>
+        <input type="range" id="in-pv4q" min="4" max="8" step="0.05" value="5.25" aria-label="Stellar tidal quality factor"></div>
+      <div class="ctl"><label>Planet tidal quality Q′<sub>p</sub> <output id="o-pv4qp">100</output></label>
+        <input type="range" id="in-pv4qp" min="1" max="6" step="0.1" value="2" aria-label="Planet tidal quality factor"></div>
+      <div class="ctl"><label>Stellar wind mass loss <output id="o-pv4w">10⁻¹⁴ M☉/yr</output></label>
+        <input type="range" id="in-pv4w" min="-15" max="-11" step="0.1" value="-14" aria-label="Stellar mass loss rate"></div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pv4a">
+        <p class="chart-title">Orbital decay: transit times over 20 years</p>
+        <p class="chart-sub">Parabola from a constant dP/dt · dots every 200 orbits · hover</p>
+        <svg id="pvch4a" viewBox="0 0 460 340" aria-label="Orbital decay parabola"></svg>
+        <div class="tip" id="tip-pv4a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pv4b">
+        <p class="chart-title">TOI-178: how far each pair sits from exact resonance</p>
+        <p class="chart-sub">Fractional offset Δ from the paper's periods · all positive, all one to two percent</p>
+        <svg id="pvch4b" viewBox="0 0 460 340" aria-label="Resonance offsets of TOI-178"></svg>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip answer"><div class="k">dP/dt</div><div class="v" id="pv4pdot">–</div></div>
+      <div class="chip"><div class="k">decay timescale P / |dP/dt|</div><div class="v" id="pv4tau">–</div></div>
+      <div class="chip"><div class="k">timing shift after 10 years</div><div class="v" id="pv4ten">–</div></div>
+      <div class="chip"><div class="k">eccentricity damping time · TOI-178 b / d / g</div><div class="v" id="pv4te" style="font-size:14px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">stellar mass loss · ΔP of TOI-178 d over 7 Gyr</div><div class="v" id="pv4w">–</div></div>
+      <div class="chip"><div class="k">planet mass loss · ΔP of TOI-178 d over 7 Gyr</div><div class="v" id="pv4pl">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Two regimes of the same physics.</em> Tides raised on the star by a Jupiter-mass planet at one day are strong enough to spiral it in within a few million years, and the period decrease is measurable within a decade. Tides raised on an Earth-mass planet by its star are far too weak to move the orbit, but they damp the planet's eccentricity on gigayear timescales, and in a resonant pair the damped eccentricity is replaced by a small outward drift of the period ratio. That is the mechanism the Leleu paper invokes for planet b, 1.5 percent wide of the 5:3 with c. Mass loss is included for completeness: seconds to a minute over the age of the system for the star's wind, microseconds for the planet's own evaporation.</p>
+</section>
+
+<!-- ================= PV5 ================= -->
+<section id="per5">
+  <div class="sec-head"><span class="sec-num">§5</span><h2>Rung 4 · a distant third body</h2></div>
+  <p class="prose">A companion far outside the transiting planet does two very different things. It makes the star orbit the common centre of mass, so the light from every transit arrives early or late by the travel time across that orbit: the period appears to change while the orbit itself does not. And if the companion is inclined, it drives Kozai-Lidov cycles that trade the inner planet's eccentricity against its inclination over long timescales, while the semi-major axis and the period stay fixed.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Companion mass <output id="o-pv5m">1.0 M<sub>Jup</sub></output></label>
+        <input type="range" id="in-pv5m" min="0" max="5.2" step="0.05" value="2.5" aria-label="Companion mass"></div>
+      <div class="ctl"><label>Companion distance <output id="o-pv5a">5.0 AU</output></label>
+        <input type="range" id="in-pv5a" min="0" max="1.7" step="0.02" value="0.699" aria-label="Companion distance"></div>
+      <div class="ctl"><label>Companion inclination <output id="o-pv5i">65°</output></label>
+        <input type="range" id="in-pv5i" min="0" max="90" step="1" value="65" aria-label="Companion inclination"></div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pv5a">
+        <p class="chart-title">Light-travel-time effect on the transit times</p>
+        <p class="chart-sub">Star of 1 M☉ · inner planet TOI-178 d's period · two companion orbits · hover</p>
+        <svg id="pvch5a" viewBox="0 0 460 340" aria-label="Light travel time effect"></svg>
+        <div class="tip" id="tip-pv5a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pv5b">
+        <p class="chart-title">Kozai-Lidov: eccentricity traded for inclination</p>
+        <p class="chart-sub">Test-particle quadrupole · the curve conserves √(1−e²) cos i · the period never moves</p>
+        <svg id="pvch5b" viewBox="0 0 460 340" aria-label="Kozai Lidov cycle"></svg>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">companion period</div><div class="v" id="pv5pc">–</div></div>
+      <div class="chip answer"><div class="k">timing amplitude</div><div class="v" id="pv5A">–</div></div>
+      <div class="chip"><div class="k">apparent period change</div><div class="v" id="pv5dp">–</div></div>
+      <div class="chip"><div class="k">Kozai maximum eccentricity</div><div class="v" id="pv5emax">–</div></div>
+      <div class="chip"><div class="k">Kozai timescale</div><div class="v" id="pv5tk">–</div></div>
+      <div class="chip"><div class="k">true period change from Kozai</div><div class="v">0<small> · a is conserved</small></div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Apparent versus real.</em> The light-travel-time effect is the cleanest example of a period change that is not one: a Jupiter at 5 AU moves the star by a few light-seconds over twelve years, and a naive fit would report a period drifting by hundredths of a second. It is distinguished from real effects because it is identical for every planet in the system and because transit durations do not change. Kozai cycles are the opposite case: a large real change in the orbit's shape and tilt with no change in period, because the perturbation is too slow to exchange energy. For TOI-178 neither applies, no companion is known, and a strongly inclined one would have broken the coplanarity of §6 in the Leleu tab.</p>
+</section>
+
+<!-- ================= PV6 ================= -->
+<section id="per6">
+  <div class="sec-head"><span class="sec-num">§6</span><h2>Rung 5 · the disk: the only time periods really changed</h2></div>
+  <p class="prose">In the first few million years a planet sits in a gas disk, and the gravitational torque of the spiral wakes it raises drives it inward: type I migration. The rate scales with the planet's mass and the local disk mass, so two planets migrate at different speeds, converge, and when their period ratio reaches a first-order resonance slowly enough, lock. From then on they migrate together, and a third, fourth and fifth planet can join in turn. This is the rung that changes periods by orders of magnitude, and the rung that built the TOI-178 chain. The toy below integrates the standard migration rate with an efficiency factor, a decaying disk and an inner edge.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label>Inner planet mass <output id="o-pv6m1">5 M⊕</output></label>
+        <input type="range" id="in-pv6m1" min="1" max="20" step="0.5" value="5" aria-label="Inner planet mass"></div>
+      <div class="ctl"><label>Outer planet mass <output id="o-pv6m2">8 M⊕</output></label>
+        <input type="range" id="in-pv6m2" min="1" max="20" step="0.5" value="8" aria-label="Outer planet mass"></div>
+      <div class="ctl"><label>Disk mass × minimum-mass nebula <output id="o-pv6f">1.0</output></label>
+        <input type="range" id="in-pv6f" min="-1" max="0.7" step="0.05" value="0" aria-label="Disk mass factor"></div>
+      <div class="ctl"><label>Migration efficiency <output id="o-pv6eff">0.10</output></label>
+        <input type="range" id="in-pv6eff" min="-2" max="0" step="0.05" value="-1" aria-label="Migration efficiency"></div>
+      <div class="ctl"><label>Disk e-folding time <output id="o-pv6td">2.0 Myr</output></label>
+        <input type="range" id="in-pv6td" min="0.5" max="5" step="0.1" value="2" aria-label="Disk lifetime"></div>
+      <div class="ctl"><label>Outer planet starts at <output id="o-pv6a2">1.60 AU</output></label>
+        <input type="range" id="in-pv6a2" min="1.2" max="3" step="0.05" value="1.6" aria-label="Outer starting distance"></div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-pv6a">
+        <p class="chart-title">Semi-major axes through the disk phase</p>
+        <p class="chart-sub">Inner planet starts at 1 AU · dashed: the disk's inner edge at 0.05 AU · hover</p>
+        <svg id="pvch6a" viewBox="0 0 460 340" aria-label="Migration tracks"></svg>
+        <div class="tip" id="tip-pv6a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-pv6b">
+        <p class="chart-title">Period ratio through the disk phase</p>
+        <p class="chart-sub">Dotted: first-order resonances · the ratio freezes at capture</p>
+        <svg id="pvch6b" viewBox="0 0 460 340" aria-label="Period ratio evolution"></svg>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">migration time at 1 AU · inner / outer</div><div class="v" id="pv6tau" style="font-size:15px">–</div></div>
+      <div class="chip answer"><div class="k">outcome</div><div class="v" id="pv6out" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">inner period · start → end</div><div class="v" id="pv6p1" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">outer period · start → end</div><div class="v" id="pv6p2" style="font-size:15px">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Why the chain is a fossil.</em> At full strength type I migration empties the inner disk in tens of thousands of years, far faster than disks live, which is the classic problem the efficiency slider parameterises. Whatever the true rate, capture needs convergence to be slow compared with the resonant libration, so heavy, fast pairs skip the 2:1 and lock at 3:2 or 4:3, while light, slow pairs stop at 2:1. TOI-178's 2:1, 3:2, 3:2, 4:3 sequence is therefore a record of relative migration speeds seven billion years ago, and the disk's inner edge, where migration halts, is where the chain was anchored. After the disk is gone nothing on the rungs above can undo it.</p>
+</section>
+
+<!-- ================= PV7 ================= -->
+<section id="per7">
+  <div class="sec-head"><span class="sec-num">§7</span><h2>The observer's table</h2></div>
+  <p class="prose">Every rung on one chart: how long the mechanism takes against how much it moves the period. The grey band is where a transit survey stops being able to see anything, and the dotted line is one orbit of TOI-178 d, above which the word "period" has stopped meaning much. The table below says what each mechanism looks like in an observed-minus-computed plot, and whether it matters for TOI-178.</p>
+  <div class="panel">
+    <div class="chart-box" id="cb-pv7">
+      <p class="chart-title">Timescale against size of the period change</p>
+      <p class="chart-sub">Values for TOI-178 d unless the label says otherwise · hover a point</p>
+      <svg id="pvch7" viewBox="0 0 920 400" aria-label="Timescale versus period change"></svg>
+      <div class="tip" id="tip-pv7" hidden></div>
+    </div>
+    <table class="pv-table">
+      <tr><th>mechanism</th><th>O − C signature</th><th>reversible</th><th>TOI-178</th></tr>
+      <tr><td>Precession of the ellipse</td><td>sinusoid at the precession period, amplitude e P / π</td><td>yes</td><td class="no">e too small to detect</td></tr>
+      <tr><td>Near-resonant neighbour</td><td>sinusoid at the super-period, tens of minutes</td><td>yes</td><td class="yes">dominant, all six planets</td></tr>
+      <tr><td>Resonant libration</td><td>slow envelope over years to decades</td><td>yes</td><td class="yes">present, chain librates</td></tr>
+      <tr><td>Chaos</td><td>random walk, no repeating pattern</td><td>no</td><td class="no">chain is regular</td></tr>
+      <tr><td>Tidal orbital decay</td><td>parabola, period shrinking</td><td>no</td><td class="no">planets too light</td></tr>
+      <tr><td>Resonant repulsion</td><td>invisible in a decade; pairs sit wide of resonance</td><td>no</td><td class="yes">b is 1.5 % wide of 5:3</td></tr>
+      <tr><td>Stellar and planetary mass loss</td><td>none within a human lifetime</td><td>no</td><td class="no">seconds over 7 Gyr</td></tr>
+      <tr><td>Light-travel time from a companion</td><td>sinusoid at the companion period, same for every planet</td><td>apparent only</td><td class="no">no companion known</td></tr>
+      <tr><td>Kozai-Lidov cycles</td><td>none in timing; duration and visibility change</td><td>yes</td><td class="no">would break coplanarity</td></tr>
+      <tr><td>Disk migration</td><td>finished before any observation</td><td>no</td><td class="yes">built the chain</td></tr>
+    </table>
+  </div>
+  <p class="takeaway"><em>The ladder in one sentence.</em> Periods breathe by minutes over months because of neighbours, bend by seconds over decades because of precession and light-travel time, decay by milliseconds a year under tides when the planet is heavy and close, drift by minutes to hours over gigayears through eccentricity damping and mass loss, and changed by orders of magnitude only once, in the disk, before any of this could be watched. The rung you need is set by the precision of your clock and the length of your patience.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The formulas are the standard ones: Kepler's law; the precession rates for general relativity, a stellar J₂, the planet's tidal bulge (Ragozzine &amp; Wolf 2009) and a coplanar outer perturber (secular Laplace–Lagrange with a numerically evaluated Laplace coefficient); the first-order precession timing amplitude e P / π; the near-resonance timing amplitude of Lithwick, Xie &amp; Wu (2012) with zero free eccentricity; constant-lag tidal decay (Goldreich &amp; Soter 1966) and eccentricity damping; the light-travel-time amplitude; the test-particle Kozai integral and timescale; the Tanaka, Takeuchi &amp; Ward (2002) type I migration rate on a minimum-mass nebula. The §3 integration is a real N-body run with the same engine as the Leleu tab. The §6 resonance capture is a toy: capture is decided by a threshold on the convergence timescale, the locked pair migrates at a mass-weighted rate, and the inner edge is a hard wall; real capture depends on eccentricities and on the disk's damping. WASP-12b's decay rate and TOI-178's periods, masses and radii are published values. The §7 chart uses the numbers computed on this page for TOI-178 d and rounds them to their order of magnitude.</p>
+  <p>Lithwick, Xie &amp; Wu (2012), ApJ 761, 122 · Ragozzine &amp; Wolf (2009), ApJ 698, 1778 · Patra et al. (2017), AJ 154, 4 (WASP-12b) · Tanaka, Takeuchi &amp; Ward (2002), ApJ 565, 1257 · Lithwick &amp; Wu (2012), ApJL 756, L11 (resonant repulsion)</p>
+</footer>
+</div><!-- /page-per -->
 
 </div>
 
@@ -6160,6 +6451,304 @@ $("btn-tl3").addEventListener("click", tlDraw3);
 $("btn-tl4").addEventListener("click", tl4Run);
 $("in-tl5sp").addEventListener("input", () => { TL.sp = +$("in-tl5sp").value; tlDraw5(); });
 
+/* ================= Changing periods (concept tab) =================
+   Fidelity ladder for the orbital period. Prefix pv/PV. Uses tlKep/tlKick from the Leleu tab for §3.   */
+const PV_AU = 1.495978707e13, PV_MSUN = 1.989e33, PV_MEG = 5.972e27, PV_RSUN = 6.957e10, PV_RE = 6.371e8, PV_GG = 6.674e-8, PV_C = 2.998e10, PV_DAY = 86400, PV_YR = 3.15576e7, PV_MJ = 1.898e30, PV_RJ = 7.149e9;
+const pvSup = e => String(e).replace("-", "⁻").replace(/\d/g, d => "⁰¹²³⁴⁵⁶⁷⁸⁹"[+d]);
+const pvSci = (v, d) => { if (!isFinite(v)) return "–"; if (v === 0) return "0"; const e = Math.floor(Math.log10(Math.abs(v))); if (Math.abs(e) < 3) return fmt(v, d === undefined ? (e >= 2 ? 0 : e >= 0 ? 1 : 3) : d); return fmt(v / Math.pow(10, e), 2) + "×10" + pvSup(e); };
+const pvTime = s => { const a = Math.abs(s); if (a < 1e-3) return fmt(s * 1e6, 1) + " µs"; if (a < 1) return fmt(s * 1e3, 1) + " ms"; if (a < 60) return fmt(s, 1) + " s"; if (a < 3600) return fmt(s / 60, 1) + " min"; if (a < PV_DAY) return fmt(s / 3600, 1) + " h"; if (a < PV_YR) return fmt(s / PV_DAY, 1) + " d"; return fmt(s / PV_YR, 1) + " yr"; };
+const pvSpan = yr => yr < 1 ? fmt(yr * 365.25, 0) + " d" : yr < 1e3 ? fmt(yr, 0) + " yr" : yr < 1e6 ? fmt(yr / 1e3, 1) + " kyr" : yr < 1e9 ? fmt(yr / 1e6, 1) + " Myr" : fmt(yr / 1e9, 2) + " Gyr";
+const pvPeriod = (aAU, Ms) => Math.sqrt(aAU * aAU * aAU / Ms) * 365.25;            // days
+const pvAxis = (Pd, Ms) => Math.cbrt(Ms * Math.pow(Pd / 365.25, 2));                 // AU
+const PV_LOG = v => Math.log10(v);
+/* ---- §1 ---- */
+const PV1 = { a: 0.05, Ms: 1 };
+function pvDraw1() {
+  $("o-pv1a").textContent = fmt(PV1.a, 3) + " AU"; $("o-pv1m").textContent = fmt(PV1.Ms, 2) + " M☉";
+  const svg = $("pvch1"); svg.innerHTML = "";
+  const s = makeScales(-2, 0, PV_LOG(0.3), PV_LOG(400), 920, 320, 56, 20, 22, 42);
+  axes(svg, s, [-2, -1.5, -1, -0.5, 0], [1, 3, 10, 30, 100, 365].map(PV_LOG), "semi-major axis, AU (log)", "period, days (log)", v => fmt(Math.pow(10, v), 2), v => Math.round(Math.pow(10, v)));
+  [[0.3, C.muted], [1, C.ink2], [2, C.muted]].forEach(([m, col]) => { const pts = []; for (let lg = -2; lg <= 0; lg += 0.05) pts.push([s.x(lg), s.y(PV_LOG(pvPeriod(Math.pow(10, lg), m)))]); el("path", { d: linePath(pts), stroke: col, "stroke-width": 1.2, fill: "none", "stroke-dasharray": m === 1 ? "" : "4 4" }, svg); el("text", { x: fmt(pts[pts.length - 1][0] - 4, 1), y: fmt(pts[pts.length - 1][1] - 6, 1), "text-anchor": "end", class: "serieslabel", fill: col }, svg).textContent = m + " M☉"; });
+  const pts = [];
+  TL_N.forEach(k => { const p = TL_PL[k], px = s.x(PV_LOG(p.a)), py = s.y(PV_LOG(p.P)); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 4, fill: p.col }, svg); pts.push([px, py, "TOI-178 " + k, p.P, p.a]); });
+  const P = pvPeriod(PV1.a, PV1.Ms), px = s.x(PV_LOG(PV1.a)), py = s.y(PV_LOG(P));
+  el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 7, fill: C.ice, stroke: "#0C111E", "stroke-width": 2 }, svg);
+  egCharts["pvch1"] = { scale: s, pts };
+  const v = Math.sqrt(PV_GG * PV1.Ms * PV_MSUN / (PV1.a * PV_AU)) / 1e5;
+  $("pv1p").innerHTML = (P < 1 ? fmt(P * 24, 1) + "<small> h</small>" : P < 100 ? fmt(P, 2) + "<small> d</small>" : fmt(P / 365.25, 2) + "<small> yr</small>");
+  $("pv1v").innerHTML = fmt(v, 0) + "<small> km/s</small>";
+  $("pv1n").innerHTML = fmt(360 / P, 2) + "<small> °/day</small>";
+}
+/* ---- §2 precession ---- */
+const PV2 = { P: 3, e: 0.05, kind: "se", J2: 1e-6, mp: 0, ratio: 2 };
+const PV2_BODY = { se: { Mp: 5 * PV_MEG, Rp: 2 * PV_RE, k2: 0.3, Ms: 1, Rs: 1 }, hj: { Mp: PV_MJ, Rp: 1.2 * PV_RJ, k2: 0.3, Ms: 1, Rs: 1 }, toi: { Mp: 3.01 * PV_MEG, Rp: 2.572 * PV_RE, k2: 0.3, Ms: 0.65, Rs: 0.651 } };
+function pvLaplace(alpha) { let sum = 0; const N = 720; for (let i = 0; i < N; i++) { const psi = (i + 0.5) / N * 2 * Math.PI; sum += Math.cos(psi) / Math.pow(1 - 2 * alpha * Math.cos(psi) + alpha * alpha, 1.5); } return sum / N * 2; }   // b^(1)_{3/2}
+function pvRates2() {
+  const b = PV2_BODY[PV2.kind], Ms = b.Ms * PV_MSUN, a = pvAxis(PV2.P, b.Ms) * PV_AU, n = 2 * Math.PI / (PV2.P * PV_DAY), e2 = 1 - PV2.e * PV2.e;
+  const gr = 3 * n * PV_GG * Ms / (a * PV_C * PV_C * e2);
+  const j2 = 1.5 * n * PV2.J2 * Math.pow(b.Rs * PV_RSUN / a, 2) / (e2 * e2);
+  const td = 7.5 * b.k2 * n * Math.pow(b.Rp / a, 5) * (Ms / b.Mp);
+  const alpha = Math.pow(1 / PV2.ratio, 2 / 3), pl = PV2.mp > 0 ? 0.25 * n * (PV2.mp * PV_MEG / Ms) * alpha * alpha * pvLaplace(alpha) : 0;
+  return { gr, j2, td, pl, tot: gr + j2 + td + pl, n, a };
+}
+function pvDraw2() {
+  $("o-pv2p").textContent = fmt(PV2.P, 1) + " d"; $("o-pv2e").textContent = fmt(PV2.e, 3); $("o-pv2j").textContent = "10" + pvSup(Math.round(PV_LOG(PV2.J2) * 10) / 10); $("o-pv2m").textContent = fmt(PV2.mp, 1) + " M⊕"; $("o-pv2r").textContent = fmt(PV2.ratio, 2);
+  const r = pvRates2(), degyr = w => w * PV_YR * 180 / Math.PI, Tprec = 2 * Math.PI / r.tot / PV_YR;
+  // ellipse
+  let svg = $("pvch2a"); svg.innerHTML = "";
+  const cx = 230, cy = 175, sc = 120, e = PV2.e, a = sc, bb = sc * Math.sqrt(1 - e * e);
+  el("line", { x1: cx, x2: cx, y1: cy, y2: 18, stroke: C.muted, "stroke-dasharray": "3 4" }, svg);
+  el("text", { x: cx, y: 12, "text-anchor": "middle", class: "serieslabel", fill: C.muted }, svg).textContent = "to Earth";
+  const ell = (w, col, op, wid) => { const pts = []; for (let f = 0; f <= 360; f += 4) { const fr = f * TL_DEG, rr = sc * (1 - e * e) / (1 + e * Math.cos(fr)), th = fr + w; pts.push([cx + rr * Math.cos(th), cy - rr * Math.sin(th)]); } el("path", { d: linePath(pts), stroke: col, "stroke-width": wid, fill: "none", opacity: op }, svg); return pts; };
+  [60, 120, 180, 240, 300].forEach(d => ell((90 + d) * TL_DEG, C.ice, 0.18, 1));
+  ell(90 * TL_DEG, C.ice, 1, 2);
+  const per = [cx + sc * (1 - e) * Math.cos(90 * TL_DEG), cy - sc * (1 - e) * Math.sin(90 * TL_DEG)];
+  el("line", { x1: cx, y1: cy, x2: fmt(cx - sc * (1 - e) * 0 + sc * (1 + e) * Math.cos(270 * TL_DEG), 1), y2: fmt(cy - sc * (1 + e) * Math.sin(270 * TL_DEG), 1), stroke: C.rock, "stroke-width": 1, opacity: 0.6 }, svg);
+  el("circle", { cx, cy, r: 7, fill: "#E8C27A" }, svg);
+  el("circle", { cx: fmt(per[0], 1), cy: fmt(per[1], 1), r: 4, fill: C.rock }, svg);
+  el("text", { x: fmt(per[0] + 8, 1), y: fmt(per[1] + 4, 1), class: "serieslabel", fill: C.rock }, svg).textContent = "periastron";
+  el("text", { x: 14, y: 330, class: "serieslabel", fill: C.muted }, svg).textContent = "e = " + fmt(e, 3) + " · long axis turns by 360° every " + pvSpan(Tprec);
+  // O-C over one precession period
+  svg = $("pvch2b"); svg.innerHTML = "";
+  const A = e * PV2.P * PV_DAY / Math.PI, Amin = A / 60;
+  const s = makeScales(0, Tprec, -Amin * 1.15 - 1e-9, Amin * 1.15 + 1e-9, 460, 340, 56, 14, 22, 42);
+  const xt = niceTicks(0, Tprec, 5);
+  axes(svg, s, xt, niceTicks(-Amin * 1.15 - 1e-9, Amin * 1.15 + 1e-9, 5), "time, years", "O − C, minutes", v => Tprec > 2e4 ? fmt(v / 1e3, 0) + "k" : fmt(v, 0), v => fmt(v, Amin < 1 ? 2 : 1));
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(0), 1), y2: fmt(s.y(0), 1), stroke: C.line }, svg);
+  const pts = []; for (let i = 0; i <= 200; i++) { const t = Tprec * i / 200; pts.push([s.x(t), s.y(-Amin * Math.cos(Math.PI / 2 + r.tot * t * PV_YR))]); }
+  el("path", { d: linePath(pts), stroke: C.ice, "stroke-width": 1.8, fill: "none" }, svg);
+  el("rect", { x: s.padL, y: s.padT, width: fmt(Math.max(1, s.x(Math.min(10, Tprec)) - s.padL), 1), height: s.H - s.padT - s.padB, fill: "rgba(201,118,51,.14)" }, svg);
+  el("text", { x: s.padL + 4, y: s.padT + 14, class: "serieslabel", fill: C.rock }, svg).textContent = "first 10 years";
+  egCharts["pvch2b"] = { scale: s, Tprec, Amin, tot: r.tot };
+  const Panom = 2 * Math.PI / (r.n - r.tot) / PV_DAY, dPmax = 2 * Math.PI * A * PV2.P * PV_DAY / (Tprec * PV_YR);
+  $("pv2per").innerHTML = "sidereal " + fmt(PV2.P, 5) + " d<br>anomalistic +" + pvTime((Panom - PV2.P) * PV_DAY) + "<br>transit " + fmt(PV2.P, 5) + " d ± " + pvTime(dPmax);
+  $("pv2src").innerHTML = "relativity " + pvSci(degyr(r.gr)) + " · star J₂ " + pvSci(degyr(r.j2)) + "<br>planet's tide " + pvSci(degyr(r.td)) + " · neighbour " + pvSci(degyr(r.pl));
+  $("pv2T").innerHTML = pvSpan(Tprec);
+  $("pv2A").innerHTML = pvTime(A);
+  $("pv2dP").innerHTML = "± " + pvTime(dPmax);
+  const ten = Math.abs(-A * Math.cos(Math.PI / 2 + r.tot * 10 * PV_YR) + A * Math.cos(Math.PI / 2));
+  $("pv2ten").innerHTML = pvTime(ten) + "<small> · of a " + pvSpan(Tprec) + " cycle</small>";
+}
+/* ---- §3 two planets: N-body ---- */
+const PV3 = { P1: 5, ratio: 2.03, m1: 5, m2: 5, e2: 0.02 };
+function pvSetup3() {
+  const Ms = 1, out = [];
+  [[PV3.P1, PV3.m1, 0, 0], [PV3.P1 * PV3.ratio, PV3.m2, PV3.e2, 137]].forEach(([P, m, e, lam0]) => {
+    const mu = TL_G * (Ms + m * TL_ME), a = Math.cbrt(mu * P * P / (4 * Math.PI * Math.PI));
+    const w = 40 * TL_DEG, rp = a * (1 - e), vp = Math.sqrt(mu * (1 + e) / (a * (1 - e)));
+    const b = { m: m * TL_ME, mu, x: rp * Math.cos(w), y: rp * Math.sin(w), vx: -vp * Math.sin(w), vy: vp * Math.cos(w) };
+    tlKep(mu, b, lam0 / 360 * P); out.push(b);
+  });
+  return out;
+}
+function pvIntegrate3(bod, days, dt) {
+  const n = Math.round(days / dt), tt = bod.map(() => []), prev = bod.map(b => Math.atan2(b.y, b.x));
+  let th = 0, pth = prev[0], half = Math.floor(n / 2); const nf = [];
+  for (let s = 0; s <= n; s++) {
+    const t = s * dt;
+    tlKick(bod, 0.5 * dt); bod.forEach(b => tlKep(b.mu, b, dt)); tlKick(bod, 0.5 * dt);
+    bod.forEach((b, i) => { const ang = Math.atan2(b.y, b.x); if (b.y > 0 && prev[i] < Math.PI / 2 && ang >= Math.PI / 2) { const fr = (Math.PI / 2 - prev[i]) / (ang - prev[i]); tt[i].push(t + fr * dt); } prev[i] = ang; });
+    { const ang = Math.atan2(bod[0].y, bod[0].x); let d = ang - pth; if (d < -Math.PI) d += 2 * Math.PI; if (d > Math.PI) d -= 2 * Math.PI; th += d; pth = ang; }
+    if (s === half) nf.push(th / (half * dt)); if (s === n) nf.push((th - nf[0] * half * dt) / ((n - half) * dt));
+    if (!isFinite(bod[0].x) || !isFinite(bod[1].x)) break;
+  }
+  return { tt, nf };
+}
+function pvOC(T) { const n = T.length; if (n < 3) return { P: NaN, oc: [] }; let sx = 0, sy = 0, sxx = 0, sxy = 0; for (let j = 0; j < n; j++) { sx += j; sy += T[j]; sxx += j * j; sxy += j * T[j]; } const sl = (n * sxy - sx * sy) / (n * sxx - sx * sx), ic = (sy - sl * sx) / n; return { P: sl, oc: T.map((t, j) => [t / 365.25, (t - ic - sl * j) * 1440]) }; }
+function pvDraw3() {
+  $("o-pv3p").textContent = fmt(PV3.P1, 1) + " d"; $("o-pv3r").textContent = fmt(PV3.ratio, 3); $("o-pv3m1").textContent = fmt(PV3.m1, 1) + " M⊕"; $("o-pv3m2").textContent = fmt(PV3.m2, 1) + " M⊕"; $("o-pv3e").textContent = fmt(PV3.e2, 3);
+  const dt = Math.max(0.01, PV3.P1 / 60), res = pvIntegrate3(pvSetup3(), 20 * 365.25, dt);
+  const rows = res.tt.map(pvOC);
+  // nearest first-order resonance
+  let best = null; for (let j = 1; j <= 8; j++) { const D = PV3.ratio * j / (j + 1) - 1; if (!best || Math.abs(D) < Math.abs(best.D)) best = { j, D }; }
+  const jL = best.j + 1, fL = 0.82 * jL - 0.45, gL = 0.82 * jL - 1.2, mu2 = PV3.m2 * TL_ME, mu1 = PV3.m1 * TL_ME;
+  const Vin = Math.abs(PV3.P1 * mu2 / (Math.PI * Math.pow(jL, 2 / 3) * Math.pow(jL - 1, 1 / 3) * best.D) * fL) * 1440;
+  const Vout = Math.abs(PV3.P1 * PV3.ratio * mu1 / (Math.PI * jL * best.D) * gL) * 1440;
+  const Psuper = 1 / Math.abs((best.j + 1) / (PV3.P1 * PV3.ratio) - best.j / PV3.P1);
+  const svg = $("pvch3"); svg.innerHTML = "";
+  let mx = 1; rows.forEach(r => r.oc.forEach(p => { if (isFinite(p[1]) && Math.abs(p[1]) > mx) mx = Math.abs(p[1]); })); mx = Math.min(mx * 1.15, 5e4);
+  const s = makeScales(0, 20, -mx, mx, 920, 360, 60, 20, 22, 42);
+  axes(svg, s, [0, 5, 10, 15, 20], niceTicks(-mx, mx, 6), "years", "O − C, minutes", v => v, v => mx > 200 ? Math.round(v) : fmt(v, 1));
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(0), 1), y2: fmt(s.y(0), 1), stroke: C.line }, svg);
+  if (Vin < mx) [Vin, -Vin].forEach(v => el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(v), 1), y2: fmt(s.y(v), 1), stroke: C.ice, "stroke-dasharray": "4 5", opacity: 0.6 }, svg));
+  rows.forEach((r, i) => { if (r.oc.length) el("path", { d: linePath(r.oc.filter(p => isFinite(p[1])).map(p => [s.x(p[0]), s.y(Math.max(-mx, Math.min(mx, p[1])))])), stroke: i ? C.rock : C.ice, "stroke-width": 1.5, fill: "none" }, svg); });
+  egCharts["pvch3"] = { scale: s, rows };
+  const amp = r => r.oc.length ? Math.max(...r.oc.map(p => Math.abs(p[1]))) : NaN;
+  const a1 = amp(rows[0]), a2 = amp(rows[1]);
+  $("pv3res").innerHTML = (best.j + 1) + ":" + best.j + "<small> · Δ = " + (best.D >= 0 ? "+" : "") + fmt(best.D * 100, 2) + " %</small>";
+  $("pv3sp").innerHTML = (Psuper > 1e4 ? "∞" : fmt(Psuper, 0)) + "<small> d</small>";
+  $("pv3amp").innerHTML = fmt(a1, 1) + " / " + fmt(a2, 1) + "<small> min · analytic " + fmt(Vin, 1) + " / " + fmt(Vout, 1) + "</small>";
+  const wob = (A, P) => 2 * Math.PI * A * P / Psuper;
+  $("pv3dp").innerHTML = "± " + fmt(wob(a1, PV3.P1), 1) + " / " + fmt(wob(a2, PV3.P1 * PV3.ratio), 1) + "<small> min</small>";
+  const a1AU = pvAxis(PV3.P1, 1), a2AU = pvAxis(PV3.P1 * PV3.ratio, 1), RH = Math.cbrt((mu1 + mu2) / 3) * (a1AU + a2AU) / 2, sep = (a2AU - a1AU) / RH;
+  $("pv3hill").innerHTML = fmt(sep, 1) + "<small> R_H · " + (sep < 3.5 ? "below 2√3, Hill-unstable" : sep < 10 ? "stable if not resonant-overlapped" : "wide") + "</small>";
+  const diff = PV_LOG(Math.max(Math.abs(res.nf[0] - res.nf[1]) / Math.abs(res.nf[0]), 1e-12));
+  $("pv3diff").innerHTML = fmt(diff, 1) + "<small> · " + (diff < -5 ? "regular" : diff < -3.5 ? "slow diffusion" : "chaotic") + "</small>";
+}
+/* ---- §4 dissipation ---- */
+const PV4 = { sys: "w12", Qs: Math.pow(10, 5.25), Qp: 100, wind: 1e-14 };
+const PV4_SYS = { w12: { P: 1.0914, Mp: 1.47 * PV_MJ, Rp: 1.9 * PV_RJ, Ms: 1.43, Rs: 1.66 }, hse: { P: 1.0, Mp: 5 * PV_MEG, Rp: 1.5 * PV_RE, Ms: 1, Rs: 1 }, toib: { P: 1.914558, Mp: 1.5 * PV_MEG, Rp: 1.152 * PV_RE, Ms: 0.65, Rs: 0.651 } };
+function pvDraw4() {
+  $("o-pv4q").textContent = pvSci(PV4.Qs); $("o-pv4qp").textContent = pvSci(PV4.Qp); $("o-pv4w").textContent = "10" + pvSup(Math.round(PV_LOG(PV4.wind) * 10) / 10) + " M☉/yr";
+  const S = PV4_SYS[PV4.sys], a = pvAxis(S.P, S.Ms) * PV_AU, Pdot = -(27 * Math.PI / (2 * PV4.Qs)) * (S.Mp / (S.Ms * PV_MSUN)) * Math.pow(S.Rs * PV_RSUN / a, 5);
+  const Ps = S.P * PV_DAY, dPdN = Pdot * Ps, N20 = 20 * PV_YR / Ps;
+  let svg = $("pvch4a"); svg.innerHTML = "";
+  const oc = N => 0.5 * dPdN * N * N / 60, ymin = Math.min(-0.5, oc(N20) * 1.1);
+  const s = makeScales(0, 20, ymin, -ymin * 0.15, 460, 340, 56, 14, 22, 42);
+  axes(svg, s, [0, 5, 10, 15, 20], niceTicks(ymin, -ymin * 0.15, 5), "years", "O − C, minutes", v => v, v => fmt(v, 1));
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(0), 1), y2: fmt(s.y(0), 1), stroke: C.line }, svg);
+  const pts = []; for (let i = 0; i <= 100; i++) { const N = N20 * i / 100; pts.push([s.x(N * Ps / PV_YR), s.y(oc(N))]); }
+  el("path", { d: linePath(pts), stroke: C.rock, "stroke-width": 1.8, fill: "none" }, svg);
+  for (let N = 0; N <= N20; N += 200) el("circle", { cx: fmt(s.x(N * Ps / PV_YR), 1), cy: fmt(s.y(oc(N)), 1), r: 2.5, fill: C.ink }, svg);
+  egCharts["pvch4a"] = { scale: s, dPdN, Ps };
+  svg = $("pvch4b"); svg.innerHTML = "";
+  const s2 = makeScales(-0.5, 4.5, 0, 2.5, 460, 340, 56, 14, 22, 42);
+  axes(svg, s2, [], [0, 0.5, 1, 1.5, 2, 2.5], "planet pair", "Δ, percent", v => v, v => fmt(v, 1));
+  tlPairs.forEach(([a1, b1, k, q, lab], i) => { const D = (TL_PL[b1].P / TL_PL[a1].P) / ((k + q) / k) - 1; el("rect", { x: fmt(s2.x(i - 0.3), 1), y: fmt(s2.y(D * 100), 1), width: fmt(s2.x(0.6) - s2.x(0), 1), height: fmt(s2.y(0) - s2.y(D * 100), 1), fill: i === 0 ? C.rock : C.ice, opacity: 0.85 }, svg); el("text", { x: fmt(s2.x(i), 1), y: s2.H - s2.padB + 18, "text-anchor": "middle", class: "serieslabel", fill: C.ink2 }, svg).textContent = a1 + "–" + b1 + " " + lab; el("text", { x: fmt(s2.x(i), 1), y: fmt(s2.y(D * 100) - 6, 1), "text-anchor": "middle", class: "serieslabel", fill: C.ink }, svg).textContent = fmt(D * 100, 2) + " %"; });
+  $("pv4pdot").innerHTML = fmt(Pdot * PV_YR * 1000, 2) + "<small> ms/yr" + (PV4.sys === "w12" ? " · measured −29" : "") + "</small>";
+  $("pv4tau").innerHTML = pvSpan(Ps / Math.abs(Pdot) / PV_YR);
+  $("pv4ten").innerHTML = pvTime(0.5 * dPdN * Math.pow(10 * PV_YR / Ps, 2));
+  const te = k => { const p = TL_PL[k], aa = p.a * PV_AU, n = 2 * Math.PI / (p.P * PV_DAY); return (4 / 63) * PV4.Qp * (p.M * PV_MEG / (0.65 * PV_MSUN)) * Math.pow(aa / (p.R * PV_RE), 5) / n / PV_YR; };
+  $("pv4te").innerHTML = pvSpan(te("b")) + " / " + pvSpan(te("d")) + " / " + pvSpan(te("g"));
+  const dM = PV4.wind * 7e9 / 0.65;
+  $("pv4w").innerHTML = "+" + pvTime(2 * dM * TL_PL.d.P * PV_DAY) + "<small> · P ∝ M★⁻²</small>";
+  $("pv4pl").innerHTML = "+" + pvTime(0.01 * 3.01 * TL_ME / 0.65 * TL_PL.d.P * PV_DAY) + "<small> · 1 % of its mass lost</small>";
+}
+/* ---- §5 third body ---- */
+const PV5 = { mc: 317.8, ac: 5, inc: 65 };
+function pvDraw5() {
+  $("o-pv5m").innerHTML = PV5.mc < 100 ? fmt(PV5.mc, 1) + " M⊕" : PV5.mc < 3e4 ? fmt(PV5.mc / 317.8, 2) + " M<sub>Jup</sub>" : fmt(PV5.mc * TL_ME, 3) + " M☉"; $("o-pv5a").textContent = fmt(PV5.ac, 1) + " AU"; $("o-pv5i").textContent = PV5.inc + "°";
+  const mc = PV5.mc * TL_ME, Pc = Math.sqrt(Math.pow(PV5.ac, 3) / (1 + mc)), A = mc / (1 + mc) * PV5.ac * PV_AU / PV_C;
+  let svg = $("pvch5a"); svg.innerHTML = "";
+  const s = makeScales(0, 2 * Pc, -A * 1.15 - 1e-6, A * 1.15 + 1e-6, 460, 340, 56, 14, 22, 42);
+  axes(svg, s, niceTicks(0, 2 * Pc, 5), niceTicks(-A * 1.15 - 1e-6, A * 1.15 + 1e-6, 5), "years", "O − C, seconds", v => fmt(v, 0), v => A > 10 ? fmt(v, 0) : fmt(v, 2));
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(0), 1), y2: fmt(s.y(0), 1), stroke: C.line }, svg);
+  const pts = []; for (let i = 0; i <= 200; i++) { const t = 2 * Pc * i / 200; pts.push([s.x(t), s.y(A * Math.sin(2 * Math.PI * t / Pc))]); }
+  el("path", { d: linePath(pts), stroke: C.ice, "stroke-width": 1.8, fill: "none" }, svg);
+  egCharts["pvch5a"] = { scale: s, A, Pc };
+  svg = $("pvch5b"); svg.innerHTML = "";
+  const s2 = makeScales(0, 1, 0, 90, 460, 340, 56, 14, 22, 42);
+  axes(svg, s2, [0, 0.2, 0.4, 0.6, 0.8, 1], [0, 30, 39.2, 60, 90], "eccentricity of the inner planet", "inclination to the companion, °", v => fmt(v, 1), v => fmt(v, v === 39.2 ? 1 : 0));
+  const ci = Math.cos(PV5.inc * TL_DEG), emax = PV5.inc > 39.23 ? Math.sqrt(Math.max(0, 1 - 5 / 3 * ci * ci)) : 0;
+  const kp = []; for (let i = 0; i <= 100; i++) { const e = emax * i / 100, cc = ci / Math.sqrt(1 - e * e); if (cc <= 1) kp.push([s2.x(e), s2.y(Math.acos(cc) / TL_DEG)]); }
+  if (kp.length > 1) el("path", { d: linePath(kp), stroke: C.rock, "stroke-width": 2, fill: "none" }, svg);
+  el("circle", { cx: fmt(s2.x(0), 1), cy: fmt(s2.y(PV5.inc), 1), r: 5, fill: C.rock }, svg);
+  el("line", { x1: s2.padL, x2: s2.W - s2.padR, y1: fmt(s2.y(39.2), 1), y2: fmt(s2.y(39.2), 1), stroke: C.muted, "stroke-dasharray": "3 4" }, svg);
+  el("text", { x: s2.W - s2.padR - 4, y: fmt(s2.y(39.2) - 5, 1), "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = "Kozai threshold 39.2°";
+  $("pv5pc").innerHTML = pvSpan(Pc);
+  $("pv5A").innerHTML = pvTime(A) + "<small> · light-seconds</small>";
+  $("pv5dp").innerHTML = "± " + pvTime(2 * Math.PI * A * TL_PL.d.P * PV_DAY / (Pc * PV_YR)) + "<small> on d's period</small>";
+  $("pv5emax").innerHTML = PV5.inc > 39.23 ? fmt(emax, 3) : "0<small> · below the threshold</small>";
+  const tk = (1 / mc) * Pc * Pc / (TL_PL.d.P / 365.25);
+  $("pv5tk").innerHTML = pvSpan(tk);
+}
+/* ---- §6 disk migration ---- */
+const PV6 = { m1: 5, m2: 8, f: 1, eff: 0.1, td: 2, a2: 1.6 };
+function pvTauMig(aAU, mE, f) { const Sig = 1700 * f * Math.pow(aAU, -1.5), h = 0.033 * Math.pow(aAU, 0.25), n = 2 * Math.PI / (pvPeriod(aAU, 1) * PV_DAY); return (1 / 2.7) * (PV_MSUN / (mE * PV_MEG)) * (PV_MSUN / (Sig * aAU * aAU * PV_AU * PV_AU)) * h * h / n / PV_YR; }
+function pvRun6() {
+  let a1 = 1, a2 = PV6.a2, t = 0, locked = 0, edge = false; const rows = [[t, a1, a2]], tEnd = 4 * PV6.td * 1e6, aEdge = 0.05, resList = [2, 1.5, 4 / 3, 1.25, 1.2];
+  let dt = 20, lastRatio = Math.pow(a2 / a1, 1.5);
+  while (t < tEnd) {
+    const f = PV6.f * Math.exp(-t / (PV6.td * 1e6));
+    let r1 = edge ? 0 : -PV6.eff / pvTauMig(a1, PV6.m1, f), r2 = -PV6.eff / pvTauMig(a2, PV6.m2, f);
+    if (locked) { const rr = edge ? 0 : (PV6.m1 * r1 + PV6.m2 * r2) / (PV6.m1 + PV6.m2); r1 = rr; r2 = rr; }
+    dt = Math.max(20, Math.min(2000, 0.002 / Math.max(Math.abs(r1), Math.abs(r2), 1e-12)));
+    a1 *= Math.exp(r1 * dt); a2 *= Math.exp(r2 * dt); t += dt;
+    if (a1 <= aEdge) { a1 = aEdge; edge = true; }
+    if (!locked) {
+      const ratio = Math.pow(a2 / a1, 1.5);
+      resList.forEach(R => { if (!locked && lastRatio > R && ratio <= R) { const conv = 1 / Math.max(Math.abs(r2 - r1), 1e-12), Pout = pvPeriod(a2, 1) / 365.25, mu = (PV6.m1 + PV6.m2) * TL_ME; if (conv > 30 * Pout / Math.pow(mu / 3e-5, 2 / 3)) { locked = R; a2 = a1 * Math.pow(R, 2 / 3); } } });
+      if (ratio <= 1.08 && !locked) { locked = -1; }
+      lastRatio = Math.pow(a2 / a1, 1.5);
+    }
+    if (rows.length < 4000 && (t - rows[rows.length - 1][0] > tEnd / 1500 || Math.abs(Math.log(a1 / rows[rows.length - 1][1])) > 0.01)) rows.push([t, a1, a2]);
+    if (locked === -1) break;
+  }
+  rows.push([t, a1, a2]);
+  return { rows, locked, edge, a1, a2 };
+}
+function pvDraw6() {
+  $("o-pv6m1").textContent = fmt(PV6.m1, 1) + " M⊕"; $("o-pv6m2").textContent = fmt(PV6.m2, 1) + " M⊕"; $("o-pv6f").textContent = fmt(PV6.f, 2); $("o-pv6eff").textContent = fmt(PV6.eff, 2); $("o-pv6td").textContent = fmt(PV6.td, 1) + " Myr"; $("o-pv6a2").textContent = fmt(PV6.a2, 2) + " AU";
+  const R = pvRun6(), tEnd = 4 * PV6.td * 1e6;
+  let svg = $("pvch6a"); svg.innerHTML = "";
+  const s = makeScales(3, PV_LOG(tEnd), PV_LOG(0.03), PV_LOG(3.5), 460, 340, 56, 14, 22, 42);
+  axes(svg, s, [3, 4, 5, 6, 7].filter(v => v <= PV_LOG(tEnd)), [0.03, 0.1, 0.3, 1, 3].map(PV_LOG), "time, years (log)", "semi-major axis, AU (log)", v => v === 3 ? "1 kyr" : v === 6 ? "1 Myr" : v === 4 ? "10 kyr" : v === 5 ? "100 kyr" : "10 Myr", v => fmt(Math.pow(10, v), 2));
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(PV_LOG(0.05)), 1), y2: fmt(s.y(PV_LOG(0.05)), 1), stroke: C.muted, "stroke-dasharray": "4 4" }, svg);
+  const tr = R.rows.filter(r => r[0] >= 1e3);
+  el("path", { d: linePath(tr.map(r => [s.x(PV_LOG(r[0])), s.y(PV_LOG(r[1]))])), stroke: C.ice, "stroke-width": 1.8, fill: "none" }, svg);
+  el("path", { d: linePath(tr.map(r => [s.x(PV_LOG(r[0])), s.y(PV_LOG(r[2]))])), stroke: C.rock, "stroke-width": 1.8, fill: "none" }, svg);
+  egCharts["pvch6a"] = { scale: s, rows: R.rows };
+  svg = $("pvch6b"); svg.innerHTML = "";
+  const s2 = makeScales(3, PV_LOG(tEnd), 1, Math.max(2.2, Math.pow(PV6.a2, 1.5) * 1.05), 460, 340, 56, 14, 22, 42);
+  axes(svg, s2, [3, 4, 5, 6, 7].filter(v => v <= PV_LOG(tEnd)), [1, 1.25, 1.5, 2, 2.5, 3, 4, 5].filter(v => v <= s2.y1), "time, years (log)", "period ratio", v => v === 3 ? "1 kyr" : v === 6 ? "1 Myr" : v === 4 ? "10 kyr" : v === 5 ? "100 kyr" : "10 Myr", v => fmt(v, 2));
+  [[2, "2:1"], [1.5, "3:2"], [4 / 3, "4:3"], [1.25, "5:4"]].forEach(([r, l]) => { el("line", { x1: s2.padL, x2: s2.W - s2.padR, y1: fmt(s2.y(r), 1), y2: fmt(s2.y(r), 1), stroke: C.muted, "stroke-dasharray": "2 4" }, svg); el("text", { x: s2.W - s2.padR - 4, y: fmt(s2.y(r) - 4, 1), "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = l; });
+  el("path", { d: linePath(tr.map(r => [s2.x(PV_LOG(r[0])), s2.y(Math.pow(r[2] / r[1], 1.5))])), stroke: C.ink, "stroke-width": 1.8, fill: "none" }, svg);
+  const P10 = pvPeriod(1, 1), P20 = pvPeriod(PV6.a2, 1), P1 = pvPeriod(R.a1, 1), P2 = pvPeriod(R.a2, 1);
+  $("pv6tau").innerHTML = pvSpan(pvTauMig(1, PV6.m1, PV6.f) / PV6.eff) + " / " + pvSpan(pvTauMig(1, PV6.m2, PV6.f) / PV6.eff);
+  const lab = { 2: "2:1", 1.5: "3:2" }[R.locked] || (R.locked > 1.3 ? "4:3" : R.locked > 1.22 ? "5:4" : R.locked > 1 ? "6:5" : "");
+  $("pv6out").innerHTML = R.locked === -1 ? "no capture: the orbits cross, the pair is lost" : R.locked ? "captured in " + lab + (R.edge ? ", parked at the inner edge" : ", still migrating when the disk went") : "no capture, ratio " + fmt(Math.pow(R.a2 / R.a1, 1.5), 2) + (R.edge ? ", inner planet at the edge" : "");
+  $("pv6p1").innerHTML = fmt(P10, 0) + " d → " + fmt(P1, 1) + " d<small> · ×" + fmt(P1 / P10, 3) + "</small>";
+  $("pv6p2").innerHTML = fmt(P20, 0) + " d → " + fmt(P2, 1) + " d<small> · ×" + fmt(P2 / P20, 3) + "</small>";
+}
+/* ---- §7 the table ---- */
+function pvDraw7() {
+  const svg = $("pvch7"); svg.innerHTML = "";
+  const s = makeScales(PV_LOG(30), PV_LOG(1.4e10), -6, 8, 920, 400, 64, 24, 22, 44);
+  axes(svg, s, [PV_LOG(30), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(v => v).filter(v => v >= PV_LOG(30) && (v % 1 === 0 || v === PV_LOG(30))), [-6, -4, -2, 0, 2, 4, 6, 8], "timescale of the mechanism (log years)", "change of the period (log seconds)", v => v === 0 ? "1 yr" : v === 3 ? "1 kyr" : v === 6 ? "1 Myr" : v === 9 ? "1 Gyr" : v % 1 === 0 ? "" : "1 month", v => v === -6 ? "1 µs" : v === -4 ? "0.1 ms" : v === -2 ? "10 ms" : v === 0 ? "1 s" : v === 2 ? "100 s" : v === 4 ? "3 h" : v === 6 ? "12 d" : "3 yr");
+  el("rect", { x: s.padL, y: fmt(s.y(1), 1), width: s.W - s.padL - s.padR, height: fmt(s.y(-6) - s.y(1), 1), fill: "rgba(107,118,144,.12)" }, svg);
+  el("text", { x: s.padL + 6, y: fmt(s.y(1) + 14, 1), class: "serieslabel", fill: C.muted }, svg).textContent = "below 10 s: under the timing precision of a single transit";
+  const Pd = TL_PL.d.P * PV_DAY;
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(PV_LOG(Pd)), 1), y2: fmt(s.y(PV_LOG(Pd)), 1), stroke: C.muted, "stroke-dasharray": "3 4" }, svg);
+  el("text", { x: s.W - s.padR - 4, y: fmt(s.y(PV_LOG(Pd)) - 5, 1), "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = "one orbit of d";
+  const pts = [
+    ["near-resonant wobble", 260 / 365.25, 8 * 60, C.ice, "reversible, every 260 d, the §3 swing"],
+    ["Laplace libration", 20, 120, C.ice, "reversible, decades"],
+    ["precession by neighbours", 150, 4, C.ice, "if e = 0.02; sinusoid over ~150 yr"],
+    ["precession by relativity", 5.5e4, 8e-3, C.ice, "if e = 0.02; a 55 kyr cycle"],
+    ["light-travel time, Jupiter at 5 AU", 12, 0.024, C.muted, "apparent only; hypothetical companion"],
+    ["hot-Jupiter tidal decay per decade", 10, 0.3, C.rock, "WASP-12b, not TOI-178: −29 ms/yr"],
+    ["resonant repulsion, planet b", 7e9, 2400, C.rock, "one-way; the 1.5 % offset from 5:3"],
+    ["stellar wind mass loss", 7e9, 80, C.rock, "one-way; P grows as the star lightens"],
+    ["planet evaporation", 7e9, 1e-5, C.rock, "one-way; negligible"],
+    ["disk migration", 1e6, 3e7, "#6ECD93", "one-way; before 5 Myr; orders of magnitude"],
+  ];
+  const hp = [];
+  pts.forEach(([lab, T, dP, col, note], i) => { const px = s.x(PV_LOG(T)), py = s.y(PV_LOG(dP)); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: col, stroke: "#0C111E", "stroke-width": 2 }, svg); const right = px < s.W - 260; el("text", { x: fmt(px + (right ? 10 : -10), 1), y: fmt(py + (i % 2 ? 14 : -8), 1), "text-anchor": right ? "start" : "end", class: "serieslabel", fill: col }, svg).textContent = lab; hp.push([px, py, lab, T, dP, note]); });
+  egCharts["pvch7"] = { scale: s, pts: hp };
+}
+function pvDrawAll() { pvDraw1(); pvDraw2(); pvDraw3(); pvDraw4(); pvDraw5(); pvDraw6(); pvDraw7(); }
+/* ---- hovers ---- */
+function pvPtHover(boxId, svgId, tipId, pad, html, rad) { attachHover($(boxId), $(svgId), pad, (px, py, cx, cy) => { const c = egCharts[svgId]; if (!c || !c.pts) return; let best = null, bd = 1e9; c.pts.forEach(p => { const d = Math.hypot(p[0] - px, p[1] - py); if (d < bd) { bd = d; best = p; } }); if (!best || bd > (rad || 14)) { $(tipId).hidden = true; return; } setTip($(tipId), cx, cy, html(best), $(boxId).clientWidth); }, () => $(tipId).hidden = true); }
+pvPtHover("cb-pv1", "pvch1", "tip-pv1", { padL: 56, padR: 20, W: 920, H: 320 }, p => "<b>" + p[2] + "</b><br><span class='mono'>P " + fmt(p[3], 3) + " d · a " + fmt(p[4], 4) + " AU</span>");
+attachHover($("cb-pv2b"), $("pvch2b"), { padL: 56, padR: 14, W: 460, H: 340 }, (px, py, cx, cy) => { const c = egCharts["pvch2b"]; if (!c) return; const t = c.scale.inv(px), oc = -c.Amin * Math.cos(Math.PI / 2 + c.tot * t * PV_YR); setTip($("tip-pv2b"), cx, cy, "<b>" + pvSpan(t) + "</b><br><span class='mono'>O − C " + fmt(oc, 2) + " min</span>", $("cb-pv2b").clientWidth); }, () => $("tip-pv2b").hidden = true);
+attachHover($("cb-pv3"), $("pvch3"), { padL: 60, padR: 20, W: 920, H: 360 }, (px, py, cx, cy) => { const c = egCharts["pvch3"]; if (!c) return; let best = null, bd = 1e9; c.rows.forEach((r, i) => r.oc.forEach(p => { const d = Math.hypot(c.scale.x(p[0]) - px, c.scale.y(p[1]) - py); if (d < bd) { bd = d; best = [i, p]; } })); if (!best || bd > 14) { $("tip-pv3").hidden = true; return; } setTip($("tip-pv3"), cx, cy, "<b>" + (best[0] ? "outer" : "inner") + " planet</b><br><span class='mono'>" + fmt(best[1][0], 2) + " yr · O − C " + fmt(best[1][1], 2) + " min</span>", $("cb-pv3").clientWidth); }, () => $("tip-pv3").hidden = true);
+attachHover($("cb-pv4a"), $("pvch4a"), { padL: 56, padR: 14, W: 460, H: 340 }, (px, py, cx, cy) => { const c = egCharts["pvch4a"]; if (!c) return; const t = c.scale.inv(px), N = t * PV_YR / c.Ps; setTip($("tip-pv4a"), cx, cy, "<b>" + fmt(t, 1) + " yr · orbit " + Math.round(N) + "</b><br><span class='mono'>O − C " + pvTime(0.5 * c.dPdN * N * N) + "</span>", $("cb-pv4a").clientWidth); }, () => $("tip-pv4a").hidden = true);
+attachHover($("cb-pv5a"), $("pvch5a"), { padL: 56, padR: 14, W: 460, H: 340 }, (px, py, cx, cy) => { const c = egCharts["pvch5a"]; if (!c) return; const t = c.scale.inv(px); setTip($("tip-pv5a"), cx, cy, "<b>" + fmt(t, 1) + " yr</b><br><span class='mono'>delay " + pvTime(c.A * Math.sin(2 * Math.PI * t / c.Pc)) + "</span>", $("cb-pv5a").clientWidth); }, () => $("tip-pv5a").hidden = true);
+attachHover($("cb-pv6a"), $("pvch6a"), { padL: 56, padR: 14, W: 460, H: 340 }, (px, py, cx, cy) => { const c = egCharts["pvch6a"]; if (!c) return; const t = Math.pow(10, c.scale.inv(px)); let b = c.rows[0]; c.rows.forEach(r => { if (Math.abs(r[0] - t) < Math.abs(b[0] - t)) b = r; }); setTip($("tip-pv6a"), cx, cy, "<b>" + pvSpan(b[0]) + "</b><br><span class='mono'>inner " + fmt(b[1], 3) + " AU · " + fmt(pvPeriod(b[1], 1), 1) + " d<br>outer " + fmt(b[2], 3) + " AU · " + fmt(pvPeriod(b[2], 1), 1) + " d</span>", $("cb-pv6a").clientWidth); }, () => $("tip-pv6a").hidden = true);
+pvPtHover("cb-pv7", "pvch7", "tip-pv7", { padL: 64, padR: 24, W: 920, H: 400 }, p => "<b>" + p[2] + "</b><br><span class='mono'>" + pvSpan(p[3]) + " · " + pvTime(p[4]) + "</span><br><span class='mono'>" + p[5] + "</span>", 18);
+/* ---- wiring ---- */
+$("in-pv1a").addEventListener("input", () => { PV1.a = Math.pow(10, +$("in-pv1a").value); pvDraw1(); });
+$("in-pv1m").addEventListener("input", () => { PV1.Ms = +$("in-pv1m").value; pvDraw1(); });
+const pvSet2 = (P, e, r) => { PV2.P = P; PV2.e = e; PV2.ratio = r; $("in-pv2p").value = P; $("in-pv2e").value = e; $("in-pv2r").value = r; };
+escSegWire("seg-pv2s", v => { PV2.kind = v; if (v === "toi") { pvSet2(6.5577, 0.02, 1.519); PV2.mp = 3.86; $("in-pv2m").value = 3.86; } else if (v === "hj") { pvSet2(1.5, 0.02, 2); PV2.mp = 0; $("in-pv2m").value = 0; } else { pvSet2(3, 0.05, 2); PV2.mp = 0; $("in-pv2m").value = 0; } }, pvDraw2);
+$("in-pv2p").addEventListener("input", () => { PV2.P = +$("in-pv2p").value; pvDraw2(); });
+$("in-pv2e").addEventListener("input", () => { PV2.e = +$("in-pv2e").value; pvDraw2(); });
+$("in-pv2j").addEventListener("input", () => { PV2.J2 = Math.pow(10, +$("in-pv2j").value); pvDraw2(); });
+$("in-pv2m").addEventListener("input", () => { PV2.mp = +$("in-pv2m").value; pvDraw2(); });
+$("in-pv2r").addEventListener("input", () => { PV2.ratio = +$("in-pv2r").value; pvDraw2(); });
+const pvSet3 = (P, r, m1, m2, e) => { PV3.P1 = P; PV3.ratio = r; PV3.m1 = m1; PV3.m2 = m2; PV3.e2 = e; $("in-pv3p").value = P; $("in-pv3r").value = r; $("in-pv3m1").value = m1; $("in-pv3m2").value = m2; $("in-pv3e").value = e; };
+escSegWire("seg-pv3s", v => { if (v === "toi") pvSet3(6.5577, 1.519, 3, 4, 0.02); else if (v === "lock") pvSet3(5, 1.5, 5, 5, 0.03); else if (v === "chaos") pvSet3(5, 1.15, 20, 20, 0.05); else pvSet3(5, 2.03, 5, 5, 0.02); }, pvDraw3);
+[["in-pv3p", "P1"], ["in-pv3r", "ratio"], ["in-pv3m1", "m1"], ["in-pv3m2", "m2"], ["in-pv3e", "e2"]].forEach(([id, k]) => $(id).addEventListener("input", () => { PV3[k] = +$(id).value; $("o-pv3p").textContent = fmt(PV3.P1, 1) + " d"; $("o-pv3r").textContent = fmt(PV3.ratio, 3); $("o-pv3m1").textContent = fmt(PV3.m1, 1) + " M⊕"; $("o-pv3m2").textContent = fmt(PV3.m2, 1) + " M⊕"; $("o-pv3e").textContent = fmt(PV3.e2, 3); }));
+$("btn-pv3").addEventListener("click", pvDraw3);
+escSegWire("seg-pv4s", v => PV4.sys = v, pvDraw4);
+$("in-pv4q").addEventListener("input", () => { PV4.Qs = Math.pow(10, +$("in-pv4q").value); pvDraw4(); });
+$("in-pv4qp").addEventListener("input", () => { PV4.Qp = Math.pow(10, +$("in-pv4qp").value); pvDraw4(); });
+$("in-pv4w").addEventListener("input", () => { PV4.wind = Math.pow(10, +$("in-pv4w").value); pvDraw4(); });
+$("in-pv5m").addEventListener("input", () => { PV5.mc = Math.pow(10, +$("in-pv5m").value); pvDraw5(); });
+$("in-pv5a").addEventListener("input", () => { PV5.ac = Math.pow(10, +$("in-pv5a").value); pvDraw5(); });
+$("in-pv5i").addEventListener("input", () => { PV5.inc = +$("in-pv5i").value; pvDraw5(); });
+[["in-pv6m1", "m1", v => v], ["in-pv6m2", "m2", v => v], ["in-pv6f", "f", v => Math.pow(10, v)], ["in-pv6eff", "eff", v => Math.pow(10, v)], ["in-pv6td", "td", v => v], ["in-pv6a2", "a2", v => v]].forEach(([id, k, f]) => $(id).addEventListener("input", () => { PV6[k] = f(+$(id).value); pvDraw6(); }));
+
 /* ================= Photobombing -> interiors (concept tab) =================
    Transcribes the target-confusion (Sect. 2.2.3) and cancellation (2.2.4) criteria of
    Cacaj et al. (2025, AJ 169, 244) onto the interior problem. Output = (M, R); the cost
@@ -7360,7 +7949,7 @@ $("btn-fl-now").addEventListener("click", () => { FL.tcur = 4570; $("in-fl-t").v
 $("btn-fl-disk").addEventListener("click", () => { FL.tcur = 1; $("in-fl-t").value = 0; flDrawAll(); });
 
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "val", "pp", "pnet", "frost"];
+const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "val", "pp", "pnet", "frost", "per"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -7382,6 +7971,7 @@ rvDrawAll();
 flDrawAll();
 pnDrawAll();
 tlDrawAll();
+pvDrawAll();
 drawB1(); b2Reset(); b3Reset();
 mInitData(); m1SetVel(); m1Render(); m2Reset(); mnInit(); ppInit(); showTab(tab0);
 </script>
