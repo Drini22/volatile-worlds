@@ -282,6 +282,7 @@
         <button class="tabbtn" id="tab-egg" role="tab" aria-selected="false">Egger 2024 <small>infer the system</small></button>
         <button class="tabbtn" id="tab-lel" role="tab" aria-selected="false">Leleu 2021 <small>read the architecture</small></button>
         <button class="tabbtn" id="tab-mis" role="tab" aria-selected="false">Mishra 2023 <small>classify the system</small></button>
+        <button class="tabbtn" id="tab-dav" role="tab" aria-selected="false">Davoult 2024 <small>predict the Earth</small></button>
       </div>
     </div>
     <div class="tabgroup">
@@ -2604,6 +2605,191 @@
   <p>L. Mishra et al. (2023), “Framework for the architecture of exoplanetary systems. I. Four classes of planetary system architecture?”, A&amp;A 670, A68 · <a href="https://arxiv.org/abs/2301.02374">arXiv:2301.02374</a> · Weiss et al. (2018), AJ 155, 48 (peas in a pod) · Emsenhuber et al. (2021), A&amp;A 656, A69 (Bern model)</p>
 </footer>
 </div><!-- /page-mis -->
+
+<div id="page-dav" role="tabpanel" aria-labelledby="tab-dav" hidden>
+<section class="pagehero">
+  <p class="eyebrow">J. Davoult, Y. Alibert, L. Mishra (2024) · A&amp;A · arXiv:2408.12251</p>
+  <p class="standfirst">Earth-like planets are expensive to find, so the question this paper asks is practical: given the planets a survey has already detected in a system, what is the probability that an undetected Earth-like planet is there too? The method takes three Bern populations around G, early-M and late-M stars, hides every planet a radial-velocity survey would miss, classifies what remains, and reads off conditional probabilities from the innermost detectable planet. The answer is a short list of signatures with probabilities above 80 percent, and a footnote that the Solar System is not on it.</p>
+</section>
+
+<!-- ================= DV1 ================= -->
+<section id="dav1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>What counts as an Earth, and what a survey can see</h2></div>
+  <p class="prose">An Earth-like planet here is a planet between half and three Earth masses whose equilibrium temperature lies between 160 and 510 K, a "temperate zone" wider than any habitable zone so that the statistics have something to count. The survey is a radial-velocity floor chosen so that no such planet is ever detected: the floor equals the signal of the heaviest allowed Earth at the inner edge of the zone. Move the definition and the floor moves with it, because the floor is defined by the definition.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Population</label>
+        <div class="seg" id="seg-dv1p" role="group" aria-label="Population">
+          <button aria-pressed="true" data-v="G">G · 1 M☉</button>
+          <button aria-pressed="false" data-v="eM">early M · 0.5 M☉</button>
+          <button aria-pressed="false" data-v="lM">late M · 0.2 M☉</button>
+        </div></div>
+      <div class="ctl"><label>Heaviest "Earth" <output id="o-dv1m">3.0 M⊕</output></label>
+        <input type="range" id="in-dv1m" min="1" max="10" step="0.5" value="3" aria-label="Maximum Earth-like mass"></div>
+      <div class="ctl"><label>Hot edge <output id="o-dv1th">510 K</output></label>
+        <input type="range" id="in-dv1th" min="350" max="700" step="10" value="510" aria-label="Hot edge temperature"></div>
+      <div class="ctl"><label>Cold edge <output id="o-dv1tc">160 K</output></label>
+        <input type="range" id="in-dv1tc" min="100" max="300" step="10" value="160" aria-label="Cold edge temperature"></div>
+    </div>
+    <div class="chart-box" id="cb-dv1">
+      <p class="chart-title">The Earth-like box and the detection floor</p>
+      <p class="chart-sub">Green: the definition · rust: the mass a planet needs at each distance to reach the floor · dots: an example system of this stellar type, filled if it would be detected · hover</p>
+      <svg id="dvch1" viewBox="0 0 920 360" aria-label="Earth-like planet definition and detection threshold"></svg>
+      <div class="tip" id="tip-dv1" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">temperate zone</div><div class="v" id="dv1zone" style="font-size:15px">–</div></div>
+      <div class="chip answer"><div class="k">detection floor</div><div class="v" id="dv1thr">–</div></div>
+      <div class="chip"><div class="k">paper's floor</div><div class="v" id="dv1pap">–</div></div>
+      <div class="chip"><div class="k">systems with an Earth-like planet</div><div class="v" id="dv1elp">–</div></div>
+      <div class="chip"><div class="k">Earths per Earth-hosting system</div><div class="v" id="dv1mult">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Why the floor rises for small stars.</em> A lighter star is easier to shake, but its temperate zone sits closer in, where periods are short and the velocity signal for a fixed mass is larger, so the heaviest Earth at the inner edge produces a bigger signal and the floor that hides it must be higher: 0.43 m/s for a Sun, 1.55 m/s for a 0.2 solar-mass star. The floor is deliberately pessimistic, it hides every Earth by construction, because the paper is about systems where no Earth has been seen. The example dots show what survives: around a Sun only the giants, around Trappist-1 every planet, because seven Earths at a few days' period are loud even at 1.55 m/s.</p>
+</section>
+
+<!-- ================= DV2 ================= -->
+<section id="dav2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>Classifying with an ellipse instead of a ratio</h2></div>
+  <p class="prose">The Mishra coefficient of similarity only sees the first and last planet. This paper wants the whole system, so it fits a principal-component ellipse to the planets in the plane of log distance against log mass. The tilt of the long axis says whether mass grows or falls outward; the width of the short axis says how scattered the planets are around that trend. A system whose heaviest planet is under 20 Earth masses, roughly the core mass for runaway gas accretion, is called low-mass before any ellipse is drawn; a single detected planet is its own class.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;max-width:none;"><label>Load a system</label>
+        <div class="seg" id="seg-dv2s" role="group" aria-label="System preset">
+          <button aria-pressed="true" data-v="sun">Solar System</button>
+          <button aria-pressed="false" data-v="toi">TOI-178</button>
+          <button aria-pressed="false" data-v="trap">Trappist-1</button>
+          <button aria-pressed="false" data-v="k11">Kepler-11</button>
+          <button aria-pressed="false" data-v="cnc">55 Cnc</button>
+          <button aria-pressed="false" data-v="gj876">GJ 876</button>
+          <button aria-pressed="false" data-v="k89">Kepler-89</button>
+          <button aria-pressed="false" data-v="anti">synthetic anti-ordered</button>
+        </div></div>
+    </div>
+    <div class="ar-sliders" id="dv2sl"></div>
+    <div class="census-grid" style="margin-top:14px;">
+      <div class="chart-box" id="cb-dv2a">
+        <p class="chart-title">The system and its principal-component ellipse</p>
+        <p class="chart-sub">Long axis: the trend, its slope is S(C₁) · short axis: the scatter, its variance is V(C₂) · hover</p>
+        <svg id="dvch2a" viewBox="0 0 460 340" aria-label="PCA ellipse of the loaded system"></svg>
+        <div class="tip" id="tip-dv2a" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-dv2b">
+        <p class="chart-title">The paper's plane: slope against scatter</p>
+        <p class="chart-sub">Only systems with a planet above 20 M⊕ are placed here · mixed above V(C₂) = 0.2 · faint dots: the other presets</p>
+        <svg id="dvch2b" viewBox="0 0 460 340" aria-label="Slope versus variance plane"></svg>
+        <div class="tip" id="tip-dv2b" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">heaviest planet</div><div class="v" id="dv2max">–</div></div>
+      <div class="chip"><div class="k">slope of the long axis S(C₁)</div><div class="v" id="dv2s">–</div></div>
+      <div class="chip"><div class="k">variance of the short axis V(C₂)</div><div class="v" id="dv2v">–</div></div>
+      <div class="chip answer"><div class="k">class · this paper</div><div class="v" id="dv2cl">–</div></div>
+      <div class="chip"><div class="k">class · Mishra's coefficients</div><div class="v" id="dv2mis">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Where the two frameworks disagree, and why it matters here.</em> Drag an interior planet of the Solar System and the ellipse tilts while Mishra's similarity coefficient stays put: the ellipse uses every planet. The other change is the low-mass class replacing "similar": a system of four equal Jupiters is similar to Mishra and mixed or ordered here, because the question is no longer "are the planets alike" but "is there anything heavy enough to have disturbed the formation of an Earth". That reframing is what makes the class predictive of Earths in the next stations.</p>
+</section>
+
+<!-- ================= DV3 ================= -->
+<section id="dav3">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Complete systems against catalogued ones</h2></div>
+  <p class="prose">For each synthetic system the paper knows two architectures: the theoretical one, with every planet above half an Earth mass, and the biased one, with only the planets above the floor. The left chart shows how the population is distributed over the five classes in each view; the right chart shows the fraction of systems in each class that actually contain an Earth-like planet. The gap between the two views is the price of observing.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>Population</label>
+        <div class="seg" id="seg-dv3p" role="group" aria-label="Population">
+          <button aria-pressed="true" data-v="G">G · 1 M☉</button>
+          <button aria-pressed="false" data-v="eM">early M · 0.5 M☉</button>
+          <button aria-pressed="false" data-v="lM">late M · 0.2 M☉</button>
+        </div></div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-dv3a">
+        <p class="chart-title">Share of systems in each class</p>
+        <p class="chart-sub">Faint: theoretical, every planet counted · solid: biased, detectable planets only · Tables 4 and 6</p>
+        <svg id="dvch3a" viewBox="0 0 460 360" aria-label="Class distribution theoretical versus biased"></svg>
+      </div>
+      <div class="chart-box" id="cb-dv3b">
+        <p class="chart-title">Systems in the class that host an Earth-like planet</p>
+        <p class="chart-sub">Faint: theoretical · solid: biased · Tables 5 and 7 · grey text: too few systems</p>
+        <svg id="dvch3b" viewBox="0 0 460 360" aria-label="Earth hosting fraction per class"></svg>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">low-mass systems · theoretical → biased</div><div class="v" id="dv3lm" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">single detectable planet · theoretical → biased</div><div class="v" id="dv3n1" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">biased synthetic vs 116 observed · low-mass / ordered</div><div class="v" style="font-size:15px">42 / 45 %<small> vs </small>58 / 36 %</div></div>
+      <div class="chip"><div class="k">biased anti-ordered around G stars that really are</div><div class="v">85 %</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Two things survive the bias.</em> First, the class you see is mostly the class that exists: 85 percent of systems catalogued as anti-ordered around G stars are anti-ordered in full, and the same holds for ordered and mixed; only the single-planet class is a grab bag, mostly low-mass systems stripped to one survivor. Second, low-mass systems host Earths overwhelmingly, 88 to 99 percent in the complete view, and still 63 to 88 percent after the bias. The biased synthetic distribution also matches 116 real multi-planet systems put through the same floor, which is the paper's argument that the Bern model can be trusted at the system level.</p>
+</section>
+
+<!-- ================= DV4 ================= -->
+<section id="dav4">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>The innermost detectable planet as a witness</h2></div>
+  <p class="prose">Within a biased class, the paper asks what the innermost detected planet says about the rest. Its mass and radius tell you whether something heavy formed or migrated inward; its period tells you whether the system is packed close to the star or shifted out toward the temperate zone. Table 8 of the paper gives the resulting conditional probabilities. Below, a real system is put through the whole pipeline: the floor for its star, the surviving planets, the ellipse, the innermost survivor, and the probabilities the paper would quote, next to whether the system really does contain an Earth-like planet by the paper's definition.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;max-width:none;"><label>System</label>
+        <div class="seg" id="seg-dv4s" role="group" aria-label="System">
+          <button aria-pressed="true" data-v="sun">Solar System</button>
+          <button aria-pressed="false" data-v="toi">TOI-178</button>
+          <button aria-pressed="false" data-v="trap">Trappist-1</button>
+          <button aria-pressed="false" data-v="k11">Kepler-11</button>
+          <button aria-pressed="false" data-v="cnc">55 Cnc</button>
+          <button aria-pressed="false" data-v="gj876">GJ 876</button>
+          <button aria-pressed="false" data-v="k89">Kepler-89</button>
+        </div></div>
+      <div class="ctl"><label>Floor × <output id="o-dv4f">1.00</output></label>
+        <input type="range" id="in-dv4f" min="-0.6" max="0.6" step="0.05" value="0" aria-label="Floor multiplier"></div>
+    </div>
+    <div class="chart-box" id="cb-dv4">
+      <p class="chart-title">The pipeline on one system</p>
+      <p class="chart-sub">Filled: above the floor · hollow: hidden · ringed: the innermost detectable planet · green: this star's Earth-like box · hover</p>
+      <svg id="dvch4" viewBox="0 0 920 360" aria-label="Pipeline applied to a real system"></svg>
+      <div class="tip" id="tip-dv4" hidden></div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">population · floor</div><div class="v" id="dv4pop" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">biased class</div><div class="v" id="dv4cl" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">innermost detectable planet</div><div class="v" id="dv4idp" style="font-size:14px;line-height:1.5">–</div></div>
+      <div class="chip answer"><div class="k">P(Earth-like planet) from its mass · radius · period</div><div class="v" id="dv4p" style="font-size:15px;line-height:1.5">–</div></div>
+      <div class="chip"><div class="k">does it actually host one?</div><div class="v" id="dv4truth" style="font-size:14px;line-height:1.5">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>The Solar System fails its own test.</em> Put through the G-star floor it keeps Jupiter and Saturn, is classed anti-ordered, and its witness is Jupiter: a giant on a long period, for which the paper's table gives a few percent. Venus and Earth are both there. The paper says this plainly and leaves it as an open question about whether the Solar System is unusual or the model is. The reverse check is the 24 known systems that do host an Earth-like planet by this definition: after the same bias, every one of them lands in a category the table calls likely. Trappist-1 is the clean case, low-mass with all seven planets detectable and an 88 percent verdict; TOI-178 is low-mass too but packed at short periods, which drags its probability down to the sixties, and indeed none of its planets is temperate.</p>
+</section>
+
+<!-- ================= DV5 ================= -->
+<section id="dav5">
+  <div class="sec-head"><span class="sec-num">§5</span><h2>The recipe, and what it rests on</h2></div>
+  <p class="prose">The paper's deliverable is a short list: the signatures of a catalogued system for which the probability of an undetected Earth-like planet is highest. They are the bold entries of its Table 8, and they are all variations of one rule: nothing heavy close in, and the innermost planet not too close to the star.</p>
+  <div class="panel">
+    <div class="chart-box" id="cb-dv5">
+      <p class="chart-title">Signatures with the highest probability of an Earth-like planet</p>
+      <p class="chart-sub">Per population, from the paper's Table 8 · a low-mass class with a small or distant witness, or a single modest planet on a long period</p>
+      <svg id="dvch5" viewBox="0 0 920 420" aria-label="Most likely signatures"></svg>
+    </div>
+    <table class="pv-table">
+      <tr><th>ingredient</th><th>what the paper did</th><th>what it costs</th></tr>
+      <tr><td>The Bern populations</td><td>14 505 G-star, 9 681 early-M and 9 963 late-M systems, planets below half an Earth mass and periods above 15 years removed</td><td>every probability is the model's; a different formation model could move them</td></tr>
+      <tr><td>The Earth definition</td><td>0.5 to 3 M⊕ and 160 to 510 K</td><td>excludes temperate super-Earths and the true habitable zone is narrower</td></tr>
+      <tr><td>The survey</td><td>one fixed velocity floor per stellar type, set to hide every Earth</td><td>real surveys have activity, cadence and period-dependent completeness; the paper points to Mayor et al. 2011 for a probabilistic version</td></tr>
+      <tr><td>The classes</td><td>20 M⊕ boundary from the runaway core mass; V(C₂) = 0.2 set by eye on 200 systems</td><td>moving either by 20 percent changes class shares by a few percent, so the classes are robust</td></tr>
+      <tr><td>The check</td><td>116 observed multi-planet systems reproduce the biased class shares; 24 observed Earth hosts all fall in likely categories</td><td>small numbers, and the Solar System is the counter-example</td></tr>
+    </table>
+  </div>
+  <p class="takeaway"><em>Back to the start of the reading list.</em> Alibert asked what one planet is made of and found it could not be told from mass and radius alone. Nine papers later the unit has changed from the planet to the system, and the degeneracy has become a conditional probability: what you have seen constrains what you have not. The chain of reasoning runs through Leleu's fossil orbits, Mishra's two numbers and this paper's ellipse, and it ends with a target list for PLATO and LIFE. Whether it survives contact with a different formation model is the open question every station of this site has been circling.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The Earth-like definition, the temperature formula, the radial-velocity amplitude formula and the three floors are the paper's equations 2, 4 and 5 and Table 3; the floors reproduce to two decimals when the amplitude of a 3 M⊕ planet at the inner edge of the temperate zone is computed, which is how §1 recomputes them when the definition is changed. The effective luminosities used to place the temperate zones, 1.7, 0.70 and 0.25 L☉, are the values the paper's quoted zone edges imply. The class rules, the 20 M⊕ boundary and the V(C₂) = 0.2 limit are the paper's; the principal-component analysis here is a two-dimensional eigen-decomposition of the population covariance of log distance and log mass, which is the standard PCA. All percentages in §3, §4 and §5 are copied from the paper's Tables 4 to 8 and Fig. 6. The presets carry published masses, radii, distances, stellar masses and luminosities; §4 assigns a system to the population of nearest stellar mass and applies that floor with no 15-year period cut, which keeps Saturn, whereas the paper's text lists Jupiter, Saturn and Neptune as the Solar System's survivors. Whether a preset "really hosts" an Earth-like planet is evaluated with the paper's definition and the star's actual luminosity.</p>
+  <p>J. Davoult, Y. Alibert &amp; L. Mishra (2024), “Earth-like planets hosting systems: Architecture and properties”, A&amp;A · <a href="https://arxiv.org/abs/2408.12251">arXiv:2408.12251</a> · Mishra et al. (2023), A&amp;A 670, A68 · Emsenhuber et al. (2021), A&amp;A 656, A69 (Bern model) · observed-system list at github.com/jdavoult/Architectures_syst</p>
+</footer>
+</div><!-- /page-dav -->
 
 <div id="page-val" role="tabpanel" aria-labelledby="tab-val" hidden>
 <section class="pagehero">
@@ -6837,6 +7023,186 @@ escSegWire("seg-ar4s", v => AR4.sys = v, arDraw4);
 $("in-ar4k").addEventListener("input", () => { AR4.K = Math.pow(10, +$("in-ar4k").value); arDraw4(); });
 $("in-ar4p").addEventListener("input", () => { AR4.span = +$("in-ar4p").value; arDraw4(); });
 
+/* ================= Davoult 2024: Earth-like planet hosts =================
+   Uses AR_SYS presets and arClass from the Mishra tab. Prefix dv/DV.                                          */
+const DV_POP = { G: { Ms: 1, L: 1.70, thr: 0.43, zone: [0.39, 3.90], elp: 60, mult: 3.13, name: "G star, 1 M☉", ex: "sun" }, eM: { Ms: 0.5, L: 0.70, thr: 0.76, zone: [0.25, 2.52], elp: 74, mult: 3.28, name: "early M, 0.5 M☉", ex: "toi" }, lM: { Ms: 0.2, L: 0.25, thr: 1.55, zone: [0.15, 1.48], elp: 40, mult: 2.60, name: "late M, 0.2 M☉", ex: "trap" } };
+const DV_L = { sun: 1, inner: 1, outer: 1, toi: 0.13, trap: 5.53e-4, k11: 1.05, cnc: 0.58, gj876: 0.0122, k89: 3.0, anti: 1 };
+const DV_CL = ["Low-mass", "Anti-ordered", "Ordered", "Mixed", "n = 1"];
+const DV_COL = { "Low-mass": "#3D9BD9", "Anti-ordered": "#6ECD93", "Ordered": "#C97633", "Mixed": "#7B6FD6", "n = 1": "#9AA6BF" };
+const DV_T4 = { G: [63, 2, 18, 10, 7], eM: [88, 1, 2, 2, 7.8], lM: [76, 0, 0, 0, 24] }, DV_T6 = { G: [30, 2, 39, 8, 19], eM: [54, 1, 7, 2, 34], lM: [42, 0, 2, 0, 56] };
+const DV_T5 = { G: [88, 23, 18, 43, 81], eM: [92, 51, 29, 61, 94], lM: [99, NaN, 0, 100, 86] }, DV_T7 = { G: [63, 21, 26, 27, 88], eM: [68, 42, 45, 38, 92], lM: [88, NaN, 33, NaN, 94] };
+const DV_T8 = {
+  G: { "Low-mass": { M: [10, 64.0, 49.7], R: [2.5, 55.8, 87.5], P: [10, 38.0, 82.7] }, "Anti-ordered": { M: [100, 37.5, 6], R: [10, 34.3, 5.3], P: [30, 23.3, 20.2] }, "Ordered": { M: [10, 30.6, 7.1], R: [6, 27.8, 2.9], P: [30, 14.1, 67.5] }, "Mixed": { M: [10, 31.7, 13.1], R: [2.5, 27.4, 8.33], P: [30, 13.8, 49.1] }, "n = 1": { M: [100, 94.8, 3.6], R: [8, 95, 7.6], P: [30, 37.0, 90.6] } },
+  eM: { "Low-mass": { M: [10, 68.5, 59.2], R: [2.75, 64.1, 94.6], P: [10, 60.3, 79.2] }, "Ordered": { M: [10, 50.0, 21.6], R: [2, 50.4, 33.8], P: [10, 40.7, 60.5] }, "n = 1": { M: [10, 92.8, 90.2], R: [2.75, 75.1, 97.3], P: [10, 49.3, 95.8] } },
+  lM: { "Low-mass": { all: 88 }, "n = 1": { all: 94 } },
+};
+const dvPeriod = (a, Ms) => 365.25 * Math.pow(a, 1.5) / Math.sqrt(Ms);           // days
+const dvK = (a, M, Ms) => 0.6395 * Math.pow(dvPeriod(a, Ms), -1 / 3) * M * Math.pow(Ms, -2 / 3);
+const dvTeq = (a, L) => 279 * Math.pow(a, -0.5) * Math.pow(L, 0.25);
+const dvZone = (L, Th, Tc) => [Math.pow(279 * Math.pow(L, 0.25) / Th, 2), Math.pow(279 * Math.pow(L, 0.25) / Tc, 2)];
+const dvPopOf = Ms => Ms >= 0.75 ? "G" : Ms >= 0.35 ? "eM" : "lM";
+function dvPCA(a, M) {
+  const n = a.length, x = a.map(v => Math.log10(v)), y = M.map(v => Math.log10(v));
+  const mx = x.reduce((p, q) => p + q, 0) / n, my = y.reduce((p, q) => p + q, 0) / n;
+  let sxx = 0, syy = 0, sxy = 0; for (let i = 0; i < n; i++) { sxx += (x[i] - mx) ** 2; syy += (y[i] - my) ** 2; sxy += (x[i] - mx) * (y[i] - my); } sxx /= n; syy /= n; sxy /= n;
+  const tr = sxx + syy, det = Math.sqrt(Math.max(0, ((sxx - syy) / 2) ** 2 + sxy * sxy)), l1 = tr / 2 + det, l2 = Math.max(0, tr / 2 - det);
+  let vx, vy; if (Math.abs(sxy) > 1e-12) { vx = sxy; vy = l1 - sxx; } else if (sxx >= syy) { vx = 1; vy = 0; } else { vx = 0; vy = 1; }
+  const nn = Math.hypot(vx, vy); vx /= nn; vy /= nn; if (vx < 0) { vx = -vx; vy = -vy; }
+  return { mx, my, l1, l2, vx, vy, slope: vx > 1e-9 ? vy / vx : (vy >= 0 ? Infinity : -Infinity) };
+}
+function dvClass(a, M) {
+  if (M.length === 0) return { cl: "none" }; if (M.length === 1) return { cl: "n = 1" };
+  const mx = Math.max(...M); if (mx <= 20) return { cl: "Low-mass", pca: dvPCA(a, M) };
+  const p = dvPCA(a, M); return { cl: p.l2 >= 0.2 ? "Mixed" : p.slope > 0 ? "Ordered" : "Anti-ordered", pca: p };
+}
+/* ---- §1 ---- */
+const DV1 = { pop: "G", Mmax: 3, Th: 510, Tc: 160 };
+function dvDraw1() {
+  $("o-dv1m").textContent = fmt(DV1.Mmax, 1) + " M⊕"; $("o-dv1th").textContent = DV1.Th + " K"; $("o-dv1tc").textContent = DV1.Tc + " K";
+  const P = DV_POP[DV1.pop], zone = dvZone(P.L, DV1.Th, DV1.Tc), thr = dvK(zone[0], DV1.Mmax, P.Ms);
+  const svg = $("dvch1"); svg.innerHTML = "";
+  const s = makeScales(-2, 1.5, PV_LOG(0.3), PV_LOG(3000), 920, 360, 60, 20, 22, 42);
+  axes(svg, s, [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5], [0.3, 1, 3, 10, 30, 100, 300, 1000, 3000].map(PV_LOG), "distance, AU (log)", "mass, M⊕ (log)", v => fmt(Math.pow(10, v), Math.pow(10, v) < 0.1 ? 2 : Math.pow(10, v) < 1 ? 1 : 0), v => Math.pow(10, v) < 1 ? fmt(Math.pow(10, v), 1) : Math.round(Math.pow(10, v)));
+  el("rect", { x: fmt(s.x(PV_LOG(zone[0])), 1), y: fmt(s.y(PV_LOG(DV1.Mmax)), 1), width: fmt(s.x(PV_LOG(zone[1])) - s.x(PV_LOG(zone[0])), 1), height: fmt(s.y(PV_LOG(0.5)) - s.y(PV_LOG(DV1.Mmax)), 1), fill: "rgba(76,187,120,.18)", stroke: "#6ECD93", "stroke-width": 1.2 }, svg);
+  el("text", { x: fmt(s.x(PV_LOG(zone[0])) + 6, 1), y: fmt(s.y(PV_LOG(DV1.Mmax)) - 6, 1), class: "serieslabel", fill: "#6ECD93" }, svg).textContent = "Earth-like planets";
+  const curve = []; for (let lg = -2; lg <= 1.5 + 1e-9; lg += 0.05) { const a = Math.pow(10, lg); curve.push([s.x(lg), s.y(PV_LOG(thr / dvK(a, 1, P.Ms)))]); }
+  el("path", { d: linePath(curve.filter(c => c[1] > s.padT && c[1] < s.H - s.padB)), stroke: C.rock, "stroke-width": 1.5, fill: "none", "stroke-dasharray": "6 4" }, svg);
+  el("text", { x: s.W - s.padR - 4, y: fmt(s.y(PV_LOG(thr / dvK(Math.pow(10, 1.5), 1, P.Ms))) - 6, 1), "text-anchor": "end", class: "serieslabel", fill: C.rock }, svg).textContent = "detection floor " + fmt(thr, 2) + " m/s";
+  const S = AR_SYS[P.ex], pts = [];
+  S.M.forEach((m, i) => { const k = dvK(S.a[i], m, S.Ms), det = k >= thr, px = s.x(PV_LOG(S.a[i])), py = s.y(PV_LOG(m)); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 6, fill: det ? C.ink : "none", stroke: C.ink, "stroke-width": 1.5 }, svg); el("text", { x: fmt(px, 1), y: fmt(py - 10, 1), "text-anchor": "middle", class: "serieslabel", fill: C.ink2 }, svg).textContent = S.pl[i]; pts.push([px, py, S.name + " " + S.pl[i], m, S.a[i], k, det]); });
+  el("text", { x: s.padL + 6, y: s.padT + 14, class: "serieslabel", fill: C.ink2 }, svg).textContent = "example: " + S.name + " at its own star of " + fmt(S.Ms, 2) + " M☉";
+  egCharts["dvch1"] = { scale: s, pts };
+  $("dv1zone").innerHTML = fmt(zone[0], 2) + " – " + fmt(zone[1], 2) + "<small> AU · paper " + P.zone[0] + " – " + P.zone[1] + "</small>";
+  $("dv1thr").innerHTML = fmt(thr, 2) + "<small> m/s</small>";
+  $("dv1pap").innerHTML = fmt(P.thr, 2) + "<small> m/s</small>";
+  $("dv1elp").innerHTML = P.elp + "<small> % of " + P.name + " systems</small>";
+  $("dv1mult").innerHTML = fmt(P.mult, 2);
+}
+/* ---- §2 ---- */
+const DV2 = { sys: "sun", M: null, a: null, names: null };
+function dv2Load() {
+  const S = AR_SYS[DV2.sys]; DV2.M = S.M.slice(); DV2.a = S.a.slice(); DV2.names = S.pl.slice();
+  const box = $("dv2sl"); box.innerHTML = "";
+  DV2.M.forEach((v, i) => { const d = document.createElement("div"); d.className = "ctl"; box.appendChild(d); d.innerHTML = "<label>" + DV2.names[i] + " · <output id='o-dv2v" + i + "'>" + fmt(v, v < 1 ? 3 : 1) + " M⊕</output></label><input type='range' id='in-dv2v" + i + "' min='-1.5' max='3.5' step='0.02' value='" + fmt(Math.log10(v), 2) + "' aria-label='mass of planet " + DV2.names[i] + "'>"; $("in-dv2v" + i).addEventListener("input", () => { DV2.M[i] = Math.pow(10, +$("in-dv2v" + i).value); $("o-dv2v" + i).textContent = fmt(DV2.M[i], DV2.M[i] < 1 ? 3 : 1) + " M⊕"; dvDraw2(); }); });
+}
+function dvDraw2() {
+  const a = DV2.a, M = DV2.M, n = M.length, res = dvClass(a, M), p = res.pca || dvPCA(a, M);
+  let svg = $("dvch2a"); svg.innerHTML = "";
+  const lo = Math.min(...M), hi = Math.max(...M), pad = Math.max(0.4, (Math.log10(hi) - Math.log10(lo)) * 0.3);
+  const s = makeScales(Math.log10(a[0]) - 0.4, Math.log10(a[n - 1]) + 0.4, Math.log10(lo) - pad, Math.log10(hi) + pad, 460, 340, 56, 16, 22, 42);
+  axes(svg, s, niceTicks(s.x0, s.x1, 4).filter(v => v >= s.x0 && v <= s.x1), niceTicks(s.y0, s.y1, 4).filter(v => v >= s.y0 && v <= s.y1), "distance, AU (log)", "mass, M⊕ (log)", v => fmt(Math.pow(10, v), Math.pow(10, v) < 0.1 ? 2 : Math.pow(10, v) < 1 ? 1 : 0), v => Math.pow(10, v) < 1 ? fmt(Math.pow(10, v), 2) : Math.round(Math.pow(10, v)));
+  el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(s.y(PV_LOG(20)), 1), y2: fmt(s.y(PV_LOG(20)), 1), stroke: C.muted, "stroke-dasharray": "3 4" }, svg);
+  el("text", { x: s.W - s.padR - 4, y: fmt(s.y(PV_LOG(20)) - 5, 1), "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = "20 M⊕";
+  const col = DV_COL[res.cl] || C.muted;
+  if (n >= 2) {
+    const e1 = Math.sqrt(p.l1) * 1.6, e2 = Math.sqrt(Math.max(p.l2, 1e-4)) * 1.6, ux = -p.vy, uy = p.vx, pts = [];
+    for (let t = 0; t <= 360; t += 6) { const c = Math.cos(t * TL_DEG), sn = Math.sin(t * TL_DEG); pts.push([s.x(p.mx + e1 * c * p.vx + e2 * sn * ux), s.y(p.my + e1 * c * p.vy + e2 * sn * uy)]); }
+    el("path", { d: linePath(pts), stroke: col, "stroke-width": 1.5, fill: col, "fill-opacity": 0.1 }, svg);
+    el("line", { x1: fmt(s.x(p.mx - e1 * p.vx), 1), y1: fmt(s.y(p.my - e1 * p.vy), 1), x2: fmt(s.x(p.mx + e1 * p.vx), 1), y2: fmt(s.y(p.my + e1 * p.vy), 1), stroke: col, "stroke-width": 2 }, svg);
+    el("line", { x1: fmt(s.x(p.mx - e2 * ux), 1), y1: fmt(s.y(p.my - e2 * uy), 1), x2: fmt(s.x(p.mx + e2 * ux), 1), y2: fmt(s.y(p.my + e2 * uy), 1), stroke: col, "stroke-width": 1.2, "stroke-dasharray": "4 3" }, svg);
+  }
+  const hp = [];
+  M.forEach((m, i) => { const px = s.x(PV_LOG(a[i])), py = s.y(PV_LOG(m)); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 5.5, fill: m > 20 ? C.rock : C.ice, stroke: "#0C111E", "stroke-width": 1.5 }, svg); el("text", { x: fmt(px, 1), y: fmt(py - 9, 1), "text-anchor": "middle", class: "serieslabel", fill: C.ink2 }, svg).textContent = DV2.names[i]; hp.push([px, py, DV2.names[i], m, a[i]]); });
+  egCharts["dvch2a"] = { scale: s, pts: hp };
+  svg = $("dvch2b"); svg.innerHTML = "";
+  const s2 = makeScales(-3, 3, 0, 0.6, 460, 340, 56, 16, 22, 42);
+  axes(svg, s2, [-3, -2, -1, 0, 1, 2, 3], [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6], "slope of the long axis S(C₁)", "variance of the short axis V(C₂)", v => v, v => fmt(v, 1));
+  el("rect", { x: s2.padL, y: s2.padT, width: s2.W - s2.padL - s2.padR, height: fmt(s2.y(0.2) - s2.padT, 1), fill: DV_COL.Mixed, opacity: 0.12 }, svg);
+  el("rect", { x: s2.padL, y: fmt(s2.y(0.2), 1), width: fmt(s2.x(0) - s2.padL, 1), height: fmt(s2.y(0) - s2.y(0.2), 1), fill: DV_COL["Anti-ordered"], opacity: 0.12 }, svg);
+  el("rect", { x: fmt(s2.x(0), 1), y: fmt(s2.y(0.2), 1), width: fmt(s2.W - s2.padR - s2.x(0), 1), height: fmt(s2.y(0) - s2.y(0.2), 1), fill: DV_COL.Ordered, opacity: 0.12 }, svg);
+  el("text", { x: s2.padL + 6, y: s2.padT + 14, class: "serieslabel", fill: DV_COL.Mixed }, svg).textContent = "mixed"; el("text", { x: s2.padL + 6, y: fmt(s2.y(0) - 8, 1), class: "serieslabel", fill: DV_COL["Anti-ordered"] }, svg).textContent = "anti-ordered"; el("text", { x: s2.W - s2.padR - 6, y: fmt(s2.y(0) - 8, 1), "text-anchor": "end", class: "serieslabel", fill: DV_COL.Ordered }, svg).textContent = "ordered";
+  const cl = v => Math.max(-3, Math.min(3, v)), pts2 = [];
+  Object.keys(AR_SYS).forEach(k => { if (k === "inner" || k === "outer") return; const S = AR_SYS[k], r = dvClass(S.a, S.M); if (!r.pca || Math.max(...S.M) <= 20) return; const px = s2.x(cl(r.pca.slope)), py = s2.y(Math.min(0.6, r.pca.l2)); if (k !== DV2.sys) el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 3.5, fill: C.muted, opacity: 0.6 }, svg); pts2.push([px, py, S.name, r.pca.slope, r.pca.l2, r.cl]); });
+  if (n >= 2 && Math.max(...M) > 20) { const px = s2.x(cl(p.slope)), py = s2.y(Math.min(0.6, p.l2)); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 8, fill: col, stroke: "#0C111E", "stroke-width": 2 }, svg); pts2.push([px, py, AR_SYS[DV2.sys].name + " (loaded)", p.slope, p.l2, res.cl]); }
+  else el("text", { x: fmt(s2.x(0), 1), y: fmt(s2.y(0.35), 1), "text-anchor": "middle", class: "serieslabel", fill: C.ink2 }, svg).textContent = res.cl === "Low-mass" ? "low-mass: no planet above 20 M⊕, no ellipse needed" : "single planet";
+  egCharts["dvch2b"] = { scale: s2, pts: pts2 };
+  $("dv2max").innerHTML = fmt(Math.max(...M), 1) + "<small> M⊕ · " + (Math.max(...M) > 20 ? "above" : "below") + " 20</small>";
+  $("dv2s").innerHTML = n >= 2 ? (isFinite(p.slope) ? (p.slope >= 0 ? "+" : "") + fmt(p.slope, 2) : "∞") : "–";
+  $("dv2v").innerHTML = n >= 2 ? fmt(p.l2, 3) + "<small> · limit 0.2</small>" : "–";
+  $("dv2cl").innerHTML = "<span style='color:" + col + "'>" + res.cl + "</span>";
+  const mc = n >= 2 ? arClass(arCS(M), arCV(M), n) : "n = 1";
+  $("dv2mis").innerHTML = "<span style='color:" + (AR_COL[mc] || C.muted) + "'>" + mc + "</span>";
+}
+/* ---- §3 ---- */
+const DV3 = { pop: "G" };
+function dvBars(svg, s, A, B, ylab, note) {
+  axes(svg, s, [], [0, 20, 40, 60, 80, 100], "class", ylab, v => v, v => v);
+  DV_CL.forEach((k, i) => { const w = s.x(0.36) - s.x(0), col = DV_COL[k];
+    if (isFinite(A[i])) { el("rect", { x: fmt(s.x(i - 0.38), 1), y: fmt(s.y(A[i]), 1), width: fmt(w, 1), height: fmt(s.y(0) - s.y(A[i]), 1), fill: col, opacity: 0.4 }, svg); el("text", { x: fmt(s.x(i - 0.2), 1), y: fmt(s.y(A[i]) - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: C.muted }, svg).textContent = A[i]; } else el("text", { x: fmt(s.x(i - 0.2), 1), y: fmt(s.y(0) - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: C.muted }, svg).textContent = "n/a";
+    if (isFinite(B[i])) { el("rect", { x: fmt(s.x(i + 0.02), 1), y: fmt(s.y(B[i]), 1), width: fmt(w, 1), height: fmt(s.y(0) - s.y(B[i]), 1), fill: col }, svg); el("text", { x: fmt(s.x(i + 0.2), 1), y: fmt(s.y(B[i]) - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: C.ink }, svg).textContent = B[i]; } else el("text", { x: fmt(s.x(i + 0.2), 1), y: fmt(s.y(0) - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: C.muted }, svg).textContent = "n/a";
+    el("text", { x: fmt(s.x(i), 1), y: s.H - s.padB + 18, "text-anchor": "middle", class: "serieslabel", fill: C.ink2 }, svg).textContent = k.replace("Anti-ordered", "anti-ord.").replace("Low-mass", "low-mass").toLowerCase(); });
+  el("text", { x: s.W - s.padR, y: s.padT + 14, "text-anchor": "end", class: "serieslabel", fill: C.muted }, svg).textContent = note;
+}
+function dvDraw3() {
+  const k = DV3.pop;
+  let svg = $("dvch3a"); svg.innerHTML = ""; dvBars(svg, makeScales(-0.5, 4.5, 0, 100, 460, 360, 50, 16, 22, 42), DV_T4[k], DV_T6[k], "percent of systems", "faint: theoretical · solid: biased");
+  svg = $("dvch3b"); svg.innerHTML = ""; dvBars(svg, makeScales(-0.5, 4.5, 0, 100, 460, 360, 50, 16, 22, 42), DV_T5[k], DV_T7[k], "percent hosting an Earth-like planet", "faint: theoretical · solid: biased");
+  $("dv3lm").innerHTML = DV_T4[k][0] + " % → " + DV_T6[k][0] + " %<small> of systems · hosting " + DV_T5[k][0] + " % → " + DV_T7[k][0] + " %</small>";
+  $("dv3n1").innerHTML = DV_T4[k][4] + " % → " + DV_T6[k][4] + " %<small> of systems · hosting " + DV_T5[k][4] + " % → " + DV_T7[k][4] + " %</small>";
+}
+/* ---- §4 ---- */
+const DV4 = { sys: "sun", f: 1 };
+function dvDraw4() {
+  $("o-dv4f").textContent = fmt(DV4.f, 2);
+  const S = AR_SYS[DV4.sys], pop = dvPopOf(S.Ms), P = DV_POP[pop], thr = P.thr * DV4.f, L = DV_L[DV4.sys], n = S.M.length;
+  const K = S.M.map((m, i) => dvK(S.a[i], m, S.Ms)), det = K.map(k => k >= thr), zone = dvZone(L, 510, 160);
+  const da = S.a.filter((v, i) => det[i]), dM = S.M.filter((v, i) => det[i]), idx = det.indexOf(true);
+  const res = dvClass(da, dM), cl = res.cl;
+  const svg = $("dvch4"); svg.innerHTML = "";
+  const s = makeScales(Math.min(PV_LOG(S.a[0]), PV_LOG(zone[0])) - 0.3, Math.max(PV_LOG(S.a[n - 1]), PV_LOG(zone[1])) + 0.3, -1.6, 3.5, 920, 360, 60, 20, 22, 42);
+  axes(svg, s, niceTicks(s.x0, s.x1, 5).filter(v => v >= s.x0 && v <= s.x1), [-1, 0, 1, 2, 3], "distance, AU (log)", "mass, M⊕ (log)", v => fmt(Math.pow(10, v), Math.pow(10, v) < 0.1 ? 2 : 1), v => Math.pow(10, v) < 1 ? fmt(Math.pow(10, v), 1) : Math.round(Math.pow(10, v)));
+  el("rect", { x: fmt(s.x(PV_LOG(zone[0])), 1), y: fmt(s.y(PV_LOG(3)), 1), width: fmt(s.x(PV_LOG(zone[1])) - s.x(PV_LOG(zone[0])), 1), height: fmt(s.y(PV_LOG(0.5)) - s.y(PV_LOG(3)), 1), fill: "rgba(76,187,120,.18)", stroke: "#6ECD93", "stroke-width": 1.2 }, svg);
+  el("text", { x: fmt(s.x(PV_LOG(zone[0])) + 6, 1), y: fmt(s.y(PV_LOG(3)) - 6, 1), class: "serieslabel", fill: "#6ECD93" }, svg).textContent = "Earth-like box for L = " + pvSci(L) + " L☉";
+  const curve = []; for (let lg = s.x0; lg <= s.x1 + 1e-9; lg += 0.05) { const a = Math.pow(10, lg); curve.push([s.x(lg), s.y(PV_LOG(thr / dvK(a, 1, S.Ms)))]); }
+  el("path", { d: linePath(curve.filter(c => c[1] > s.padT && c[1] < s.H - s.padB)), stroke: C.rock, "stroke-width": 1.3, fill: "none", "stroke-dasharray": "6 4" }, svg);
+  const pts = [];
+  S.M.forEach((m, i) => { const px = s.x(PV_LOG(S.a[i])), py = s.y(PV_LOG(m)); if (i === idx) el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 12, fill: "none", stroke: C.rock, "stroke-width": 2 }, svg); el("circle", { cx: fmt(px, 1), cy: fmt(py, 1), r: 7, fill: det[i] ? C.ice : "none", stroke: det[i] ? "#0C111E" : C.ice, "stroke-width": 2 }, svg); el("text", { x: fmt(px, 1), y: fmt(py - 16, 1), "text-anchor": "middle", class: "serieslabel", fill: C.ink2 }, svg).textContent = S.pl[i]; pts.push([px, py, S.pl[i], m, K[i], dvPeriod(S.a[i], S.Ms), det[i], dvTeq(S.a[i], L)]); });
+  egCharts["dvch4"] = { scale: s, pts };
+  $("dv4pop").innerHTML = P.name + "<br><small>floor " + fmt(thr, 2) + " m/s · " + dM.length + " of " + n + " detected</small>";
+  $("dv4cl").innerHTML = "<span style='color:" + (DV_COL[cl] || C.muted) + "'>" + cl + "</span>" + (res.pca && Math.max(...dM) > 20 ? "<br><small>S(C₁) " + (isFinite(res.pca.slope) ? fmt(res.pca.slope, 2) : "∞") + " · V(C₂) " + fmt(res.pca.l2, 3) + "</small>" : "");
+  if (idx < 0) { $("dv4idp").innerHTML = "none detected"; $("dv4p").innerHTML = "–"; }
+  else {
+    const m = S.M[idx], R = S.R ? S.R[idx] : null, Pd = dvPeriod(S.a[idx], S.Ms);
+    $("dv4idp").innerHTML = "<b>" + S.pl[idx] + "</b> · " + fmt(m, m < 1 ? 2 : 1) + " M⊕ · " + (R ? fmt(R, 2) + " R⊕" : "no radius") + " · " + (Pd < 1000 ? fmt(Pd, 1) + " d" : fmt(Pd / 365.25, 1) + " yr");
+    const T = (DV_T8[pop] || {})[cl];
+    if (!T) $("dv4p").innerHTML = "n/a<small> · too few such systems in the paper</small>";
+    else if (T.all !== undefined) $("dv4p").innerHTML = T.all + " %<small> · class as a whole</small>";
+    else { const pick = (arr, v) => v === null ? "–" : (v > arr[0] ? arr[2] : arr[1]) + " %" + "<small> (" + (v > arr[0] ? ">" : "<") + " " + arr[0] + ")</small>"; $("dv4p").innerHTML = pick(T.M, m) + " · " + pick(T.R, R) + " · " + pick(T.P, Pd); }
+  }
+  const truth = S.M.map((m, i) => m >= 0.5 && m <= 3 && dvTeq(S.a[i], L) >= 160 && dvTeq(S.a[i], L) <= 510 ? S.pl[i] : null).filter(x => x);
+  $("dv4truth").innerHTML = truth.length ? "<span style='color:#6ECD93'>yes</span> · " + truth.join(", ") + "<br><small>" + (truth.some(k => det[S.pl.indexOf(k)]) ? "and the survey sees it" : "hidden below the floor") + "</small>" : "<span style='color:var(--muted)'>no</span><br><small>nothing of 0.5–3 M⊕ at 160–510 K</small>";
+}
+/* ---- §5 ---- */
+function dvDraw5() {
+  const svg = $("dvch5"); svg.innerHTML = "";
+  const rows = [
+    ["G · low-mass · witness radius > 2.5 R⊕", 87.5, "G"], ["G · low-mass · witness period > 10 d", 82.7, "G"], ["G · single planet · < 100 M⊕", 94.8, "G"], ["G · single planet · < 8 R⊕", 95, "G"], ["G · single planet · period > 30 d", 90.6, "G"],
+    ["early M · low-mass · witness radius > 2.75 R⊕", 94.6, "eM"], ["early M · low-mass · witness period > 10 d", 79.2, "eM"], ["early M · single planet · > 2.75 R⊕", 97.3, "eM"], ["early M · single planet · period > 10 d", 95.8, "eM"],
+    ["late M · low-mass, any witness", 88, "lM"], ["late M · single planet, any", 94, "lM"],
+    ["for contrast: G · anti-ordered · witness > 100 M⊕", 6, "x"], ["for contrast: G · ordered · witness radius > 6 R⊕", 2.9, "x"],
+  ];
+  const s = makeScales(0, 100, -0.5, rows.length - 0.5, 920, 420, 330, 40, 18, 40);
+  axes(svg, s, [0, 20, 40, 60, 80, 100], [], "probability of an Earth-like planet, percent", "", v => v, v => "");
+  const cols = { G: "#3D9BD9", eM: "#6ECD93", lM: "#7B6FD6", x: "#C97633" };
+  rows.forEach((r, i) => { const y = s.y(rows.length - 1 - i), h = (s.y(0) - s.y(1)) * 0.62; el("rect", { x: s.padL, y: fmt(y - h / 2, 1), width: fmt(s.x(r[1]) - s.padL, 1), height: fmt(h, 1), fill: cols[r[2]], opacity: r[2] === "x" ? 0.7 : 0.85 }, svg); el("text", { x: s.padL - 8, y: fmt(y + 4, 1), "text-anchor": "end", class: "serieslabel", fill: C.ink2 }, svg).textContent = r[0]; el("text", { x: fmt(s.x(r[1]) + 6, 1), y: fmt(y + 4, 1), class: "serieslabel", fill: C.ink }, svg).textContent = r[1] + " %"; });
+}
+function dvDrawAll() { dvDraw1(); dv2Load(); dvDraw2(); dvDraw3(); dvDraw4(); dvDraw5(); }
+/* ---- hovers ---- */
+function dvPtHover(boxId, svgId, tipId, pad, html, rad) { attachHover($(boxId), $(svgId), pad, (px, py, cx, cy) => { const c = egCharts[svgId]; if (!c || !c.pts) return; let best = null, bd = 1e9; c.pts.forEach(p => { const d = Math.hypot(p[0] - px, p[1] - py); if (d < bd) { bd = d; best = p; } }); if (!best || bd > (rad || 14)) { $(tipId).hidden = true; return; } setTip($(tipId), cx, cy, html(best), $(boxId).clientWidth); }, () => $(tipId).hidden = true); }
+dvPtHover("cb-dv1", "dvch1", "tip-dv1", { padL: 60, padR: 20, W: 920, H: 360 }, p => "<b>" + p[2] + "</b><br><span class='mono'>" + fmt(p[3], p[3] < 1 ? 3 : 1) + " M⊕ · " + fmt(p[4], 3) + " AU · K = " + fmt(p[5], 2) + " m/s · " + (p[6] ? "detected" : "hidden") + "</span>");
+dvPtHover("cb-dv2a", "dvch2a", "tip-dv2a", { padL: 56, padR: 16, W: 460, H: 340 }, p => "<b>" + p[2] + "</b><br><span class='mono'>" + fmt(p[3], p[3] < 1 ? 3 : 1) + " M⊕ · " + fmt(p[4], 3) + " AU</span>");
+dvPtHover("cb-dv2b", "dvch2b", "tip-dv2b", { padL: 56, padR: 16, W: 460, H: 340 }, p => "<b>" + p[2] + "</b><br><span class='mono'>S " + (isFinite(p[3]) ? fmt(p[3], 2) : "∞") + " · V " + fmt(p[4], 3) + " · " + p[5] + "</span>");
+dvPtHover("cb-dv4", "dvch4", "tip-dv4", { padL: 60, padR: 20, W: 920, H: 360 }, p => "<b>planet " + p[2] + "</b><br><span class='mono'>" + fmt(p[3], p[3] < 1 ? 3 : 1) + " M⊕ · K " + fmt(p[4], 2) + " m/s · P " + (p[5] < 1000 ? fmt(p[5], 1) + " d" : fmt(p[5] / 365.25, 1) + " yr") + " · T_eq " + Math.round(p[7]) + " K · " + (p[6] ? "detected" : "hidden") + "</span>");
+/* ---- wiring ---- */
+escSegWire("seg-dv1p", v => DV1.pop = v, dvDraw1);
+$("in-dv1m").addEventListener("input", () => { DV1.Mmax = +$("in-dv1m").value; dvDraw1(); });
+$("in-dv1th").addEventListener("input", () => { DV1.Th = +$("in-dv1th").value; if (DV1.Tc >= DV1.Th - 50) { DV1.Tc = DV1.Th - 50; $("in-dv1tc").value = DV1.Tc; } dvDraw1(); });
+$("in-dv1tc").addEventListener("input", () => { DV1.Tc = +$("in-dv1tc").value; if (DV1.Tc >= DV1.Th - 50) { DV1.Tc = DV1.Th - 50; $("in-dv1tc").value = DV1.Tc; } dvDraw1(); });
+escSegWire("seg-dv2s", v => { DV2.sys = v; dv2Load(); }, dvDraw2);
+escSegWire("seg-dv3p", v => DV3.pop = v, dvDraw3);
+escSegWire("seg-dv4s", v => DV4.sys = v, dvDraw4);
+$("in-dv4f").addEventListener("input", () => { DV4.f = Math.pow(10, +$("in-dv4f").value); dvDraw4(); });
+
 /* ================= Changing periods (concept tab) =================
    Fidelity ladder for the orbital period. Prefix pv/PV. Uses tlKep/tlKick from the Leleu tab for §3.   */
 const PV_AU = 1.495978707e13, PV_MSUN = 1.989e33, PV_MEG = 5.972e27, PV_RSUN = 6.957e10, PV_RE = 6.371e8, PV_GG = 6.674e-8, PV_C = 2.998e10, PV_DAY = 86400, PV_YR = 3.15576e7, PV_MJ = 1.898e30, PV_RJ = 7.149e9;
@@ -8336,7 +8702,7 @@ $("btn-fl-now").addEventListener("click", () => { FL.tcur = 4570; $("in-fl-t").v
 $("btn-fl-disk").addEventListener("click", () => { FL.tcur = 1; $("in-fl-t").value = 0; flDrawAll(); });
 
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "mis", "val", "pp", "pnet", "frost", "per"];
+const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "mis", "dav", "val", "pp", "pnet", "frost", "per"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -8360,6 +8726,7 @@ pnDrawAll();
 tlDrawAll();
 pvDrawAll();
 arDrawAll();
+dvDrawAll();
 drawB1(); b2Reset(); b3Reset();
 mInitData(); m1SetVel(); m1Render(); m2Reset(); mnInit(); ppInit(); showTab(tab0);
 </script>
