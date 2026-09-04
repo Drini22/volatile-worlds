@@ -48,6 +48,12 @@
 
   /* ---------- escape (concept) tab ---------- */
   .tabbtn.concept{border-style:dashed;}
+  /* ---------- frost line (concept) tab ---------- */
+  .fl-phases{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media (max-width:760px){.fl-phases{grid-template-columns:1fr;}}
+  .fl-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:1px solid var(--muted);font-family:var(--mono);font-size:11px;color:var(--ink);flex:none;}
+  .mech p.move{font-family:var(--mono);font-size:12.5px;color:var(--ink2);background:var(--surface);border:1px solid var(--line-soft);border-radius:8px;padding:6px 10px;}
+  .mech p.move b{color:var(--ink);font-weight:500;}
   .esc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
   @media (max-width:760px){.esc-grid{grid-template-columns:1fr;}}
   .mech{background:var(--surface2);border:1px solid var(--line-soft);border-radius:12px;padding:16px 18px 14px;display:flex;flex-direction:column;gap:8px;}
@@ -268,6 +274,7 @@
     <div class="tabgroup">
       <p class="tab-label">Concept tabs · read alongside the papers they follow</p>
       <div class="tabs" role="tablist" aria-label="Concept tabs">
+        <button class="tabbtn concept" id="tab-frost" role="tab" aria-selected="false">Frost line <small>after Alibert · where the water was</small></button>
         <button class="tabbtn concept" id="tab-conf" role="tab" aria-selected="false">Photobombing <small>after Dorn · Cacaj 2025 → interiors</small></button>
         <button class="tabbtn concept" id="tab-esc" role="tab" aria-selected="false">Gas escape <small>after Kubyshkina · how gas leaves</small></button>
         <button class="tabbtn concept" id="tab-pp" role="tab" aria-selected="false">PINN playground <small>after Baty · learn the tricks</small></button>
@@ -459,6 +466,111 @@
   <p>Y. Alibert (2016), “Constraining the volatile fraction of planets from transit observations”, A&amp;A 591, A79 · <a href="https://arxiv.org/abs/1605.05064">arXiv:1605.05064</a></p>
 </footer>
 </div><!-- /page-alibert -->
+
+<div id="page-frost" role="tabpanel" aria-labelledby="tab-frost" hidden>
+<section class="pagehero">
+  <p class="eyebrow">Concept tab · the frost line · not a paper</p>
+  <p class="standfirst">Alibert's whole argument rests on one boundary: inside it water is vapour and planets are born dry, outside it water is ice and planets can be born wet. That boundary is not a place. It moved by two orders of magnitude over the Sun's life, and every planet, asteroid and comet remembers where it was when their solids condensed. This tab computes the line's whole history for the solar system, on a log clock, and explains each of its seven movements.</p>
+</section>
+
+<!-- ================= STATION F1 ================= -->
+<section id="f1">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>Watch it move</h2></div>
+  <p class="prose">Two frost lines are drawn because there are two ways to be at 170 K. <strong>Blue</strong> is the midplane of the gas disk: heated from inside by the friction of accreting gas and from outside by the young Sun's light landing on a flared surface. <strong>Rust</strong> is a bare body in sunlight with no disk to shade it, the only line that exists once the gas is gone. Scrub the clock, change the disk, and read the right-hand chart to see which heating term is setting the line at that moment.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="max-width:320px;"><label>Clock <output id="o-fl-t">4.6 Gyr</output></label>
+        <input type="range" id="in-fl-t" min="-2" max="4.0899" step="0.01" value="3.6599" aria-label="Time since the Sun's birth, logarithmic"></div>
+      <div class="ctl" style="flex:none;"><label>Jump to</label>
+        <div style="display:flex;gap:8px;"><button class="btn preset" id="btn-fl-disk">1 Myr · disk era</button><button class="btn preset" id="btn-fl-now">today</button></div></div>
+      <div class="ctl" style="flex:none;"><label>Condensing species</label>
+        <div class="seg" id="seg-fl-sp" role="group" aria-label="Condensing species" style="white-space:nowrap;">
+          <button aria-pressed="true" data-v="h2o">H₂O · 170 K</button>
+          <button aria-pressed="false" data-v="co2">CO₂ · 70 K</button>
+          <button aria-pressed="false" data-v="co">CO · 25 K</button>
+        </div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Ṁ at 1 Myr <output id="o-fl-md">3.0×10⁻⁸ M☉/yr</output></label>
+        <input type="range" id="in-fl-md" min="-9" max="-7" step="0.05" value="-7.523" aria-label="Disk accretion rate at 1 Myr, logarithmic"></div>
+      <div class="ctl"><label>Viscosity α <output id="o-fl-al">1.0×10⁻²</output></label>
+        <input type="range" id="in-fl-al" min="-4" max="-1" step="0.05" value="-2" aria-label="Alpha viscosity, logarithmic"></div>
+      <div class="ctl"><label>Disk lifetime <output id="o-fl-td">4 Myr</output></label>
+        <input type="range" id="in-fl-td" min="2" max="10" step="0.5" value="4" aria-label="Disk lifetime"></div>
+      <div class="ctl" style="flex:none;"><label>FU Ori outburst at 100 kyr</label>
+        <div class="seg" id="seg-fl-burst" role="group" aria-label="Outburst on or off">
+          <button aria-pressed="true" data-v="on">on</button>
+          <button aria-pressed="false" data-v="off">off</button>
+        </div></div>
+    </div>
+    <div class="rv-grid">
+      <div class="chart-box" id="cb-flch1">
+        <p class="chart-title">The frost line through the Sun's life</p>
+        <p class="chart-sub">Blue: disk midplane, band = accretion rate three times higher or lower · rust: bare body in sunlight · numbers: the phases of §2 · hover for values</p>
+        <svg id="flch1" viewBox="0 0 620 420" aria-label="Frost line distance against time"></svg>
+        <div class="tip" id="tip-flch1" hidden></div>
+      </div>
+      <div class="chart-box" id="cb-flch2">
+        <p class="chart-title">Temperature profile at the clock</p>
+        <p class="chart-sub">Dotted: viscous and irradiation terms alone · solid: their sum · dots: where each species condenses</p>
+        <svg id="flch2" viewBox="0 0 380 420" aria-label="Temperature against distance at the selected time"></svg>
+        <div class="tip" id="tip-flch2" hidden></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">clock</div><div class="v" id="fl-rt">–</div></div>
+      <div class="chip"><div class="k">Sun</div><div class="v" id="fl-rL">–</div></div>
+      <div class="chip"><div class="k">accretion rate</div><div class="v" id="fl-rM">–</div></div>
+      <div class="chip"><div class="k">temperature at 1 AU</div><div class="v" id="fl-rT">–</div></div>
+      <div class="chip answer"><div class="k">frost line · disk midplane</div><div class="v" id="fl-rmid">–</div></div>
+      <div class="chip"><div class="k">frost line · bare body</div><div class="v" id="fl-rbare">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>Read the two heating terms first.</em> Viscous heating scales as Ṁ<sup>2/5</sup> and falls steeply with distance, as r<sup>−9/10</sup>, so it rules the inner disk while gas is still pouring through it. Irradiation of a flared disk falls slowly, as r<sup>−3/7</sup>, so it always wins far out and it becomes the only term once accretion dies. The frost line is where the sum of the two crosses 170 K. Everything in §2 is one of those two terms rising or falling, or the disk itself disappearing.</p>
+</section>
+
+<!-- ================= STATION F2 ================= -->
+<section id="f2">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>Every movement, explained</h2></div>
+  <p class="prose">The numbers in each card are computed live from the model above and follow the sliders. The physics in each card does not.</p>
+  <div class="fl-phases">
+    <div class="mech"><h3><span class="fl-num">1</span>Embedded protostar <span class="inkub">0 – 300 kyr</span></h3>
+      <p class="move" id="fl-p1">–</p>
+      <p>The Sun is still gaining mass from its collapsing cloud, gas streams through the disk at a few 10<sup>−7</sup> M☉ per year, and the friction of that flow keeps the midplane hot out to Jupiter's orbit and beyond. Accretion is not steady: pile-ups in the inner disk drain in outbursts, when the accretion luminosity briefly reaches hundreds of L☉ and the front sweeps out to 40 AU. That is what ALMA sees in V883 Ori. The first solids in meteorites, the CAIs, condense in this era, inside the line, from a gas that was hot enough to vaporise rock.</p>
+      <p class="where"><b>Sets the line:</b> viscous heating, plus bursts of accretion light</p></div>
+    <div class="mech"><h3><span class="fl-num">2</span>Viscous decline <span class="inkub">300 kyr – 3 Myr</span></h3>
+      <p class="move" id="fl-p2">–</p>
+      <p>The infall stops and the disk drains itself. The accretion rate falls roughly as t<sup>−3/2</sup>, so the viscous term fades and the line sweeps inward through the region where the giant planets sit. Jupiter's core reaches tens of Earth masses in about 1 Myr, and meteorite isotopes show the inner and outer nebula stopped mixing at the same moment. The natural reading is that Jupiter grew at the frost line while it passed 3 to 5 AU, then acted as a dam: pebbles drifting in from the cold outer disk piled up behind it, and the inner disk stayed dry even after the line moved on. Morbidelli et al. 2016 call this the fossilised snow line.</p>
+      <p class="where"><b>Sets the line:</b> viscous heating, fading</p></div>
+    <div class="mech"><h3><span class="fl-num">3</span>Passive floor <span class="inkub">3 Myr – disk dispersal</span></h3>
+      <p class="move" id="fl-p3">–</p>
+      <p>Once accretion drops below about 10<sup>−9</sup> M☉ per year the disk is heated by starlight alone. A flared disk catches the Sun's light at a grazing angle of a few degrees, so its interior is only about half as warm as a bare body at the same distance, and the frost line settles inside 1 AU. This is the dry-Earth problem: if the line spent a million years at half an AU, why is Earth only a tenth of a per cent water? The answers on offer are Jupiter's dam, an inner disk whose planetesimals had already formed dry, and a dead-zone correction that keeps the line a little further out.</p>
+      <p class="where"><b>Sets the line:</b> irradiation of the flared disk</p></div>
+    <div class="mech"><h3><span class="fl-num">4</span>The disk disappears <span class="inkub">a few Myr, over 100 kyr</span></h3>
+      <p class="move" id="fl-p4">–</p>
+      <p>Far-ultraviolet and X-ray light from the Sun evaporates the last gas in about a hundred thousand years, a blink on this axis. The line does not move gradually here: it jumps. Without a disk there is no grazing-angle geometry and no shading of the midplane; a body sits in full sunlight and reaches its blackbody equilibrium temperature. The rust line is where an airless body reaches 170 K, and it sits several times further out than the shaded midplane did. From this moment on there is one frost line, and it belongs to the Sun's luminosity alone.</p>
+      <p class="where"><b>Sets the line:</b> direct sunlight on bare bodies</p></div>
+    <div class="mech"><h3><span class="fl-num">5</span>Hayashi dimming <span class="inkub">disk dispersal – 50 Myr</span></h3>
+      <p class="move" id="fl-p5">–</p>
+      <p>The young Sun is a large, cool, contracting star. As it shrinks along the Hayashi track its luminosity falls to about half the present value, reaches a minimum near 10 to 20 Myr, then recovers slightly as hydrogen burning ignites and the Sun arrives on the zero-age main sequence at about 0.7 L☉. The frost line follows the square root of the luminosity, so it dips in and drifts back out. This is when the terrestrial planets finish: Mars in the first 10 Myr, Earth's Moon-forming impact somewhere between 50 and 100 Myr. The belt records the boundary: Vesta at 2.36 AU melted dry, Ceres at 2.77 AU kept its ice.</p>
+      <p class="where"><b>Sets the line:</b> the Sun's pre-main-sequence luminosity</p></div>
+    <div class="mech"><h3><span class="fl-num">6</span>Main-sequence brightening <span class="inkub">50 Myr – 10 Gyr</span></h3>
+      <p class="move" id="fl-p6">–</p>
+      <p>Fusion turns hydrogen into helium, the core slowly contracts and heats, and the Sun brightens by about 10 % per Gyr. The line creeps outward through the asteroid belt. Today it sits near 2.7 AU, which is why comets switch on their water activity around 3 AU and why the belt turns from dry S-types to hydrated C-types across the same distance. Within another few Gyr the line will pass Ceres. This is the only era where the frost line is something you can go and watch.</p>
+      <p class="where"><b>Sets the line:</b> the Sun's slowly rising luminosity</p></div>
+    <div class="mech"><h3><span class="fl-num">7</span>Giant branch <span class="inkub">10 – 12.3 Gyr · schematic</span></h3>
+      <p class="move" id="fl-p7">–</p>
+      <p>With the core's hydrogen spent, the Sun swells into a red giant and its luminosity climbs to a few thousand L☉ at the tip of the giant branch. The frost line races out past Neptune and through the Kuiper belt. Every icy moon of Jupiter and Saturn, every dwarf planet, becomes a comet for a while. The habitable zone moves with it, out to tens of AU. The curve here is a sketch: the model interpolates a handful of points from stellar evolution tracks, and the details of the branch, including mass loss, are not modelled.</p>
+      <p class="where"><b>Sets the line:</b> the Sun's post-main-sequence luminosity</p></div>
+  </div>
+  <p class="takeaway"><em>What this means for Alibert's argument.</em> The habitable zone of a Sun-like star spans about 0.95 to 1.7 AU. For most of the time solids were being assembled into planets, the frost line sat outside that range; it dips inside only in the last, gas-poor phase of the disk, when little solid mass is left to be redistributed. A habitable-zone planet made of tens of per cent water therefore did not condense where it orbits. It grew beyond the line and migrated, or the water was carried in. Earth's own tenth of a per cent is the delivered case. That is why a measured water fraction is a birth certificate, and why Alibert wants it.</p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The disk midplane uses T⁴ = T<sub>visc</sub>⁴ + T<sub>irr</sub>⁴. The viscous term is the midplane temperature of a steady, optically thick α disk, T<sub>visc</sub>⁵ = (3/128π²) κμm<sub>H</sub>/(σαk) · Ṁ²Ω³, with the Bell &amp; Lin (1994) ice-grain opacity κ = 2×10⁻⁴ T² cm² g⁻¹ evaluated at the condensation temperature of the selected species. The irradiation term is the Chiang &amp; Goldreich (1997) flared-disk interior, 150 K (L/1.44 L☉)<sup>2/7</sup> (r/AU)<sup>−3/7</sup>. The accretion rate is a self-similar viscous disk, Ṁ ∝ (1 + t/0.2 Myr)<sup>−3/2</sup>, normalised at 1 Myr by the slider; the band shows a factor 3 either way, the observed scatter at fixed age. Accretion luminosity GMṀ/2R is added to the Sun's; the outburst uses 10⁻⁴ M☉ per year in the irradiation term only. The bare-body line is the blackbody equilibrium of a fast-rotating, zero-albedo body, 278.6 K L<sup>1/4</sup> (r/AU)<sup>−1/2</sup>, which gives 2.7 AU for 170 K today. The Sun's luminosity is a table read off Baraffe et al. (2015) up to 50 Myr, Gough's (1981) fit L = 1/(1 + 0.4(1 − t/4.57 Gyr)) on the main sequence, and a schematic giant branch. Condensation temperatures 170, 70 and 25 K are representative disk values at 10⁻⁴ to 10⁻⁶ bar. Not modelled: the embedded envelope's back-warming, the dead zone, dust settling, the moving opacity transition at the line itself, and the redistribution of ice by drifting pebbles, which is exactly what makes the real line fuzzy.</p>
+  <p>Chiang &amp; Goldreich (1997), ApJ 490, 368 · Bell &amp; Lin (1994), ApJ 427, 987 · Hartmann et al. (1998), ApJ 495, 385 · Hayashi (1981), PTPS 70, 35 · Sasselov &amp; Lecar (2000), ApJ 528, 995 · Garaud &amp; Lin (2007), ApJ 654, 606 · Oka, Nakamoto &amp; Ida (2011), ApJ 738, 141 · Martin &amp; Livio (2012), MNRAS 425, L6 · Bitsch et al. (2015), A&amp;A 575, A28 · Morbidelli et al. (2016), Icarus 267, 368 · Kruijer et al. (2017), PNAS 114, 6712 · Cieza et al. (2016), Nature 535, 258 · Baraffe et al. (2015), A&amp;A 577, A42 · Gough (1981), Solar Phys. 74, 21 · Sackmann, Boothroyd &amp; Kraemer (1993), ApJ 418, 457</p>
+</footer>
+</div><!-- /page-frost -->
 
 <div id="page-dorn" role="tabpanel" aria-labelledby="tab-dorn" hidden>
 <section class="pagehero">
@@ -2096,9 +2208,54 @@
   <p class="takeaway"><em>Why a single sector cannot settle a system like this.</em> Planets f and g transit once and twice in 26 days; a period search needs at least two events, and three events from two different planets at the right spacing look exactly like one planet. The 10.35-day candidate was even proposed to be a co-orbital pair. What broke it was prediction: the paper's Laplace-resonance hypothesis said the ghost's third event had to be a 20.7-day planet, computed its next transit to within hours, and CHEOPS caught it on 7 September 2020. Planet b, at 263 ppm, is below what this search can find in one sector; it took CHEOPS's 11-day stare and a dedicated transit detection algorithm.</p>
 </section>
 
+
+<!-- ================= STATION L1b: the ghost, animated ================= -->
+<section id="lel1b">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>The ghost, drawn</h2></div>
+  <p class="prose">Left, the real system. Right, the system TESS reported after one sector: d at 6.55 days, e at 9.96 days, and a planet at 10.35 days that does not exist. Under each, the noiseless light curve that system produces over the sector, with the running time marked. Play the two side by side and watch the three rust-marked events: in the real system they are g, then f, then g; in the reported system one planet does all three, and the light curves are indistinguishable.</p>
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl" style="flex:none;"><label>View</label>
+        <div class="seg" id="seg-tl1bv" role="group" aria-label="View">
+          <button aria-pressed="true" data-v="top">Top view</button>
+          <button aria-pressed="false" data-v="transit">Transit view</button>
+        </div></div>
+      <div class="ctl" style="flex:none;"><label>&nbsp;</label><button class="btn" id="btn-tl1bp">❚❚ Pause</button></div>
+      <div class="ctl"><label>Time speed <output id="o-tl1bs">0.5 days per second</output></label>
+        <input type="range" id="in-tl1bs" min="-1.3" max="0.7" step="0.05" value="-0.3" aria-label="Time speed"></div>
+      <div class="ctl"><label>Scrub · day <output id="o-tl1bt">0.0</output> of the sector</label>
+        <input type="range" id="in-tl1bt" min="0" max="25.9" step="0.02" value="0" aria-label="Time in the sector"></div>
+      <div class="ctl" style="flex:none;"><label>Jump to ghost event</label>
+        <div class="seg" id="seg-tl1bj" role="group" aria-label="Jump to ghost event">
+          <button aria-pressed="false" data-v="1">1 · g</button>
+          <button aria-pressed="false" data-v="2">2 · f</button>
+          <button aria-pressed="false" data-v="3">3 · g</button>
+        </div></div>
+    </div>
+    <div class="census-grid">
+      <div class="chart-box" id="cb-tl1d">
+        <p class="chart-title">The real system · six planets</p>
+        <p class="chart-sub">Orbits to scale · planet sizes exaggerated · transit when a planet crosses the line to Earth</p>
+        <svg id="tlch1d" viewBox="0 0 460 440" aria-label="Real system animation"></svg>
+      </div>
+      <div class="chart-box" id="cb-tl1e">
+        <p class="chart-title">What TESS reported · d, e and a 10.35-day planet</p>
+        <p class="chart-sub">The phantom in rust · its orbit would sit almost on top of e's, which is why a co-orbital pair was proposed</p>
+        <svg id="tlch1e" viewBox="0 0 460 440" aria-label="Reported system animation"></svg>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="chip"><div class="k">time</div><div class="v" id="tl1bt" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">in transit now · real system</div><div class="v" id="tl1bnow" style="font-size:15px">–</div></div>
+      <div class="chip"><div class="k">in transit now · reported system</div><div class="v" id="tl1bnow2" style="font-size:15px">–</div></div>
+    </div>
+  </div>
+  <p class="takeaway"><em>What a single transit cannot tell you.</em> A transit gives a depth and a duration, and depth is set by the planet's size while duration is set mostly by the orbital speed and the impact parameter. Planets f and g have almost the same radius, and at 15 and 21 days their transits last about the same two and a half hours, so their events are interchangeable to a box search. Only the spacing distinguishes them, and with one event of f and two of g the spacing happened to be regular. In the transit view the phantom crosses the star three times where the real system sends three different bodies across it. The same light curve, two different worlds: it is the photometric version of the interior degeneracy in the Dorn tab.</p>
+</section>
+
 <!-- ================= STATION L2 ================= -->
 <section id="lel2">
-  <div class="sec-head"><span class="sec-num">§2</span><h2>A chain of Laplace resonances</h2></div>
+  <div class="sec-head"><span class="sec-num">§3</span><h2>A chain of Laplace resonances</h2></div>
   <p class="prose">Consecutive pairs sit just outside first-order mean-motion resonances: c–d near 2:1, d–e and e–f near 3:2, f–g near 4:3. Each pair's distance from exact resonance sets a super-period, and the remarkable thing is that all four super-periods are the same, about 260 days. That coincidence is what a Laplace resonance means: the three-body angles ψ built from consecutive triplets stop circulating and librate around fixed values. The integration below is a real N-body run with the paper's masses and ephemerides, started at the epoch of TESS Sector 2. Perturb planet f and watch the chain break.</p>
   <div class="panel">
     <div class="tl-ladder" id="tl-ladder"></div>
@@ -2141,7 +2298,7 @@
 
 <!-- ================= STATION L3 ================= -->
 <section id="lel3">
-  <div class="sec-head"><span class="sec-num">§3</span><h2>Transit timing variations</h2></div>
+  <div class="sec-head"><span class="sec-num">§4</span><h2>Transit timing variations</h2></div>
   <p class="prose">Planets near resonance tug on each other in step, so their transits arrive early and late with a period equal to the super-period, about 260 days here, and amplitudes that scale with the perturber's mass. The same N-body run, extended to six years, gives the transit times; subtracting a linear ephemeris leaves the variations. This is the paper's Fig. 14, and its point: TTVs would measure the masses independently of the radial velocities, whose error bars are still 20 to 40 percent.</p>
   <div class="panel">
     <div class="controls">
@@ -2169,7 +2326,7 @@
 
 <!-- ================= STATION L4 ================= -->
 <section id="lel4">
-  <div class="sec-head"><span class="sec-num">§4</span><h2>Densities out of order</h2></div>
+  <div class="sec-head"><span class="sec-num">§5</span><h2>Densities out of order</h2></div>
   <p class="prose">Formation theory expects density to fall with distance from the star, because the outer planets keep more of their primordial gas, and to fall with mass, because heavier cores accrete more of it. TOI-178 does neither. Planet d, at 6.6 days, is six times less dense than its inner neighbour c and less dense than e outside it; planet f, the most massive, is denser than the lighter planets on either side of it. Below, the six planets against this site's composition lines, and the toy interior sampler of the Egger tab run on all six.</p>
   <div class="panel">
     <div class="census-grid">
@@ -2206,7 +2363,7 @@
 
 <!-- ================= STATION L5 ================= -->
 <section id="lel5">
-  <div class="sec-head"><span class="sec-num">§5</span><h2>What the chain forbids and predicts</h2></div>
+  <div class="sec-head"><span class="sec-num">§6</span><h2>What the chain forbids and predicts</h2></div>
   <p class="prose">A resonant chain is a rule, and rules make predictions. The impact parameters grow linearly with the two-thirds power of the period, which means the orbits share one plane, and that plane tilts the outer orbits off the star: any planet beyond about 26 days would not transit. The chain's super-period, meanwhile, fixes where a seventh planet would have to sit to continue it. Slide the super-period to see how robust those periods are, and where the habitable zone begins.</p>
   <div class="panel">
     <div class="controls">
@@ -2238,7 +2395,7 @@
 </section>
 
 <footer>
-  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The ephemerides, radii, masses, impact parameters and equilibrium temperatures are the paper's Tables 3 and 4; the Laplace angles, super-periods and continuation periods are its equations 1, 2 and C.7, and the angles this page computes at the TESS epoch match its Table 6 to within half a degree. The N-body integration is real: a heliocentric kick–drift–kick scheme with exact Kepler drifts, the six planets at their median masses, circular and coplanar initial orbits placed at the mean longitudes of the transit ephemerides. The paper uses REBOUND with the same initial conditions, so the libration equilibria agree; the amplitudes differ at the tens-of-percent level because a circular start is itself a small perturbation. The light curve of §1 is synthetic, the paper's transit depths and durations plus white noise, with no stellar variability, no instrument systematics and a simplified box search; the ghost period arises from the true ephemerides, not from anything added. The interiors of §4 use this site's toy forward model with solar-scaled abundances at [Fe/H] = −0.23, not the paper's plaNETic run, and its gas fractions are indicative only. The habitable-zone edge and the minimum-mass nebula figure are the paper's estimates.</p>
+  <p><strong style="color:var(--ink2)">What's real and what's a toy.</strong> The ephemerides, radii, masses, impact parameters and equilibrium temperatures are the paper's Tables 3 and 4; the Laplace angles, super-periods and continuation periods are its equations 1, 2 and C.7, and the angles this page computes at the TESS epoch match its Table 6 to within half a degree. The N-body integration is real: a heliocentric kick–drift–kick scheme with exact Kepler drifts, the six planets at their median masses, circular and coplanar initial orbits placed at the mean longitudes of the transit ephemerides. The paper uses REBOUND with the same initial conditions, so the libration equilibria agree; the amplitudes differ at the tens-of-percent level because a circular start is itself a small perturbation. The light curves of §1 and §2 are synthetic, the paper's transit depths and durations plus white noise, with no stellar variability, no instrument systematics and a simplified box search; the ghost period arises from the true ephemerides, not from anything added. The interiors of §5 use this site's toy forward model with solar-scaled abundances at [Fe/H] = −0.23, not the paper's plaNETic run, and its gas fractions are indicative only. The habitable-zone edge and the minimum-mass nebula figure are the paper's estimates.</p>
   <p>A. Leleu et al. (2021), “Six transiting planets and a chain of Laplace resonances in TOI-178”, A&amp;A 649, A26 · <a href="https://arxiv.org/abs/2101.09260">arXiv:2101.09260</a> · Lithwick, Xie &amp; Wu (2012), ApJ 761, 122 (super-periods and TTVs) · Delisle (2017), A&amp;A 605, A96 (Laplace equilibria)</p>
 </footer>
 </div><!-- /page-lel -->
@@ -5725,6 +5882,74 @@ function tlDraw1() {
   $("tl1ghost").innerHTML = ghostEvents.length ? ghostEvents.map(e => "<b style='color:" + TL_PL[e[1]].col + "'>" + e[1] + "</b> at " + fmt(e[0] - 2458000, 2)).join(" · ") + "<small><br>spacings " + ghostEvents.slice(1).map((e, i) => fmt(e[0] - ghostEvents[i][0], 2) + " d").join(", ") + "</small>" : "f and g switched off";
   $("tl1n").innerHTML = TL_N.map(k => { if (!TL.present[k]) return "–"; const p = TL_PL[k]; let n = 0; for (let m = -300; m < 300; m++) { const tc = p.T0 + m * p.P; if (tc > TL1.tStart && tc < TL1.tEnd && !(tc > TL1.gapA && tc < TL1.gapB)) n++; } return n; }).join(" · ");
 }
+/* ---- §2 the ghost, animated ---- */
+const TL_GHOST = { k: "10.35 d", P: 10.355, T0: 2458364.92, R: 2.55, b: 0.6, a: 0.0805, dep: 1300, t14: 2.3, col: "#C97633" };
+const TL1B = { view: "top", speed: 0.5, t: 2458354.1, playing: false, last: 0, sys: null };
+const TL_RSTAR = 0.651 * 0.00465047;   // AU
+const TL_GHOST_EV = [2458354.55, 2458364.92, 2458375.26];
+function tl1bModel(pls, t) { let f = 0; pls.forEach(p => { let ph = (t - p.T0) / p.P; ph -= Math.round(ph); const dtr = Math.abs(ph * p.P) * 24, half = p.t14 / 2; if (dtr < half) f -= p.dep * 1e-6 * (dtr < half * 0.8 ? 1 : (half - dtr) / (half * 0.2)); }); return f; }
+function tl1bStatic() {
+  TL1B.sys = [
+    { svg: "tlch1d", now: "tl1bnow", pls: TL_N.map(k => Object.assign({ k }, TL_PL[k])) },
+    { svg: "tlch1e", now: "tl1bnow2", pls: [Object.assign({ k: "d" }, TL_PL.d), Object.assign({ k: "e" }, TL_PL.e), TL_GHOST] },
+  ];
+  const cx = 230, cy = 150, sc = 130 / 0.1275;
+  TL1B.sys.forEach(S => {
+    const svg = $(S.svg); svg.innerHTML = "";
+    const g0 = el("g", {}, svg);
+    if (TL1B.view === "top") {
+      el("line", { x1: cx, x2: cx, y1: cy, y2: 18, stroke: C.muted, "stroke-dasharray": "3 4" }, g0);
+      el("text", { x: cx, y: 12, "text-anchor": "middle", class: "serieslabel", fill: C.muted }, g0).textContent = "to Earth";
+      S.pls.forEach(p => el("circle", { cx, cy, r: fmt(p.a * sc, 1), fill: "none", stroke: p.col, "stroke-width": 0.8, opacity: 0.45 }, g0));
+      el("circle", { cx, cy, r: 5, fill: "#E8C27A" }, g0);
+    } else {
+      el("circle", { cx, cy, r: 84, fill: "#E8C27A", opacity: 0.16 }, g0);
+      el("circle", { cx, cy, r: 76, fill: "#E8C27A" }, g0);
+      el("text", { x: 14, y: 22, class: "serieslabel", fill: C.muted }, g0).textContent = "seen from Earth · planet sizes ×5";
+    }
+    // light-curve strip
+    const sx = t => 24 + (t - TL1.tStart) / (TL1.tEnd - TL1.tStart) * 420, sy = f => 326 + (-f * 1000) / 2 * 88;
+    el("line", { x1: 24, x2: 444, y1: fmt(sy(0), 1), y2: fmt(sy(0), 1), stroke: C.line }, g0);
+    el("text", { x: 24, y: 318, class: "serieslabel", fill: C.muted }, g0).textContent = "model light curve over the sector · 2 mmag";
+    let d = ""; for (let t = TL1.tStart; t <= TL1.tEnd; t += 0.006) { const inGap = t > TL1.gapA && t < TL1.gapB; d += (d && !inGap ? "L" : "M") + fmt(sx(t), 1) + " " + fmt(sy(inGap ? 0 : tl1bModel(S.pls, t)), 1); }
+    el("path", { d, stroke: C.ink2, "stroke-width": 1.2, fill: "none" }, g0);
+    TL_GHOST_EV.forEach(t => el("path", { d: "M" + fmt(sx(t), 1) + " 428 l-5 8 l10 0 z", fill: "#C97633" }, g0));
+    S.dyn = el("g", {}, svg); S.sx = sx; S.sy = sy;
+  });
+  tl1bTick();
+}
+function tl1bTick() {
+  const t = TL1B.t, cx = 230, cy = 150, sc = 130 / 0.1275, ss = 76 / TL_RSTAR, RS = 76;
+  TL1B.sys.forEach(S => {
+    const g = S.dyn; g.innerHTML = ""; const now = [];
+    S.pls.forEach(p => {
+      const l = tlWrap(90 + 360 * (t - p.T0) / p.P) * TL_DEG, cl = Math.cos(l), sl = Math.sin(l);
+      let ph = (t - p.T0) / p.P; ph -= Math.round(ph); const inTr = Math.abs(ph * p.P) * 24 < p.t14 / 2; if (inTr) now.push(p.k);
+      const r = Math.max(3, p.R * 1.7);
+      if (TL1B.view === "top") {
+        el("circle", { cx: fmt(cx + p.a * sc * cl, 1), cy: fmt(cy - p.a * sc * sl, 1), r: fmt(r, 1), fill: p.col, stroke: inTr ? "#fff" : "none", "stroke-width": 1.5 }, g);
+      } else {
+        const x = cx + p.a * ss * cl; if (Math.abs(x - cx) > 226) return;
+        const front = sl > 0, rr = Math.max(2, p.R * 0.009158 / 0.651 * RS * 5);
+        if (!front && Math.abs(x - cx) < RS + rr) return;
+        el("circle", { cx: fmt(x, 1), cy: fmt(cy + p.b * RS, 1), r: fmt(rr, 1), fill: front ? p.col : C.muted, opacity: front ? 1 : 0.45, stroke: front && inTr ? "#0C111E" : "none", "stroke-width": 1 }, g);
+        if (front) el("text", { x: fmt(x, 1), y: fmt(cy + p.b * RS - rr - 5, 1), "text-anchor": "middle", class: "serieslabel", fill: inTr ? "#0C111E" : p.col }, g).textContent = p.k;
+      }
+    });
+    el("line", { x1: fmt(S.sx(t), 1), x2: fmt(S.sx(t), 1), y1: 322, y2: 424, stroke: C.rock, "stroke-width": 1.2 }, g);
+    el("circle", { cx: fmt(S.sx(t), 1), cy: fmt(S.sy(tl1bModel(S.pls, t)), 1), r: 3, fill: C.rock }, g);
+    $(S.now).innerHTML = now.length ? now.join(", ") : "none";
+  });
+  $("tl1bt").innerHTML = "BJD " + fmt(t, 2) + "<small> · day " + fmt(t - TL1.tStart, 1) + " of 25.9</small>";
+  $("o-tl1bt").textContent = fmt(t - TL1.tStart, 1); $("in-tl1bt").value = fmt(t - TL1.tStart, 2);
+}
+function tl1bLoop(ts) {
+  if (!TL1B.playing) return;
+  const dt = Math.min(0.1, (ts - TL1B.last) / 1000); TL1B.last = ts;
+  if (!$("page-lel").hidden) { TL1B.t += dt * TL1B.speed; if (TL1B.t > TL1.tEnd) TL1B.t = TL1.tStart; tl1bTick(); }
+  requestAnimationFrame(tl1bLoop);
+}
+function tl1bPlay(on) { TL1B.playing = on && typeof requestAnimationFrame === "function"; $("btn-tl1bp").textContent = TL1B.playing ? "❚❚ Pause" : "▶ Play"; if (TL1B.playing) { TL1B.last = performance.now(); requestAnimationFrame(tl1bLoop); } }
 /* ---- N-body ---- */
 function tlKep(mu, b, dt) {   // advance body b in place on its Kepler orbit
   const r0x = b.x, r0y = b.y, v0x = b.vx, v0y = b.vy;
@@ -5895,7 +6120,7 @@ function tlDraw5() {
   egCharts["tlch5b"] = { scale: s2, pts: pts2 };
   $("tl5cont").innerHTML = cont.filter(c => c.q === 1).slice(0, 3).map(c => fmt(c.P, 1) + " d <small>(" + (c.k + 1) + ":" + c.k + ")</small>").join(" · ");
 }
-function tlDrawAll() { tlDraw1(); tlDraw2(); tlDraw3(); tlDraw4(); tlDraw5(); }
+function tlDrawAll() { tlDraw1(); tlDraw2(); tl1bStatic(); tl1bPlay(true); tlDraw3(); tlDraw4(); tlDraw5(); }
 /* ---- hovers ---- */
 attachHover($("cb-tl1a"), $("tlch1a"), { padL: 56, padR: 14, W: 920, H: 260 },
   (px, py, cx, cy) => { const c = egCharts["tlch1a"]; let best = null, bd = 1e9; c.marks.forEach(m => { const d = Math.abs(m[0] - px); if (d < bd) { bd = d; best = m; } }); if (!best || bd > 8) { $("tip-tl1a").hidden = true; return; } setTip($("tip-tl1a"), cx, cy, "<b>planet " + best[1] + "</b><br><span class='mono'>transit at BJD " + fmt(best[2], 2) + " · depth " + TL_PL[best[1]].dep + " ppm · " + fmt(TL_PL[best[1]].t14, 2) + " h</span>", $("cb-tl1a").clientWidth); }, () => $("tip-tl1a").hidden = true);
@@ -5918,6 +6143,11 @@ tlPtHover("cb-tl5b", "tlch5b", "tip-tl5b", { padL: 46, padR: 12, W: 460, H: 340 
 $("tog-tl1").querySelectorAll("button").forEach(b => b.addEventListener("click", () => { const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", on); TL.present[b.dataset.v] = on; tlDraw1(); }));
 escSegWire("seg-tl1n", v => TL.noise = +v, tlDraw1);
 escSegWire("seg-tl1f", v => TL.fold = +v, tlDraw1);
+escSegWire("seg-tl1bv", v => TL1B.view = v, tl1bStatic);
+$("btn-tl1bp").addEventListener("click", () => tl1bPlay(!TL1B.playing));
+$("in-tl1bs").addEventListener("input", () => { TL1B.speed = Math.pow(10, +$("in-tl1bs").value); $("o-tl1bs").textContent = fmt(TL1B.speed, 2) + " days per second"; });
+$("in-tl1bt").addEventListener("input", () => { TL1B.t = TL1.tStart + (+$("in-tl1bt").value); tl1bTick(); });
+$("seg-tl1bj").querySelectorAll("button").forEach(b => b.addEventListener("click", () => { $("seg-tl1bj").querySelectorAll("button").forEach(o => o.setAttribute("aria-pressed", o === b)); TL1B.t = TL_GHOST_EV[+b.dataset.v - 1] - 0.12; tl1bPlay(false); tl1bTick(); }));
 $("in-tl2dp").addEventListener("input", () => { TL.dPf = +$("in-tl2dp").value; $("o-tl2dp").textContent = (TL.dPf >= 0 ? "+" : "") + fmt(TL.dPf, 3) + " d"; });
 $("in-tl2e").addEventListener("input", () => { TL.ef = +$("in-tl2e").value; $("o-tl2e").textContent = fmt(TL.ef, 3); });
 $("in-tl2m").addEventListener("input", () => { TL.mf = +$("in-tl2m").value; $("o-tl2m").textContent = fmt(TL.mf, 1) + " M⊕"; });
@@ -6923,8 +7153,214 @@ function ppInit() {
   all.forEach(s => s.draw());
 }
 
+/* ================= Frost line (concept tab) =================
+   Where water freezes in the solar nebula and, once the gas is gone, in bare sunlight, as a function of time.
+   Disk midplane: T⁴ = T_visc⁴ + T_irr⁴ with a steady optically thick α disk (T_visc⁵ ∝ κ Ṁ² Ω³ / α, midplane
+   temperature of a viscously heated disk) and the Chiang & Goldreich 1997 flared-disk interior
+   (T_irr = 150 K (L/1.44 L☉)^(2/7) r^(-3/7)). Bare body in sunlight: T = 278.6 K L^(1/4) r^(-1/2).
+   Stellar luminosity: pre-main-sequence table (Baraffe et al. 2015), Gough 1981 on the main sequence,
+   schematic giant branch after 10 Gyr. Prefix fl/FL.                                                        */
+const FLC = { AU: 1.496e11, Msun: 1.989e30, Lsun: 3.828e26, Rsun: 6.957e8, G: 6.674e-11, sig: 5.670e-8, k: 1.381e-23, mH: 1.673e-27, yr: 3.156e7 };
+const FL = { sp: "h2o", mdot1: 3e-8, alpha: 1e-2, tdisk: 4, burst: true, tcur: 4570 };
+const FL_SP = { h2o: { T: 170, lab: "H₂O" }, co2: { T: 70, lab: "CO₂" }, co: { T: 25, lab: "CO" } };
+const FL_T1 = 12300, FL_TB = 0.1, FL_MB = 1e-4;     // end of the plot (Myr); outburst epoch (Myr) and accretion rate (M☉/yr)
+const FL_LPRE = [[0.01, 12], [0.03, 8], [0.1, 5], [0.3, 3.2], [1, 2.2], [2, 1.35], [3, 1.0], [5, 0.75], [10, 0.55], [20, 0.52], [35, 0.62], [50, 0.716]];
+const FL_LPOST = [[10000, 1.90], [10500, 2.3], [11000, 3.5], [11500, 9], [12000, 50], [12200, 400], [12300, 2300]];
+const FL_RSTAR = [[0.01, 5], [0.1, 3.5], [1, 2.3], [3, 1.6], [10, 1.15], [30, 0.95], [50, 1]];
+const FL_TS = (() => { const a = []; for (let lg = -2; lg <= Math.log10(FL_T1) + 1e-9; lg += 0.01) a.push(Math.pow(10, lg)); return a; })();
+function flInterp(tab, t) {          // log-log interpolation, clamped at both ends
+  if (t <= tab[0][0]) return tab[0][1];
+  if (t >= tab[tab.length - 1][0]) return tab[tab.length - 1][1];
+  let i = 1; while (tab[i][0] < t) i++;
+  const ta = tab[i - 1][0], la = tab[i - 1][1], tb = tab[i][0], lb = tab[i][1];
+  const u = (Math.log(t) - Math.log(ta)) / (Math.log(tb) - Math.log(ta));
+  return Math.exp(Math.log(la) + u * (Math.log(lb) - Math.log(la)));
+}
+const flLstar = t => t <= 50 ? flInterp(FL_LPRE, t) : t <= 10000 ? 1 / (1 + 0.4 * (1 - t / 4570)) : flInterp(FL_LPOST, t);
+const flMdot = t => { const tnu = 0.2; return FL.mdot1 * Math.pow(1 + 1 / tnu, 1.5) * Math.pow(1 + t / tnu, -1.5); };
+const flLacc = (t, mdot) => FLC.G * FLC.Msun * (mdot * FLC.Msun / FLC.yr) / (2 * flInterp(FL_RSTAR, t) * FLC.Rsun) / FLC.Lsun;
+const flKap = Tc => 2e-4 * Tc * Tc * 0.1;     // Bell & Lin 1994 ice-grain opacity evaluated at the condensation temperature, m² kg⁻¹
+function flTvisc(r, mdot, kap, alpha) {
+  if (mdot <= 0) return 0;
+  const Om = Math.sqrt(FLC.G * FLC.Msun / Math.pow(r * FLC.AU, 3)), Md = mdot * FLC.Msun / FLC.yr;
+  const Cc = 3 / (128 * Math.PI * Math.PI) * kap * 2.34 * FLC.mH / (FLC.sig * alpha * FLC.k);
+  return Math.pow(Cc * Md * Md * Om * Om * Om, 0.2);
+}
+const flTirr = (r, L) => 150 * Math.pow(L / 1.44, 2 / 7) * Math.pow(r, -3 / 7);
+const flTbare = (r, L) => 278.6 * Math.pow(L, 0.25) / Math.sqrt(r);
+function flState(t, mscale = 1, burst = false) {
+  const disk = t <= FL.tdisk, mdot = disk ? flMdot(t) * mscale : 0;
+  const L = flLstar(t), Lacc = disk ? flLacc(t, burst ? FL_MB : mdot) : 0;
+  return { t, disk, mdot, L, Lacc, Ltot: L + Lacc };
+}
+const flTmid = (r, st, kap) => Math.pow(Math.pow(flTvisc(r, st.mdot, kap, FL.alpha), 4) + Math.pow(flTirr(r, st.Ltot), 4), 0.25);
+function flSolve(fn, Tc) {           // radius where the decreasing profile fn(r) crosses Tc; bisection in log r
+  let lo = Math.log(0.02), hi = Math.log(3000);
+  if (fn(Math.exp(lo)) < Tc) return 0.02;
+  if (fn(Math.exp(hi)) > Tc) return 3000;
+  for (let i = 0; i < 46; i++) { const m = 0.5 * (lo + hi); if (fn(Math.exp(m)) > Tc) lo = m; else hi = m; }
+  return Math.exp(0.5 * (lo + hi));
+}
+const flBare = (t, sp = FL.sp) => Math.pow(278.6 / FL_SP[sp].T, 2) * Math.sqrt(flLstar(t));
+function flMid(t, sp = FL.sp, mscale = 1, burst = false) {
+  const st = flState(t, mscale, burst); if (!st.disk) return null;
+  const kap = flKap(FL_SP[sp].T);
+  return flSolve(r => flTmid(r, st, kap), FL_SP[sp].T);
+}
+const flTlab = t => t < 1 ? Math.round(t * 1000) + " kyr" : t < 1000 ? Math.round(t) + " Myr" : (t / 1000).toFixed(t < 10000 ? 1 : 0).replace(/\.0$/, "") + " Gyr";
+const flRlab = r => r < 1 ? r.toFixed(r < 0.1 ? 2 : 1) : r < 10 ? r.toFixed(1).replace(/\.0$/, "") : Math.round(r) + "";
+const flAU = r => r >= 100 ? Math.round(r) + " AU" : r >= 10 ? fmt(r, 1) + " AU" : fmt(r, 2) + " AU";
+const flSci = x => { const e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); return (m >= 9.5 ? "10" : fmt(m, 1) + "×10") + String(m >= 9.5 ? e + 1 : e).replace(/-/g, "⁻").replace(/\d/g, c => "⁰¹²³⁴⁵⁶⁷⁸⁹"[+c]); };
+const FL_CH = {};
+const FL_BODIES = [["Earth", 1], ["Mars", 1.52], ["Jupiter", 5.2], ["Saturn", 9.6], ["Neptune", 30.1]];
+const FL_BANDS = [["asteroid belt", 2.1, 3.3], ["Kuiper belt", 39, 48]];
+function flDraw1() {
+  const svg = $("flch1"); svg.innerHTML = "";
+  const X0 = -2, X1 = Math.log10(FL_T1), Y0 = -1, Y1 = 2.5;
+  const s = makeScales(X0, X1, Y0, Y1, 620, 420, 46, 84, 30, 40);   // numerals sit inside the plot, under the top edge
+  const lx = t => s.x(Math.log10(t)), ly = r => s.y(Math.log10(Math.min(Math.max(r, 0.1), 316)));
+  // gas-disk era shading
+  el("rect", { x: fmt(s.padL, 1), y: s.padT, width: fmt(lx(FL.tdisk) - s.padL, 1), height: s.H - s.padT - s.padB, fill: "rgba(61,155,217,.05)" }, svg);
+  el("text", { x: fmt(s.padL + 6, 1), y: s.H - s.padB - 8, class: "serieslabel", fill: C.muted, style: "font-size:10.5px" }, svg).textContent = "gas disk present";
+  axes(svg, s, [-2, -1, 0, 1, 2, 3, 4], [-1, Math.log10(0.3), 0, Math.log10(3), 1, Math.log10(30), 2, Math.log10(300)],
+       "time since the Sun's birth (log)", "distance from the Sun, AU (log)", v => flTlab(Math.pow(10, v)), v => flRlab(Math.pow(10, v)));
+  // solar-system ruler
+  FL_BANDS.forEach(b => {
+    el("rect", { x: s.padL, y: fmt(ly(b[2]), 1), width: s.W - s.padL - s.padR, height: fmt(ly(b[1]) - ly(b[2]), 1), fill: "rgba(174,182,196,.07)" }, svg);
+    el("text", { x: s.W - s.padR + 6, y: fmt((ly(b[1]) + ly(b[2])) / 2 + 4, 1), class: "axis", fill: C.muted, style: "font-family:var(--mono);font-size:10px" }, svg).textContent = b[0];
+  });
+  FL_BODIES.forEach(b => {
+    el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(ly(b[1]), 1), y2: fmt(ly(b[1]), 1), stroke: C.line, "stroke-dasharray": "2 5" }, svg);
+    el("text", { x: s.W - s.padR + 6, y: fmt(ly(b[1]) + 4, 1), fill: C.muted, style: "font-family:var(--mono);font-size:10px" }, svg).textContent = b[0];
+  });
+  // uncertainty band: accretion rate three times higher or lower than the slider
+  const inDisk = FL_TS.filter(t => t <= FL.tdisk);
+  const hi = inDisk.map(t => flMid(t, FL.sp, 3)), lo = inDisk.map(t => flMid(t, FL.sp, 1 / 3));
+  const band = inDisk.map((t, i) => [lx(t), ly(hi[i])]).concat(inDisk.map((t, i) => [lx(t), ly(lo[i])]).reverse());
+  el("path", { d: linePath(band) + "Z", fill: "rgba(61,155,217,.16)", stroke: "none" }, svg);
+  // bare-body line: dashed and faint while the disk exists, solid after it is gone
+  const bare = FL_TS.map(t => flBare(t));
+  const pre = FL_TS.map((t, i) => [lx(t), ly(bare[i])]).filter((p, i) => FL_TS[i] <= FL.tdisk);
+  const post = FL_TS.map((t, i) => [lx(t), ly(bare[i])]).filter((p, i) => FL_TS[i] >= FL.tdisk);
+  el("path", { d: linePath(pre), stroke: C.rock, "stroke-width": 1.5, "stroke-dasharray": "5 5", opacity: .55, fill: "none" }, svg);
+  el("path", { d: linePath(post), stroke: C.rock, "stroke-width": 2.5, fill: "none" }, svg);
+  // midplane line
+  const mid = inDisk.map(t => flMid(t));
+  el("path", { d: linePath(inDisk.map((t, i) => [lx(t), ly(mid[i])])), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  // the jump at dispersal
+  const mEnd = mid[mid.length - 1], bEnd = flBare(FL.tdisk);
+  el("line", { x1: fmt(lx(FL.tdisk), 1), x2: fmt(lx(FL.tdisk), 1), y1: fmt(ly(mEnd), 1), y2: fmt(ly(bEnd), 1), stroke: C.ink2, "stroke-dasharray": "2 3" }, svg);
+  el("text", { x: fmt(lx(FL.tdisk) + 5, 1), y: fmt((ly(mEnd) + ly(bEnd)) / 2 + 4, 1), class: "serieslabel", fill: C.ink2, style: "font-size:10.5px" }, svg).textContent = "disk gone";
+  // outburst spike
+  let burstR = null;
+  if (FL.burst && FL_TB <= FL.tdisk) {
+    burstR = flMid(FL_TB, FL.sp, 1, true);
+    const q = flMid(FL_TB);
+    el("line", { x1: fmt(lx(FL_TB), 1), x2: fmt(lx(FL_TB), 1), y1: fmt(ly(q), 1), y2: fmt(ly(burstR), 1), stroke: C.ice, "stroke-width": 1.5 }, svg);
+    el("circle", { cx: fmt(lx(FL_TB), 1), cy: fmt(ly(burstR), 1), r: 3.5, fill: C.ice }, svg);
+    el("text", { x: fmt(lx(FL_TB) + 7, 1), y: fmt(ly(burstR) + 4, 1), class: "serieslabel", fill: C.ice, style: "font-size:10.5px" }, svg).textContent = "FU Ori outburst";
+  }
+  // phase numerals
+  const ph = [[0.05, "1"], [Math.sqrt(0.3 * Math.min(3, FL.tdisk)), "2"], [FL.tdisk > 3.5 ? Math.sqrt(3 * FL.tdisk) : null, "3"], [FL.tdisk, "4"], [Math.sqrt(FL.tdisk * 50), "5"], [700, "6"], [11000, "7"]];
+  ph.forEach(p => { if (p[0] === null) return; const x = lx(p[0]);
+    el("circle", { cx: fmt(x, 1), cy: s.padT + 12, r: 8, fill: "var(--surface2)", stroke: C.muted }, svg);
+    el("text", { x: fmt(x, 1), y: s.padT + 16, "text-anchor": "middle", fill: C.ink, style: "font-family:var(--mono);font-size:10px" }, svg).textContent = p[1]; });
+  // cursor
+  const cur = flLinesAt(FL.tcur);
+  el("line", { x1: fmt(lx(FL.tcur), 1), x2: fmt(lx(FL.tcur), 1), y1: s.padT, y2: s.H - s.padB, stroke: C.ink, "stroke-width": 1, opacity: .7 }, svg);
+  if (cur.mid !== null) el("circle", { cx: fmt(lx(FL.tcur), 1), cy: fmt(ly(cur.mid), 1), r: 5, fill: C.ice, stroke: "#0C111E", "stroke-width": 2 }, svg);
+  el("circle", { cx: fmt(lx(FL.tcur), 1), cy: fmt(ly(cur.bare), 1), r: 5, fill: C.rock, stroke: "#0C111E", "stroke-width": 2, opacity: cur.mid !== null ? .6 : 1 }, svg);
+  FL_CH.c1 = { s, lx, ly, mid, bare, inDisk, burstR };
+}
+const flLinesAt = t => ({ mid: flMid(t), bare: flBare(t) });
+function flDraw2() {
+  const svg = $("flch2"); svg.innerHTML = "";
+  const st = flState(FL.tcur), kap = flKap(FL_SP[FL.sp].T);
+  const s = makeScales(-1, 2.5, 1, 3.5, 380, 420, 44, 12, 30, 40);
+  const lx = r => s.x(Math.log10(r)), ly = T => s.y(Math.log10(Math.min(Math.max(T, 10), 3162)));
+  axes(svg, s, [-1, 0, 1, 2], [1, 2, 3], "distance, AU (log)", "temperature, K (log)", v => flRlab(Math.pow(10, v)), v => Math.round(Math.pow(10, v)) + "");
+  const rs = []; for (let lg = -1; lg <= 2.5 + 1e-9; lg += 0.02) rs.push(Math.pow(10, lg));
+  // condensation temperatures
+  Object.keys(FL_SP).forEach(k => { const T = FL_SP[k].T, on = k === FL.sp;
+    el("line", { x1: s.padL, x2: s.W - s.padR, y1: fmt(ly(T), 1), y2: fmt(ly(T), 1), stroke: on ? C.ink2 : C.line, "stroke-dasharray": "4 4" }, svg);
+    el("text", { x: s.W - s.padR - 3, y: fmt(ly(T) - 4, 1), "text-anchor": "end", class: "serieslabel", fill: on ? C.ink : C.muted, style: "font-size:10.5px" }, svg).textContent = FL_SP[k].lab + " · " + T + " K"; });
+  const prof = {};
+  if (st.disk) {
+    prof.visc = rs.map(r => flTvisc(r, st.mdot, kap, FL.alpha)); prof.irr = rs.map(r => flTirr(r, st.Ltot)); prof.mid = rs.map(r => flTmid(r, st, kap));
+    el("path", { d: linePath(rs.map((r, i) => [lx(r), ly(prof.visc[i])])), stroke: C.ice, "stroke-width": 1.2, "stroke-dasharray": "2 3", fill: "none", opacity: .8 }, svg);
+    el("path", { d: linePath(rs.map((r, i) => [lx(r), ly(prof.irr[i])])), stroke: C.iron, "stroke-width": 1.2, "stroke-dasharray": "2 3", fill: "none", opacity: .8 }, svg);
+    el("path", { d: linePath(rs.map((r, i) => [lx(r), ly(prof.mid[i])])), stroke: C.ice, "stroke-width": 2.5, fill: "none" }, svg);
+  }
+  prof.bare = rs.map(r => flTbare(r, st.L));
+  el("path", { d: linePath(rs.map((r, i) => [lx(r), ly(prof.bare[i])])), stroke: C.rock, "stroke-width": st.disk ? 1.5 : 2.5, "stroke-dasharray": st.disk ? "5 5" : "none", opacity: st.disk ? .6 : 1, fill: "none" }, svg);
+  // where the active profile crosses each condensation temperature
+  Object.keys(FL_SP).forEach(k => { const T = FL_SP[k].T;
+    const r = st.disk ? flSolve(x => flTmid(x, st, flKap(T)), T) : Math.pow(278.6 / T, 2) * Math.sqrt(st.L);
+    if (r > 0.1 && r < 316) el("circle", { cx: fmt(lx(r), 1), cy: fmt(ly(T), 1), r: k === FL.sp ? 5 : 3.5, fill: st.disk ? C.ice : C.rock, stroke: "#0C111E", "stroke-width": 2 }, svg); });
+  // series labels
+  const labY = 0.2;
+  if (st.disk) {
+    el("text", { x: fmt(lx(0.42), 1), y: fmt(ly(prof.mid[Math.round((Math.log10(0.42) + 1) / 0.02)]) - 10, 1), class: "serieslabel", fill: C.ice, style: "font-size:11px" }, svg).textContent = "disk midplane";
+    el("text", { x: fmt(lx(40), 1), y: fmt(ly(flTbare(40, st.L)) - 8, 1), class: "serieslabel", fill: C.rock, style: "font-size:11px", opacity: .8 }, svg).textContent = "bare body";
+  } else {
+    el("text", { x: fmt(lx(0.13), 1), y: fmt(ly(flTbare(0.13, st.L)) - 8, 1), class: "serieslabel", fill: C.rock, style: "font-size:11px" }, svg).textContent = "bare body in sunlight";
+  }
+  FL_CH.c2 = { s, lx, ly, rs, prof, st };
+}
+function flReadouts() {
+  const st = flState(FL.tcur), cur = flLinesAt(FL.tcur), sp = FL_SP[FL.sp];
+  $("o-fl-t").textContent = flTlab(FL.tcur);
+  $("fl-rt").innerHTML = flTlab(FL.tcur) + "<small> · " + (st.disk ? "gas disk" : FL.tcur <= 50 ? "no disk · pre-main-sequence" : FL.tcur <= 10000 ? "main sequence" : "giant branch") + "</small>";
+  $("fl-rL").innerHTML = (st.L >= 100 ? Math.round(st.L) : fmt(st.L, 2)) + "<small> L☉" + (st.Lacc > 0.05 ? " + " + fmt(st.Lacc, 1) + " accretion" : "") + "</small>";
+  $("fl-rM").innerHTML = st.disk ? flSci(st.mdot) + "<small> M☉/yr</small>" : "0<small> · disk gone</small>";
+  $("fl-rT").innerHTML = Math.round(st.disk ? flTmid(1, st, flKap(sp.T)) : flTbare(1, st.L)) + "<small> K · " + (st.disk ? "midplane" : "bare body") + "</small>";
+  $("fl-rmid").innerHTML = cur.mid === null ? "–<small> no disk</small>" : flAU(cur.mid) + "<small> " + sp.lab + "</small>";
+  $("fl-rbare").innerHTML = flAU(cur.bare) + "<small> " + sp.lab + (st.disk ? " · if the disk were gone" : "") + "</small>";
+}
+function flPhases() {
+  const td = FL.tdisk, m = t => flMid(t), b = t => flBare(t);
+  const arrow = (a, c) => "<b>" + flAU(a) + "</b> → <b>" + flAU(c) + "</b>";
+  const dir = (a, c) => c > a * 1.03 ? "outward" : c < a / 1.03 ? "inward" : "barely moves";
+  const t2 = Math.min(3, td);
+  $("fl-p1").innerHTML = arrow(m(0.01), m(0.3)) + " · " + dir(m(0.01), m(0.3)) + (FL.burst ? " · outburst spike to <b>" + flAU(flMid(FL_TB, FL.sp, 1, true)) + "</b>" : "");
+  $("fl-p2").innerHTML = arrow(m(0.3), m(t2)) + " · " + dir(m(0.3), m(t2));
+  $("fl-p3").innerHTML = td > 3.5 ? arrow(m(3), m(td)) + " · " + dir(m(3), m(td)) : "<b>skipped</b> · the disk is gone at " + flTlab(td) + ", before the viscous heating has faded";
+  $("fl-p4").innerHTML = arrow(m(td), b(td)) + " · jumps " + dir(m(td), b(td)) + " by a factor " + fmt(b(td) / m(td), 1);
+  let tmin = td, rmin = b(td); for (let t = td; t <= 50; t *= 1.02) { const r = b(t); if (r < rmin) { rmin = r; tmin = t; } }
+  $("fl-p5").innerHTML = arrow(b(td), rmin) + " at " + flTlab(tmin) + ", then <b>" + flAU(b(50)) + "</b> at the zero-age main sequence";
+  $("fl-p6").innerHTML = arrow(b(50), b(4570)) + " today · <b>" + flAU(b(10000)) + "</b> at 10 Gyr";
+  $("fl-p7").innerHTML = arrow(b(10000), b(12300)) + " · outward past the Kuiper belt";
+}
+function flDrawAll() { flDraw1(); flDraw2(); flReadouts(); flPhases(); }
+/* frost-line hovers */
+attachHover($("cb-flch1"), $("flch1"), { padL: 46, padR: 84, W: 620, H: 420 },
+  (px, py, cx, cy) => {
+    const c = FL_CH.c1; if (!c) return;
+    const t = Math.pow(10, c.s.inv(px)), l = flLinesAt(t), st = flState(t);
+    setTip($("tip-flch1"), cx, cy, "<b>" + flTlab(t) + "</b> · " + (st.L >= 100 ? Math.round(st.L) : fmt(st.L, 2)) + " L☉<br><span class='mono'>" +
+      (l.mid !== null ? "midplane " + flAU(l.mid) + " · " : "") + "bare body " + flAU(l.bare) + "</span>" +
+      (st.disk ? "<br><span class='mono'>Ṁ = " + flSci(st.mdot) + " M☉/yr</span>" : ""), $("cb-flch1").clientWidth);
+  }, () => $("tip-flch1").hidden = true);
+attachHover($("cb-flch2"), $("flch2"), { padL: 44, padR: 12, W: 380, H: 420 },
+  (px, py, cx, cy) => {
+    const c = FL_CH.c2; if (!c) return;
+    const r = Math.pow(10, c.s.inv(px)), st = c.st, kap = flKap(FL_SP[FL.sp].T);
+    setTip($("tip-flch2"), cx, cy, "<b>" + flAU(r) + "</b><br><span class='mono'>" +
+      (st.disk ? "midplane " + Math.round(flTmid(r, st, kap)) + " K · viscous " + Math.round(flTvisc(r, st.mdot, kap, FL.alpha)) + " · irradiated " + Math.round(flTirr(r, st.Ltot)) + "<br>" : "") +
+      "bare body " + Math.round(flTbare(r, st.L)) + " K</span>", $("cb-flch2").clientWidth);
+  }, () => $("tip-flch2").hidden = true);
+/* frost-line wiring */
+$("in-fl-t").addEventListener("input", () => { FL.tcur = Math.pow(10, +$("in-fl-t").value); flDrawAll(); });
+$("in-fl-md").addEventListener("input", () => { FL.mdot1 = Math.pow(10, +$("in-fl-md").value); $("o-fl-md").textContent = flSci(FL.mdot1) + " M☉/yr"; flDrawAll(); });
+$("in-fl-al").addEventListener("input", () => { FL.alpha = Math.pow(10, +$("in-fl-al").value); $("o-fl-al").textContent = flSci(FL.alpha); flDrawAll(); });
+$("in-fl-td").addEventListener("input", () => { FL.tdisk = +$("in-fl-td").value; $("o-fl-td").textContent = FL.tdisk + " Myr"; flDrawAll(); });
+escSegWire("seg-fl-sp", v => FL.sp = v, flDrawAll);
+escSegWire("seg-fl-burst", v => FL.burst = v === "on", flDrawAll);
+$("btn-fl-now").addEventListener("click", () => { FL.tcur = 4570; $("in-fl-t").value = Math.log10(4570); flDrawAll(); });
+$("btn-fl-disk").addEventListener("click", () => { FL.tcur = 1; $("in-fl-t").value = 0; flDrawAll(); });
+
 /* ================= tabs ================= */
-const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "val", "pp", "pnet"];
+const TABS = ["alibert", "dorn", "conf", "kub", "esc", "baty", "mos", "egg", "lel", "val", "pp", "pnet", "frost"];
 function showTab(t) {
   TABS.forEach(x => {
     $("page-" + x).hidden = x !== t;
@@ -6943,6 +7379,7 @@ drawE2(); drawE3(); drawE4(); drawE5();
 cfDrawAll();
 egDrawAll();
 rvDrawAll();
+flDrawAll();
 pnDrawAll();
 tlDrawAll();
 drawB1(); b2Reset(); b3Reset();
